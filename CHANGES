@@ -1,0 +1,107 @@
+Compiler
+--------
+
+
+
+version 0.2.5.
+- first version of the 0.2.* series published 
+- the following indirections are now handled by the library:
+  * m.apply(o,pl) 
+  * m.call(o,p1,...,pn)
+
+
+version 0.2.4.
+- tests if version 0.1.17 and 0.2.4 behaves the same if
+  --trans-no-transformation is passed to version 0.2.4.
+
+version 0.2.3.
+- command line arguments for transactifier changed into:
+  --trans-js-namespace       sets the namespace used to interact with the
+                             transaction library (DEFAULT: TRANS)
+  --trans-no-transformation  the compiler does modify the code under test to
+                             use transactions.
+  --trans-all                the compiler modify the code under test, such that
+                             side effects are reverted.
+  --trans-only-effect        the compiler modifies functions with annotation
+                             ~effect.
+  --trans-default            the compiler modifies functions aside from the one
+                             annotated with ~noEffect. (Default)
+- output of -h reads the environment variable COLUMNS and uses
+  it to display the help information in an apropriate way.
+
+version 0.2.2:
+- transformation for transactions complete
+- command line interface parameters
+    --txn-js-namespace, --no-transaction, --transaction
+  added
+- the default behavior for functions without
+  special annotations is, that it will be 
+  transformed to support transactions.
+- ~noEffect and ~effect annotations on functions
+  allow fine control of the rewriting process for
+  each function.
+
+version 0.2.1:
+- transactifier added
+
+version 0.1.17:
+- first published version.
+
+
+
+JSConTest JavaScript Library
+----------------------------
+
+version 0.2.0 (for compiler version 0.4.*):
+- default namespace: PROGLANG
+  Under this namespace all the parts of the library does
+  register themselves, e.g. PROGLANG.tests is the testing
+  part of the library. 
+
+- new flexible event handler interface (proglang.events.js)
+
+- new effect system added (proglang.effects.js)
+
+- delta debbuing added (proglang.ddmin.js)
+
+- enum logger (proglang.events.enum.js) hides large counter examples 
+  and shows the smallest one for each contract. (used in combination 
+  with delta debugging). 
+
+- library slitted into different files
+  - proglang.js
+    This file contains the core of the JSConTest JavaScript 
+    library. If you would like to use JSConTest you have to 
+    include it always.
+  - proglang.tests.js
+    This file contains all the code for creating contests,
+    and generating random tests from them. It also contains
+    the checks for all the build-in contracts. 
+  - proglang.events.js 
+    The file contains the new event handler interface. Include
+    it and call the fire function do fire events. The first
+    parameter should be the message name, followed by the parameters
+    of the event. 
+  - proglang.events.*.js
+    Event listeners. 
+  - proglang.trans.js
+    The transaction library with css-effects.
+  - proglang.effects.js
+    The effect system
+  - proglang.ddmin.js
+    If you include this file, the ddmin algorithm is used
+    to minimize our test cases. 
+
+- proglang.js analyzed with JSLint (passes "The good parts",
+  except unknown identifier, since JSLint is not able to find
+  function names correctly)
+
+
+version 0.1.18:
+- transaction system added
+- css-effect system added
+
+
+
+version 0.1.2:
+- first published version
