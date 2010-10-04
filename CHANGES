@@ -1,6 +1,18 @@
 Compiler
 --------
 
+version 0.4.2.
+- default namespace changes from PROGLANG to JSConTest.
+
+version 0.4.1.
+- command line arguments for effects added:
+  -ce                        shortcut for --css-effects
+  -effects                   the compiler rewrites the code under test, such
+                             that effects will be tracked. This feature can not
+                             be combined with transactions and css effects.
+  -e                         shortcut for --effects
+  --effect-js-namespace      sets the namespace used to interact with the
+                             transaction library (DEFAULT: PROGLANG.effect)
 
 
 version 0.2.5.
