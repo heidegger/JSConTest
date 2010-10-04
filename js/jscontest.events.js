@@ -170,4 +170,4 @@
   E.register = register;
   E.fire = fire;
   
-})(PROGLANG);
+})(JSConTest);

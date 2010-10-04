@@ -2,7 +2,7 @@
 /* author: Phillip Heidegger */
 
 /* This library will not change the global namespace in any sense. 
-   But it assumes that the global variable PROGLANG exists and 
+   But it assumes that the global variable JSConTest exists and 
    register all its methods in PROGALNG.effects.
    
    In order to change this behaviour, please go to the end of the
@@ -28,7 +28,7 @@
     checkEffect = true;  // should effects be checked?
   
   /* use the new object E and register it in the
-     namespace PROGLANG */
+     namespace JSConTest */
   P.effects = E;
 
   function cfire() {
@@ -425,4 +425,4 @@
     P.tests.callback.unregisterEffect = unregisterEffect;
   }
 
- })(PROGLANG);
+ })(JSConTest);

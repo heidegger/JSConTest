@@ -3,10 +3,6 @@
 
 "use strict";
 
-if (!(PROGLANG)) {
-  var PROGLANG = {};
-}
-
 (function (P) {
   P.ddmin = {};
 
@@ -312,4 +308,4 @@ if (!(PROGLANG)) {
   };
 
   P.ddmin.ddmin = ddmin;
-})(PROGLANG);
+})(JSConTest);

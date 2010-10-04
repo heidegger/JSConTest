@@ -2,8 +2,8 @@
 /* author: Phillip Heidegger */
 
 /* This library will not change the global namespace in any sense. 
-   But it assumes that the global variable PROGLANG exists and 
-   register all its methods in PROGALNG.tests.
+   But it assumes that the global variable JSConTest exists and 
+   register all its methods in JSConTest.tests.
    
    In order to change this behaviour, please go to the end of the
    file and pass another object to the function. 
@@ -14,7 +14,7 @@
   var DEBUG = false;
 
   /* create a new object, and register it in the
-     namespace PROGLANG */
+     namespace JSConTest */
   var T = {};
   P.tests = T;
 
@@ -1200,6 +1200,6 @@
   };
   T.callback = {};
   
- })(PROGLANG);
+ })(JSConTest);
 
 

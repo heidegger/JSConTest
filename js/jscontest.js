@@ -2,7 +2,7 @@
 /* author: Phillip Heidegger, Dirk Kienle */
 
 /* This library will change the global namespace.
-   It creates a global variable PROGLANG.
+   It creates a global variable JSConTest.
    
    In order to change this behaviour, just rename it. Please note,
    that you have to use the same global namespace identifier in
@@ -11,7 +11,7 @@
 
 "use strict";
 
-var PROGLANG = (function (P) {
+var JSConTest = (function (P) {
   /*members MAXINT, Top, TopOUndef, apply, arity, check, compare, 
     compareArray, constructor, contract, effToString, floor, gen, 
     genAInt, genBoolean, genEPL, genIInt, genInt, genLength, genNInt, 

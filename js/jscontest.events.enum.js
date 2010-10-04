@@ -249,4 +249,4 @@
   
   R.create = create;
 
- })(PROGLANG);
+ })(JSConTest);

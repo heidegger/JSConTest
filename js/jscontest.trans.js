@@ -451,4 +451,4 @@
   P.tests.callback.registerEffect = registerEffect;
   P.tests.callback.unregisterEffect = unregisterEffect;
   
-})(PROGLANG);
+})(JSConTest);
