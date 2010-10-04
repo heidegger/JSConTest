@@ -1,0 +1,11 @@
+type position = int
+type lexbuf = Ulexing.lexbuf
+let dummy_pos = 0
+let get_start_pos = Ulexing.lexeme_start 
+let get_current_pos = Ulexing.lexeme_end  
+let get_position_cnum pos = pos 
+let get_current_location = Ulexing.loc
+let lexeme_length = Ulexing.lexeme_length
+let utf8_lexeme = Ulexing.utf8_lexeme
+let from_channel = Ulexing.from_utf8_channel
+let flush_input buf = ()

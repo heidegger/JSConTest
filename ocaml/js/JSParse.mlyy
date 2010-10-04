@@ -1,0 +1,3 @@
+module Lexing : sig
+  type lexbuf = LexingOwn.lexbuf
+end
