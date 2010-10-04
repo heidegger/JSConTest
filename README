@@ -1,0 +1,87 @@
+                                JSConTest
+                                ---------
+
+OVERVIEW:
+
+JSContest is a tool that enhances JavaScript with simple, type-like
+contracts and provides a framework for monitoring and guided random
+testing of programs against these contracts at the same time. Function
+contracts in JSContest serve a dual role as specifications of the
+input/output behavior and as test case generators. Generation of test
+data for a contract is principally random, but can be guided by
+annotations on the contract to achieve higher coverage. Annotations
+may indicate dependencies among parameters or between parameters and
+the result or they may select lightweight program analyses, the
+results of which influence the choice of test data. A case study
+substantiates that JSContest finds type-related errors with high
+probability.
+
+
+
+INSTALLATION / USAGE:
+
+Please ensure that you have the following programs available:
+   - An OCaml Interpreter (http://caml.inria.fr/)
+   - Bash (if you decide to use create-html.sh)
+
+The file jscontest is a OCaml bytecode file, which can
+be executed on all machines, where an OCaml Interpreter
+is installed. 
+
+Execute 
+    ./jscontest --help 
+to get an overview over the command line options. 
+
+A bash shell script creating a default html page,
+that runs the test framework is also included into 
+the archive.
+
+
+
+EXAMPLE USAGE (Linux)
+
+Execute the following commands in your shell:
+    ./jscontest yourfile.js
+    ./create-html.sh yourfile.test.js
+    ./firefox yourfile.html
+After these commands your firefox will open and shows
+a web page, where your contracts are tested. On top of
+the page a statistic is presented that gives you an 
+overview of your tests.
+
+
+
+CONTENTS:
+
+CHANGES          what's new in each release          
+create-html.sh   generates default html page
+LICENSE          Simplified BSD License
+jscontest        the bytecode file, compiler of contracts
+                 and the transactifier
+README           this file
+
+
+
+COPYRIGHT:
+
+All files in this distribution are copyright 2010 Phillip 
+Heidegger and distributed under the conditions stated in 
+file LICENSE. 
+
+
+
+AVAILABILITY:
+
+Please visit 
+   http://proglang.informatik.uni-freiburg.de/jscontest/
+with a web browser for additional informations and 
+new versions.
+
+
+
+BUG REPORTS AND USER FEEDBACK:
+
+Send your bug reports by E-mail to:
+   heidegger@informatik.uni-freiburg.de
+It is helpful if a bug reports includes a complete JavaScript
+program (preferably small) that exhibits the unexpected behavior.
