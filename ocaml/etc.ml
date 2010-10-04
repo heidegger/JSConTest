@@ -2,7 +2,7 @@ open ProglangUtils
 open ExtUtils
 
 let print_version () =
-  print_endline ("0.4.1 -- " ^ Date.date);
+  print_endline ("0.4.2 -- " ^ Date.date);
   exit 0
 
 
@@ -41,11 +41,11 @@ let get_local_scope_prefix,set_local_scope_prefix =
 
 
 let get_javascript_test_namespace, set_javascript_test_namespace =
-  create_string_ref_getter_setter (fun () -> "PROGLANG.tests")
+  create_string_ref_getter_setter (fun () -> "JSConTest.tests")
 let get_javascript_trans_namespace, set_javascript_trans_namespace =
-  create_string_ref_getter_setter (fun () -> "PROGLANG.trans")
+  create_string_ref_getter_setter (fun () -> "JSConTest.trans")
 let get_javascript_effect_namespace, set_javascript_effect_namespace =
-  create_string_ref_getter_setter (fun () -> "PROGLANG.effects")
+  create_string_ref_getter_setter (fun () -> "JSConTest.effects")
 
     
 let m_b_o default =

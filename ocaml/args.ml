@@ -127,7 +127,7 @@ let spec =
     " run all unit tests and exits (compiles nothing)");
    ("--test-js-namespace",String (Etc.set_javascript_test_namespace),
     " sets the namespace that is used to interact "^
-      "with the library (DEFAULT: PROGLANG.test)");
+      "with the library (DEFAULT: JSConTest.test)");
    ("-tjsn",String (Etc.set_javascript_test_namespace),
     " shortcut for --test-js-namespace");
    ("-h", Unit (fun () -> raise (Bad ""))," Display this list of options");
@@ -152,7 +152,7 @@ let spec =
     " shortcut for --version");
    ("--trans-js-namespace",String (Etc.set_javascript_trans_namespace),
     " sets the namespace used to interact with the "^
-      "transaction library (DEFAULT: PROGLANG.trans)");
+      "transaction library (DEFAULT: JSConTest.trans)");
    ("--trans-no-transformation",Unit 
       (fun () -> Etc.set_effect_state Effect.NoTrans),
     " the compiler does modify the code under test to "^
@@ -180,7 +180,7 @@ let spec =
     " shortcut for --effects");
    ("--effect-js-namespace",String (Etc.set_javascript_effect_namespace),
     " sets the namespace used to interact with the "^
-      "transaction library (DEFAULT: PROGLANG.effect)");
+      "transaction library (DEFAULT: JSConTest.effect)");
   ]
 let get_spec () = 
   Arg.align spec
