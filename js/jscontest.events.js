@@ -45,7 +45,7 @@
               // add msg at the beginning
               args.unshift( msg );
               // call fire function
-              fire.apply( this, args)
+              fire.apply( this, args );
             });
   }
 
