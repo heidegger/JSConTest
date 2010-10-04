@@ -597,7 +597,7 @@
         throw "An Integer Intervall needs Integers as bounds, not floats.";
       }
     }
-  }
+  };
   T.NIntervall = function(low,high) {
     if (P.check.isNumber(low) && P.check.isNumber(high)) {
       var o = new SContract(function (v) { 
@@ -674,7 +674,7 @@
                          function (v) { return P.check.isArray(v,t); }, 
                          function () { return P.gen.genArray(t); },
                          function () { return "array[" + t.getcdes() + "]"; } ));
-  }
+  };
   
   /*********** FUNCTION **********/
   /* A function contract. pl is a list of contracts for the
@@ -770,31 +770,31 @@
               T.callback.unregisterEffect(uid);
               return c;
             }
-          }
+          };
           return o;
         }
       }
       return c;  
     };
     return c;
-  }
+  };
   
   T.Depend = function(order,dl) {
     var dparam = {};
     function getDepend(i) {
       if (i < dl.length - 1) return dl[i];
-    };
+    }
     function getDependResult() {
       return dl[dl.length - 1];
-    };
+    }
     function getOrder() {
       return order;
-    };
+    }
     dparam.getDepend = getDepend;
     dparam.getDependResult = getDependResult;
     dparam.getOrder = getOrder;
     return dparam;
-  }
+  };
   T.DFunction = function(pl,rt,dparam) {
     function DValues () {
       var scope = [[]];
@@ -1139,8 +1139,12 @@
   var testmode =
     (function () {
       var inTestMode = false;
-      function intoTest() { inTestMode = true };
-      function leafTest() { inTestMode = false };
+      function intoTest() { 
+    	inTestMode = true; 
+      };
+      function leafTest() { 
+    	inTestMode = false;
+      };
       function getTestMode() { return inTestMode; };
       return { iT: intoTest, lT: leafTest, gT: getTestMode };
     })();
@@ -1192,7 +1196,7 @@
       return v;
     }
     return ret;
-  }
+  };
   T.overrideToStringOfFunction = function (f,fstr) {
     f.toString = function () { 
       return "" + fstr;
@@ -1201,5 +1205,3 @@
   T.callback = {};
   
  })(JSConTest);
-
-

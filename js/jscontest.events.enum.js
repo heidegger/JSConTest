@@ -12,7 +12,7 @@
 
   /** event interface: 
       { fail: (value, contract) -> void;
-        success: (value, contract, anz) -> void;
+        success: (value, contract, count) -> void;
         error: string -> void;
         moduleChange: string -> void;
         CExpStart: void -> void;

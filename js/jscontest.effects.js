@@ -5,24 +5,24 @@
    But it assumes that the global variable JSConTest exists and 
    register all its methods in PROGALNG.effects.
    
-   In order to change this behaviour, please go to the end of the
+   In order to change this behavior, please go to the end of the
    file and pass another object to the function. 
 */
 
 "use strict";
 (function (P) {
   // Effect Paths
-  var PARAMETER    = 1,
-      VARIABLE     = 2,
-      PROP         = 3,
+  var PARAMETER = 1,
+      VARIABLE = 2,
+      PROP = 3,
       QUESTIONMARK = 4,
-      STAR         = 5,
-      ALL          = 6;
+      STAR = 5,
+      ALL = 6;
 
   
   var E = {},
     // Formal: uid -> (Read,Write)
-    // Implemenation: uid -> effect attached to function
+    // Implementation: uid -> effect attached to function
     // Initially the empty map
     effect_store = {},  
     checkEffect = true;  // should effects be checked?
@@ -260,7 +260,7 @@
   function mCall(o,m,pl) {
     // TODO: what, if m is wrapped, too?
     if (o && o.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
-      return ((o.value)[m]).apply(o.value,pl)
+      return ((o.value)[m]).apply(o.value,pl);
     } else {
       return o[m].apply(o,pl);
     }

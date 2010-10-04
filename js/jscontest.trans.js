@@ -39,8 +39,6 @@
     }
   }
 
-  }
-  
   function collectMethodsPlain(methods) {
     // if the object contains the method itself,
     // we are at the correct prototype, which we should
@@ -55,7 +53,7 @@
           typeof this[mname] === 'function') {
         var undoObj = { proto: this, 
                         undo: methods[mname], 
-                        method: this[mname],
+                        method: this[mname]
         };
         undoFactory.push(undoObj);
       };
@@ -145,8 +143,8 @@
           var oldParent = node.parent;
           var oldnS = node.nextSibling;
           return undo;
-        },
-      },
+        }
+      }
     };
     
     for (p in elements) {
@@ -166,7 +164,7 @@
   
   function doPropAssignment(object,prop,righthandside,operator_lambda) {
     function createUndoProp(object,prop,value) {
-      return (function () { object[prop] = value });
+      return (function () { object[prop] = value; });
     };
     var old_value = object[prop];
     var new_value = righthandside;
@@ -320,7 +318,7 @@
           { type : PROP,
             property : prop,
             effect : context
-          }
+          };
         value_contexts[unique_id] = new_context;
         if (!check(unique_id,new_context)) {
           eventHandler(obj,prop,
@@ -351,20 +349,19 @@
   // - The uid is returned, such that the unregisterEffect
   //   method later can delete the effect
   var getUid = function () { return undefined; };
-  var registerEffect = 
-    (function () {
-      var i = 0;
-      function getGlobalObject() { return this };
-      function registerEffect(effl,pl,fname) {
-        var uid = i;
-        ++i;
-        var gO = getGlobalObject();
-        var contexts = getContexts(gO);
-        contexts[uid] = 
-          { type: PARAMETER,
-            number: 0,
-            fname: fname
-          };
+  var registerEffect = (function () {
+    var i = 0;
+    function getGlobalObject() { return this; };
+    function registerEffect(effl,pl,fname) {
+      var uid = i;
+      ++i;
+      var gO = getGlobalObject();
+      var contexts = getContexts(gO);
+      contexts[uid] = 
+      	{ type: PARAMETER,
+    	  number: 0,	
+    	  fname: fname
+      	};
         for (var j = 0; j < pl.length; ++j) {
           if (typeof(pl[j]) === 'object') {
             contexts = getContexts(pl[j]);
@@ -380,16 +377,19 @@
       };
       getUid = function () { return uid };
       return registerEffect;
-    })();
+    }());
+
   function unregisterEffect(uid) {
     delete effect_store[uid];
-  };
+  }
   function newObj(o) {
     o.__contexts__.alloc = getUid();
-  };
+  }
   
   function effToString(eff) {
-    if (!eff) return "NO VALID EFFECT";
+    if (!eff) {
+      return "NO VALID EFFECT";
+    }
     switch (eff.type) {
     case PARAMETER:
       return (eff.fname + ": $" + eff.number);
@@ -402,8 +402,9 @@
     case STAR: 
       return effToString(eff.effect) + ".*";
     default: return "NO KNOWN EFFECT TYPE";
-    };
-  };
+    }
+  }
+  
   function efflToString(effl) {
     if ((typeof effl === 'object') && (effl.type === ALL)) {
       return "*";
