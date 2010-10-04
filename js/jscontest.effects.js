@@ -3,7 +3,7 @@
 
 /* This library will not change the global namespace in any sense. 
    But it assumes that the global variable JSConTest exists and 
-   register all its methods in PROGALNG.effects.
+   register all its methods in JSConTest.effects.
    
    In order to change this behavior, please go to the end of the
    file and pass another object to the function. 
