@@ -13,6 +13,27 @@
 
   <body onload="JSConTest.tests.run()">
     <h1>Test Framework</h1>
+    
+    <p>This test suite runs a lot of basic contracts against a set
+    	of values. It is expected to test 187 contracts. 29 should
+    	be verified, 147 should fail, and 11 should exists with an
+    	error. This is checked automatically, since 
+        two event handlers are registered. One checks if the contract
+ 		behaves as expected. The other prints the usual contract 
+ 		output to the page.     
+ 	</p>
+ 		
+ 	<p>	If something unexpected happens, the first event handler will 
+ 		add an log message into the error box below. This may indicate, 
+ 		that JSConTest does not work correctly in your browser, either
+ 		due to the fact that your browser does not support a feature JSConTest
+ 		rely on, or because JSConTest has an error. 
+    </p>
+    
+	<div style="background-color: #999;">
+		<h2>Error log:</h2>
+		<p id="checker" style="color: #A00;"></p>
+	</div>
     <div id="logger"></div>
     
 
@@ -61,11 +82,276 @@
         var d = vals[j].d;
         for (var i in contr) {
           JSConTest.tests.add(d, v, contr[i],anz);
-        };
-      };
-
+		  // success, fail, error
+        }
+      }
+      
       var dl = JSConTest.events.enum.create('logger',"ul");
       JSConTest.events.register(dl);
+      
+      
+      var checker = (function() {
+		var expected = [// Null
+		                { msg: 'moduleChange' },
+		                { msg: 'fail' },
+		                { msg: 'error' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                // Udf
+		                { msg: 'moduleChange' },
+		                { msg: 'success' },
+		                { msg: 'error' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                // True
+		                { msg: 'moduleChange' },
+		                { msg: 'fail' },
+		                { msg: 'error' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+						// False
+		                { msg: 'moduleChange' },
+		                { msg: 'fail' },
+		                { msg: 'error' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+						// Integer
+		                { msg: 'moduleChange' },
+		                { msg: 'fail' },
+		                { msg: 'error' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'success' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+						// NaN
+		                { msg: 'moduleChange' },
+		                { msg: 'fail' },
+		                { msg: 'error' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+						// Float
+		                { msg: 'moduleChange' },
+		                { msg: 'fail' },
+		                { msg: 'error' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+						// String
+		                { msg: 'moduleChange' },
+		                { msg: 'success' },
+		                { msg: 'error' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+						// Object
+		                { msg: 'moduleChange' },
+		                { msg: 'fail' },
+		                { msg: 'error' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+						// Array[int]
+		                { msg: 'moduleChange' },
+		                { msg: 'fail' },
+		                { msg: 'error' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'success' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+						// Array[boolean]
+		                { msg: 'moduleChange' },
+		                { msg: 'fail' },
+		                { msg: 'error' },
+		                { msg: 'fail' },
+		                { msg: 'success' },
+		                { msg: 'success' },
+		                { msg: 'success' },
+		                { msg: 'success' },
+		                { msg: 'success' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                { msg: 'fail' },
+		                ];
+		expected.reverse();
+    	var o = { 
+		  "default": function(msg) {
+        	if (msg === 'stat' || msg === 'CExpStart') {
+        		return;
+        	}
+			var e = expected.pop();
+        	if (e) {
+				if (e.msg !== msg) {
+					switch (msg) {
+					case "fail": 
+					  	document.getElementById("checker").innerHTML +=
+					    	("<b>Expected</b>: " + e.msg 
+					    			+ ", <br /><b>got message</b>: " + msg 
+									+ ", value: " + arguments[1]
+									+ ", constraint: " + arguments[2]
+					    			+ "<br /><br />");
+						break;
+					case "success":
+					  	document.getElementById("checker").innerHTML +=
+					    	("<b>Expected</b>: " + e.msg 
+					    			+ ", <br /><b>got message</b>: " + msg 
+									+ ", value: " + arguments[1]
+									+ ", constraint: " + arguments[2]
+					    			+ "<br /><br />");
+						break;
+					case "error":
+					  	document.getElementById("checker").innerHTML +=
+					    	("<b>Expected</b>: " + e.msg 
+					    			+ ", <br /><b>got message</b>: " + msg 
+									+ ", error message: " + arguments[1]
+									+ ", constraint: " + arguments[2]
+					    			+ "<br /><br />");
+						break;
+					default:
+					  	document.getElementById("checker").innerHTML +=
+					    	("Expected:" + e.msg + ", Not expected: " + msg + "<br />");
+					}
+				}
+        	} else {
+			    document.getElementById("checker").innerHTML +=
+				  ("expected empty, got: " + msg + "<br />")        		
+        	}
+		  }
+		}
+    	return o;
+      }());
+      
+//      JSConTest.events.register(h);
+      
+      JSConTest.events.register(checker);
     </script>
     
 

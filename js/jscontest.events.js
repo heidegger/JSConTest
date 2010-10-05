@@ -27,7 +27,7 @@
             // convert arguments into real array
             var args = Array.prototype.slice.call( arguments );
             // default handler get the msg message as first argument
-            h['default'].call(P, args );
+            h['default'].apply(P, args );
           }
         }
       }

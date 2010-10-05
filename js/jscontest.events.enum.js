@@ -234,7 +234,7 @@
           newHeadding("Collected Counterexamples", "cex"); 
         },
         CExp: function(ce) { 
-          aCE(ce) 
+          aCE(ce); 
         },
         stat: statistic,
         assertParam: assertParam,
