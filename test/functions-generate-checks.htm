@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>JSConTest - Test Framework - Function - Simple Boolean</title>
+    <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../js/jscontest.js"></script>
+    <script type="text/javascript" src="../js/jscontest.tests.js"></script>
+    <script type="text/javascript" src="../js/jscontest.events.js"></script>
+    <script type="text/javascript" src="../js/jscontest.events.enum.js"></script>
+    <script type="text/javascript" src="checker.js"></script>
+  </head>
+
+  <body onload="JSConTest.tests.run()">
+    <h1>JSConTest - Test Framework - Function - Simple Boolean</h1>
+    
+    <p>This test suite runs a six contract checks. 
+    	There are two event handlers registered. One checks if the contract
+ 		behaves as expected. The other prints the usual contract 
+ 		output to the page.     
+ 	</p>
+ 		
+ 	<p>	If something unexpected happens, the first event handler will 
+ 		add an log message into the error box below. This may indicate, 
+ 		that JSConTest does not work correctly in your browser, either
+ 		due to the fact that your browser does not support a feature JSConTest
+ 		rely on, or because JSConTest has an error. 
+    </p>
+
+    
+	<div style="background-color: #999;">
+		<h2>Error log:</h2>
+		<p id="checker" style="color: #A00;"></p>
+	</div>
+    <div id="logger"></div>
+
+    <script type="text/javascript">
+		function params(p1, p2) {
+			if (JSConTest.check.isBoolean(p1) 
+					&& JSConTest.check.isBoolean(p2)) {
+				return true;
+			}
+			return "Error"; 
+		}
+		
+      	var anz = 1000;
+	    JSConTest.tests.add("generateBooleans", 
+	    		params, 
+	    		JSConTest.tests.Function([JSConTest.tests.Boolean,
+	    								  JSConTest.tests.Boolean],
+	    								 JSConTest.tests.Boolean),
+	    		anz);
+      
+		var dl = JSConTest.events.enum.create('logger',"ul");
+		JSConTest.events.register(dl);
+		var ch = checker(['stat'],[
+			// generateBools
+		    { msg: 'moduleChange' },
+			{ msg: 'success' },
+			// Counter Examples
+			{ msg: 'CExpStart' },
+		]);
+		JSConTest.events.register(ch);
+    </script>
+    
+
+  </body>
+</html>
