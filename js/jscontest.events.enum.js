@@ -84,6 +84,9 @@
       newDef(dl,"contract",ce.contrToString());
 
       /*** TODO: erzeuge tree view element mithilfe der paramToTreeView methode des ce */
+//      var treeDiv = document.createElement("div");
+//      newDef(dl,"parameter",treeDiv);
+//      ce.paramToTreeView(treeDiv);
       newDef(dl,"parameter",ce.paramToString(nextLine));
       newDef(dl,"result", ce.resultToString());
       /*** END TODO */

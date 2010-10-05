@@ -329,11 +329,11 @@
   }
   var doCancel, doCancelAM, doCancelAC;
 
-  function add(m,v,c,t) {
+  function add(m,v,c,t,expected) {
     if (!(tests[m])) {
       tests[m]= [];
     }
-    tests[m].push({v: v, c: c, t: t});
+    tests[m].push({v: v, c: c, t: t, expected: expected});
   }
   function collectCounterExample(ce) {
     if (!(counterexp[module])) {
@@ -483,10 +483,14 @@
     /*** TODO: parameter to String sollte durch ein TreeView 
          Steuerelement ersetzt werden */
     /*** paramToTreeView(parent) parent = html eltern element */
+    function paramToTreeView(parent) {
+    	initTree(tparams,parent);
+    }
     
     function paramToString(nextLine) {
-      return P.utils.valueToString(tparams, nextLine );
+    	return P.utils.valueToString(tparams, nextLine );
     }
+
     function resultToString(nextLine) {
       return P.utils.valueToString(result, nextLine);
     }

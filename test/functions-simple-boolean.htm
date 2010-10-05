@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Test Framework</title>
+    <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../js/jscontest.js"></script>
+    <script type="text/javascript" src="../js/jscontest.tests.js"></script>
+    <script type="text/javascript" src="../js/jscontest.events.js"></script>
+    <script type="text/javascript" src="../js/jscontest.events.enum.js"></script>
+    <script type="text/javascript" src="checker.js"></script>
+  </head>
+
+  <body onload="JSConTest.tests.run()">
+    <h1>JSConTest - Test Framework - Function - Simple Boolean</h1>
+    
+    <p>This test suite runs a six contract checks. 
+    	There are two event handlers registered. One checks if the contract
+ 		behaves as expected. The other prints the usual contract 
+ 		output to the page.     
+ 	</p>
+ 		
+ 	<p>	If something unexpected happens, the first event handler will 
+ 		add an log message into the error box below. This may indicate, 
+ 		that JSConTest does not work correctly in your browser, either
+ 		due to the fact that your browser does not support a feature JSConTest
+ 		rely on, or because JSConTest has an error. 
+    </p>
+
+    
+	<div style="background-color: #999;">
+		<h2>Error log:</h2>
+		<p id="checker" style="color: #A00;"></p>
+	</div>
+    <div id="logger"></div>
+
+    <script type="text/javascript">
+      	var anz = 1000;
+		function returnTrue() {
+			return true;
+		}
+		function returnFalse() {
+			return false;
+		}
+		
+	    JSConTest.tests.add("returnTrue", 
+	    		returnTrue, 
+	    		JSConTest.tests.Function([],JSConTest.tests.Boolean),
+	    		anz);
+	    JSConTest.tests.add("returnTrue", 
+	    		returnTrue, 
+	    		JSConTest.tests.Function([],JSConTest.tests.True),
+	    		anz);
+	    JSConTest.tests.add("returnTrue", 
+	    		returnTrue, 
+	    		JSConTest.tests.Function([],JSConTest.tests.False),
+	    		anz);
+
+	    JSConTest.tests.add("returnFalse", 
+	    		returnFalse, 
+	    		JSConTest.tests.Function([],JSConTest.tests.Boolean),
+	    		anz);
+	    JSConTest.tests.add("returnFalse", 
+	    		returnFalse, 
+	    		JSConTest.tests.Function([],JSConTest.tests.True),
+	    		anz);
+	    JSConTest.tests.add("returnFalse", 
+	    		returnFalse, 
+	    		JSConTest.tests.Function([],JSConTest.tests.False),
+	    		anz);
+      
+		var dl = JSConTest.events.enum.create('logger',"ul");
+		JSConTest.events.register(dl);
+		var ch = checker(['stat'],[
+			// returnTrue
+		    { msg: 'moduleChange' },
+			{ msg: 'fail' },
+			{ msg: 'success' },
+			{ msg: 'success' },
+			// returnFalse
+			{ msg: 'moduleChange' },
+			{ msg: 'success' },
+			{ msg: 'fail' },
+			{ msg: 'success' },
+			{ msg: 'CExpStart' },
+			{ msg: 'CExp' },
+			{ msg: 'CExp' }
+		]);
+		JSConTest.events.register(ch);
+    </script>
+    
+
+    <address><a href="mailto:linkenhe@manuka.informatik.uni-freiburg.de">Phillip 
+        Heidegger</a></address>
+      <p>
+<!-- Created: Wed Jul 29 16:08:03 CEST 2009 -->
+<!-- hhmts start -->
+Last modified: Mon Aug 30 11:10:51 CEST 2010
+<!-- hhmts end -->
+      </p>
+  </body>
+</html>
