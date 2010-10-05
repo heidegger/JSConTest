@@ -1,0 +1,13 @@
+*.cmo
+*.cmi
+*.annot
+*~
+ocaml/js/JSParse.ml
+ocaml/js/JSParse.mli
+ocaml/contracts/ContractParse.ml
+ocaml/contracts/ContractParse.mli
+ocaml/._d/
+ocaml/._bcdi/
+.settings/
+.metadata/
+.project
