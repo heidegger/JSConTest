@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Test Framework</title>
+    <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../js/jscontest.js"></script>
+    <script type="text/javascript" src="../js/jscontest.tests.js"></script>
+    <script type="text/javascript" src="../js/jscontest.events.js"></script>
+    <script type="text/javascript" src="../js/jscontest.events.enum.js"></script>
+  </head>
+
+  <body onload="JSConTest.tests.run()">
+    <h1>Test Framework</h1>
+    <div id="logger"></div>
+    
+
+    <script type="text/javascript">
+      var anz = 1;
+
+      var u = JSConTest.tests.Name("u");
+      JSConTest.tests.Let("u",JSConTest.tests.Union(JSConTest.tests.Undefined, u));
+      var x = JSConTest.tests.Name("x");
+      JSConTest.tests.Let("x",JSConTest.tests.Union(JSConTest.tests.Undefined,JSConTest.tests.String));
+
+      var contr = [
+      	JSConTest.tests.Null,
+        JSConTest.tests.Undefined,
+        JSConTest.tests.True,
+		JSConTest.tests.False,
+		JSConTest.tests.Boolean,
+		JSConTest.tests.Integer,
+		JSConTest.tests.IIntervall(0,5),
+		JSConTest.tests.Number,
+		JSConTest.tests.String,
+		JSConTest.tests.Object,
+		JSConTest.tests.Array(JSConTest.tests.Boolean),
+		JSConTest.tests.Array(JSConTest.tests.Top),
+		JSConTest.tests.Union(JSConTest.tests.Object,JSConTest.tests.Null),
+		JSConTest.tests.Union(JSConTest.tests.Object,JSConTest.tests.String),
+		JSConTest.tests.Union(JSConTest.tests.True,JSConTest.tests.Boolean),
+		u,
+		x
+      ];
+      var vals = [
+        {v: null, d: "Null"},
+        {v: undefined, d: "Udf"},
+        {v: true, d: "True"},
+        {v: false, d: "False"},
+        {v: 0, d: "Integer"},
+        {v: Number.NaN, d: "NaN" },
+        {v: 1.5, d: "Float"},
+        {v: "str", d: "String"},
+        {v: {}, d: "Obj" },
+        {v: [1,2], d: "Array[int]" },
+        {v: [true,false,true], d: "Array[boolean]" },
+      ];
+      for (var j in vals) {
+        var v = vals[j].v;
+        var d = vals[j].d;
+        for (var i in contr) {
+          JSConTest.tests.add(d, v, contr[i],anz);
+        };
+      };
+
+      var dl = JSConTest.events.enum.create('logger',"ul");
+      JSConTest.events.register(dl);
+    </script>
+    
+
+    <address><a href="mailto:linkenhe@manuka.informatik.uni-freiburg.de">Phillip 
+        Heidegger</a></address>
+      <p>
+<!-- Created: Wed Jul 29 16:08:03 CEST 2009 -->
+<!-- hhmts start -->
+Last modified: Mon Aug 30 11:10:51 CEST 2010
+<!-- hhmts end -->
+      </p>
+  </body>
+</html>

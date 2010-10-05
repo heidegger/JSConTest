@@ -266,9 +266,11 @@ var JSConTest = (function (P) {
           return false;
         }
       }
-    } else {
-      return Object.prototype.toString.apply(obj) === '[object Array]';
     }
+    // either all elements fulfills the type, or the type does not
+    // exits. Hence the check, if obj is an array, is the only thing
+    // we need to check now. 
+    return Object.prototype.toString.apply(obj) === '[object Array]';
   }
   function isFunction(v) {
     return typeof(v) === 'function';

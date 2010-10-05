@@ -351,6 +351,17 @@
 
 
   /********** contracts **********/
+  /* 
+     contractType: 
+     check:
+     generate:
+     initcdes:
+
+     simplValue:
+     getcdes:
+     setcdes:
+     genNeeded:     
+  */
   function Contract(p) {
     var ct = makeContractType(p.contractType),
       cdes = p.initcdes,     
@@ -363,7 +374,7 @@
                                  return false;
                                } 
                              }),
-      sv = P.utils.getFun(simplValue,function(v) { return v; }),
+      sv = P.utils.getFun(p.simplValue,function(v) { return v; }),
       ce;
     
     this.check = function() {
@@ -413,24 +424,39 @@
     };
   }
   function SContract(check,generate,cdes,ct,genNeeded) {
-    return Contract.call(this,ct,check,generate,null,null,genNeeded,cdes);
+    var p = {
+      contractType: ct,
+      initcdes: cdes,
+      generate: generate,
+      check: check,
+      genNeeded: genNeeded
+    };
+    return Contract.call(this,p);
   }
   function PContract(ct,check,pl,p,gen,cdes,genNeeded) {
     if (!p) {
       p = 0.5;
     }
+    var p = {
+      contractType: ct,
+      check: check,
+      generate: function() { return pickOrF(pl,p,gen); },
+      genNeeded: genNeeded,
+      initcdes: cdes
+    }
     if (P.check.isSArray(pl)) {
-      return Contract.call(this,ct,check,
-                           function() { return pickOrF(pl,p,gen); },
-                           null,null,
-                           genNeeded,
-                           cdes);
+      return Contract.call(this,p);
     } else {
       throw "PContract needs array as parameter";
     }
   }
   function SingletonContract(value,cdes,genNeeded) {
-    return Contract.call(this,ctBasic,value,value,null,null,genNeeded,cdes);
+    return Contract.call(this, { contractType: ctBasic,
+                                 check: value,
+                                 generate: value,
+                                 genNeeded: genNeeded,
+                                 initcdes: cdes
+                               });  
   }
 
   /* Interface of counterexamples : {
@@ -641,39 +667,52 @@
    * property. 
    */
   T.EObject = function(pl) {
-    var o = new Contract(ctObject,
-                         function (v) { return P.check.isObject(v,pl); },
-                         function () { return P.gen.genObject(pl); },
-                         function () { 
-                           var s = "eobject{";
-                           var pls = [];
-                           var random = false;
-                           for (j in pl) {
-                             var p = pl[j];
-                             if (p.name && p.contract) {
-                               pls.push(p.name + ":" + p.contract.getcdes());
-                             } else {
-                               if (p.random) { 
-                                 random = true;
-                               } else { 
-                                 pls.push(P.utils.valueToString(p));
-                               };
-                             };
-                           };
-                           s += concat(pls,",","","",false);
-                           if (random) {
-                             s += ",...";
-                           };
-                           return s + "}";
-                         });
+    var p = {
+   	  contractType: ctObject, 
+      check: function (v) { return P.check.isObject(v,pl); },
+      generate: function () { return P.gen.genObject(pl); },
+      getcdes: function () { 
+          var s = "eobject{";
+          var pls = [];
+          var random = false;
+          for (j in pl) {
+            var p = pl[j];
+            if (p.name && p.contract) {
+              pls.push(p.name + ":" + p.contract.getcdes());
+            } else {
+              if (p.random) { 
+                random = true;
+              } else { 
+                pls.push(P.utils.valueToString(p));
+              };
+            };
+          };
+          s += concat(pls,",","","",false);
+          if (random) {
+            s += ",...";
+          };
+          return s + "}";
+        }    		
+    };
+    var o = new Contract(
+);
     return o;
   };
   /* An Array. t is the type of the elements. */
-  T.Array = function(t) { 
-    return (new Contract(ctArray,
-                         function (v) { return P.check.isArray(v,t); }, 
-                         function () { return P.gen.genArray(t); },
-                         function () { return "array[" + t.getcdes() + "]"; } ));
+  T.Array = function(t) {
+	var p = {
+      contractType: ctArray, 
+      check: function (v) { 
+    	  return P.check.isArray(v,t); 
+      },
+      generate: function () { 
+    	  return P.gen.genArray(t); 
+      },
+      getcdes: function () { 
+    	  return "array[" + t.getcdes() + "]"; 
+      }
+	};
+    return new Contract(p);
   };
   
   /*********** FUNCTION **********/
@@ -725,8 +764,17 @@
       if (i > 0) pldes += ", ";
       pldes += pl[i].getcdes();
     };
-    var c = new Contract(ctFunction, check, gen, getcdes, setcdes,
-                            P.check.isFunction);
+    var p = {
+	  contractType: ctFunction,
+	  check: check,
+	  generate: gen,
+	  getcdes: getcdes,
+	  setcdes: setcdes,
+	  genNeeded: P.check.isFunction    
+    };
+//    var c = new Contract(ctFunction, check, gen, getcdes, setcdes,
+//                            P.check.isFunction);
+    var c = new Contract(p);
     function gen() {
       return function () {
         if (c.checkParams(arguments)) return rt.gen();
@@ -865,8 +913,17 @@
     function setcdes() {
       throw "Setting description for function contract not supported";
     };
-    var c = new Contract(ctFunction,check,{},getcdes,setcdes,
-                         P.check.isFunction);
+    var p = {
+    		  contractType: ctFunction,
+    		  check: check,
+    		  generate: {},
+    		  getcdes: getcdes,
+    		  setcdes: setcdes,
+    		  genNeeded: P.check.isFunction    
+    	    };
+//    var c = new Contract(ctFunction,check,{},getcdes,setcdes,
+//                        P.check.isFunction);
+    var c = new Contract(p);
     c.checkParams = function (plv) {
       for (var i in pl) {
         v = plv[i];
@@ -944,7 +1001,14 @@
         var c = sr(c1,c2);
         if (c) return c;
       };
-      return new Contract(ctComplex,check,generate,getcdes);
+      var p = {
+	    contractType: ctComplex,
+    	check: check,
+    	generate: generate,
+    	getcdes: getcdes
+      };
+//      return new Contract(ctComplex,check,generate,getcdes);
+      return new Contract(p);
     };
     Union =  createUnion;
     UnionAddSimplRule = addSimpl;
@@ -1038,7 +1102,14 @@
                           "Name: " + name + "(no Image)");
         return r;
       };
-      var o = new Contract(ctName,check,generate,getcdes);
+      var p = {
+        contractType: ctName, 
+    	check: check,
+    	generate: generate,
+    	getcdes: getcdes
+      };
+//      var o = new Contract(ctName,check,generate,getcdes);
+      var o = new Contract(p);
       cnames.push({name: name, contract: o, marked: false});
       return o;
     };
