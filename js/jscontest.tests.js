@@ -329,11 +329,11 @@
   }
   var doCancel, doCancelAM, doCancelAC;
 
-  function add(m,v,c,t,expected) {
+  function add(m,v,c,t) {
     if (!(tests[m])) {
       tests[m]= [];
     }
-    tests[m].push({v: v, c: c, t: t, expected: expected});
+    tests[m].push({v: v, c: c, t: t });
   }
   function collectCounterExample(ce) {
     if (!(counterexp[module])) {
