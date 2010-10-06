@@ -328,7 +328,7 @@ var JSConTest = (function (P) {
     }
   }
   
-  /* genNInt gernerates a floating point value between 
+  /* genNInt generates a floating point value between 
      low and high, if both parameters are given.
      If one parameter is given, a floating point
      value in [0,p] is generated. 
@@ -360,7 +360,6 @@ var JSConTest = (function (P) {
       return Math.random() * (high - low) + low;
     } else {
       if ((!isNumber(low)) && (!isNumber(high))) {
-        // generate random double
         return genRNDFloat();
       } else {
         // generate random double in range [0,p], where p = low or high
@@ -370,12 +369,8 @@ var JSConTest = (function (P) {
   }
   function genLength() {
     var i = 0;
-    while (true) {
-      if (Math.random() < 0.8) {
-        i = i + 1;
-      } else {
-        break;
-      }
+    while (Math.random() < 0.8) {
+      i += 1;
     }
     return i;
   }
