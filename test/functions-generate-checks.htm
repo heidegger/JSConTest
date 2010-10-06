@@ -36,7 +36,7 @@
     <div id="logger"></div>
 
     <script type="text/javascript">
-		function params(p1, p2) {
+		function genBoolean(p1, p2) {
 			if (JSConTest.check.isBoolean(p1) 
 					&& JSConTest.check.isBoolean(p2)) {
 				return true;
@@ -45,8 +45,8 @@
 		}
 		
       	var anz = 1000;
-	    JSConTest.tests.add("generateBooleans", 
-	    		params, 
+	    JSConTest.tests.add("genBoolean", 
+	    		genBoolean, 
 	    		JSConTest.tests.Function([JSConTest.tests.Boolean,
 	    								  JSConTest.tests.Boolean],
 	    								 JSConTest.tests.Boolean),
