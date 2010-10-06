@@ -292,7 +292,7 @@
     T.doCancelAC = doCancelAC;
     T.doCancelAM = doCancelAM;
 
-    (function() {
+    (function toRun() {
       fire('stat', testContracts, testCount, failCount, verifyContracts,
            errorContract, wellTestedCount);
       if (cancel) { 
@@ -309,7 +309,7 @@
           afterRun();
         }
       } else {
-        setTimeout(arguments.callee, 0);
+        setTimeout(toRun, 0);
         if (resetAM()) {
           return;
         }
