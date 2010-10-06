@@ -342,9 +342,6 @@ var JSConTest = (function (P) {
       return genNumber();
     }
   }
-  var twoto20 = 1024 * 1024;
-  var twoto50 = twoto20 * twoto20 * 1024;
-  var twoto100 = twoto50 * twoto50;
   function genRNDFloat() {
 	  var r, e, i;
 	  if (Math.random() < 0.2) {
