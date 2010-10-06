@@ -174,7 +174,6 @@
     undoLog.push(createUndoProp(object,prop,old_value));
     object[prop] = new_value;
     
-    // TODO: put correct event handler here
     return checkObj(object, prop, undefined, checkWrite,
                     cfire('assertEffectsWrite'));
   };
