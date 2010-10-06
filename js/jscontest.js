@@ -294,8 +294,8 @@ var JSConTest = (function (P) {
   
   
   /********** generator **********/
-  /* You can call every generate without any parmeters.
-     Then all parameters are choosen randomly. 
+  /* You can call every generate without any parameters.
+     Then all parameters are chosen randomly. 
      If you specify the parameters, they are taken to
      account, and the generated value fulfills then
      restrictions represented by them. */
@@ -322,7 +322,7 @@ var JSConTest = (function (P) {
   }
   function genIInt(low, high) {
     if (isInt(low) && isInt(high)) {
-      return Math.round(Math.random() * (high - low)) + low;
+      return Math.floor(Math.random() * (high - low)) + low;
     } else {
       return genInt();
     }
