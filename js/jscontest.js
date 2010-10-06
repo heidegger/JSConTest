@@ -86,11 +86,11 @@ var JSConTest = (function (P) {
     return true;
   }
   function unSafePick(a) {
-    return a[Math.round(Math.random() * (a.length - 1))];
+    return a[Math.floor(Math.random() * (a.length - 1))];
   }
   function pick(a) {
     if (isSArray(a)) {
-      return a[Math.round(Math.random() * (a.length - 1))];
+      return a[Math.floor(Math.random() * (a.length - 1))];
     } else {
       throw "Call pick with an array";
     }
@@ -342,6 +342,21 @@ var JSConTest = (function (P) {
       return genNumber();
     }
   }
+  var twoto20 = 1024 * 1024;
+  var twoto50 = twoto20 * twoto20 * 1024;
+  var twoto100 = twoto50 * twoto50;
+  function genRNDFloat() {
+	  var r, e, i;
+	  if (Math.random() < 0.2) {
+		  return unSafePick([Math.E, Math.LN2, Math.LN10, 
+		                     Math.LOG2E, Math.LOG10E,
+		                     Math.PI, Math.SQRT2, Math.SQRT1_2,
+		                     1/0, -1/0]);
+	  }
+	  r = Math.random();
+	  e = genIInt(-1074,971);
+	  return r * Math.pow(2, e);
+  }
   function genNumber(low, high) {
     if (isNumber(low) && isNumber(high)) {
       // generate random float in range
@@ -349,9 +364,7 @@ var JSConTest = (function (P) {
     } else {
       if ((!isNumber(low)) && (!isNumber(high))) {
         // generate random double
-        
-        // TODO
-        return 0;
+        return genRNDFloat();
       } else {
         // generate random double in range [0,p], where p = low or high
         return genNumber(0, (0 + low) || (0 + high));
