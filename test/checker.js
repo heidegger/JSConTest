@@ -18,37 +18,29 @@ function checker(ignore, expected) {
 				if (e.msg !== msg) {
 					switch (msg) {
 					case "fail": 
-					  	document.getElementById("checker").innerHTML +=
-					    	("<b>Expected</b>: " + e.msg 
-					    			+ ", <br /><b>got message</b>: " + msg 
+						fail( "Expected: " + e.msg 
+					    			+ ", got message: " + msg 
 									+ ", value: " + arguments[1]
-									+ ", constraint: " + arguments[2]
-					    			+ "<br /><br />");
+									+ ", constraint: " + arguments[2]);
 						break;
 					case "success":
-					  	document.getElementById("checker").innerHTML +=
-					    	("<b>Expected</b>: " + e.msg 
+					  	fail( "Expected: " + e.msg 
 					    			+ ", <br /><b>got message</b>: " + msg 
 									+ ", value: " + arguments[1]
-									+ ", constraint: " + arguments[2]
-					    			+ "<br /><br />");
+									+ ", constraint: " + arguments[2]);
 						break;
 					case "error":
-					  	document.getElementById("checker").innerHTML +=
-					    	("<b>Expected</b>: " + e.msg 
+					  	fail( "Expected</b>: " + e.msg 
 					    			+ ", <br /><b>got message</b>: " + msg 
 									+ ", error message: " + arguments[1]
-									+ ", constraint: " + arguments[2]
-					    			+ "<br /><br />");
+									+ ", constraint: " + arguments[2]);
 						break;
 					default:
-					  	document.getElementById("checker").innerHTML +=
-					    	("Expected:" + e.msg + ", Not expected: " + msg + "<br />");
+						fail( "Expected:" + e.msg + ", Not expected: " + msg);
 					}
 				}
 	    	} else {
-			    document.getElementById("checker").innerHTML +=
-				  ("expected empty, got: " + msg + "<br />")        		
+	    		fail( "expected empty, got: " + msg );        		
 	    	}
 		}
 	};
