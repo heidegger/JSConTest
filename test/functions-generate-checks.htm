@@ -15,7 +15,8 @@
   <body onload="JSConTest.tests.run()">
     <h1>JSConTest - Test Framework - Function - Simple Boolean</h1>
     
-    <p>This test suite runs a six contract checks. 
+    <p>This test suite run some contract checks to check
+	    if the generators are working correct. 
     	There are two event handlers registered. One checks if the contract
  		behaves as expected. The other prints the usual contract 
  		output to the page.     
@@ -26,6 +27,10 @@
  		that JSConTest does not work correctly in your browser, either
  		due to the fact that your browser does not support a feature JSConTest
  		rely on, or because JSConTest has an error. 
+    </p>
+    
+    <p>In this suite we expect two contracts to fail, and two to be
+    	successful. The two failing one should produce two counter examples.
     </p>
 
     
@@ -43,23 +48,72 @@
 			}
 			return "Error"; 
 		}
+		function genNumber(f) {
+			if (JSConTest.check.isNumber(f)) {
+				return true;
+			}
+			return "Error";
+		}
+
+		function genBooleanFail(p1, p2) {
+			if ( p1 && p2 ) {
+				return "Error";
+			} else {
+				return false;
+			}
+		}
+		function genNumberFail(f) {
+			if (f > 0) {
+				return "Error";
+			} else {
+				return false;
+			}
+		}
 		
-      	var anz = 1000;
+      	var anz = 100000;
 	    JSConTest.tests.add("genBoolean", 
 	    		genBoolean, 
 	    		JSConTest.tests.Function([JSConTest.tests.Boolean,
 	    								  JSConTest.tests.Boolean],
 	    								 JSConTest.tests.Boolean),
 	    		anz);
+	    JSConTest.tests.add("genNumber", 
+	    		genNumber, 
+	    		JSConTest.tests.Function([JSConTest.tests.Number],
+	    								 JSConTest.tests.Boolean),
+	    		anz);
+
+	    JSConTest.tests.add("genBooleanFail", 
+	    		genBooleanFail, 
+	    		JSConTest.tests.Function([JSConTest.tests.Boolean,
+	    								  JSConTest.tests.Boolean],
+	    								 JSConTest.tests.Boolean),
+	    		anz);
+	    JSConTest.tests.add("genNumberFail", 
+	    		genNumberFail, 
+	    		JSConTest.tests.Function([JSConTest.tests.Number],
+	    								 JSConTest.tests.Boolean),
+	    		anz);
       
 		var dl = JSConTest.events.enum.create('logger',"ul");
 		JSConTest.events.register(dl);
 		var ch = checker(['stat'],[
-			// generateBools
+   			// genBoolean
+   			{ msg: 'moduleChange' },
+   			{ msg: 'success' },
+   			// genFloat
 		    { msg: 'moduleChange' },
 			{ msg: 'success' },
+   			// genBooleanFail
+   			{ msg: 'moduleChange' },
+   			{ msg: 'fail' },
+   			// genNumberFail
+   			{ msg: 'moduleChange' },
+   			{ msg: 'fail' },
 			// Counter Examples
 			{ msg: 'CExpStart' },
+			{ msg: 'CExp' },
+			{ msg: 'CExp' },
 		]);
 		JSConTest.events.register(ch);
     </script>
