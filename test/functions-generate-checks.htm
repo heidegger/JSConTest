@@ -6,6 +6,8 @@
     <meta http-equiv="Content-Script-Type" content="text/javascript"/>
     <link href="style.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="../js/jscontest.js"></script>
+    <script type="text/javascript" src="../js/jscontest.contracts.js"></script>
+    <script type="text/javascript" src="../js/jscontest.cexp.js"></script>
     <script type="text/javascript" src="../js/jscontest.tests.js"></script>
     <script type="text/javascript" src="../js/jscontest.events.js"></script>
     <script type="text/javascript" src="../js/jscontest.events.handler.simple.js"></script>
@@ -41,9 +43,12 @@
     <div id="logger"></div>
 
     <script type="text/javascript">
+	  	function fail(s) {
+  			document.getElementById('checker').innerHTML += s + "<br />";
+	  	}
 		function genBoolean(p1, p2) {
 			if (JSConTest.check.isBoolean(p1) 
-					&& JSConTest.check.isBoolean(p2)) {
+				&& JSConTest.check.isBoolean(p2)) {
 				return true;
 			}
 			return "Error"; 
@@ -69,46 +74,50 @@
 			}
 		}
 		
-      	var anz = 100000;
-	    JSConTest.tests.add("genBoolean", 
-	    		genBoolean, 
-	    		JSConTest.tests.Function([JSConTest.tests.Boolean,
-	    								  JSConTest.tests.Boolean],
-	    								 JSConTest.tests.Boolean),
-	    		anz);
-	    JSConTest.tests.add("genNumber", 
-	    		genNumber, 
-	    		JSConTest.tests.Function([JSConTest.tests.Number],
-	    								 JSConTest.tests.Boolean),
-	    		anz);
-
-	    JSConTest.tests.add("genBooleanFail", 
-	    		genBooleanFail, 
-	    		JSConTest.tests.Function([JSConTest.tests.Boolean,
-	    								  JSConTest.tests.Boolean],
-	    								 JSConTest.tests.Boolean),
-	    		anz);
-	    JSConTest.tests.add("genNumberFail", 
-	    		genNumberFail, 
-	    		JSConTest.tests.Function([JSConTest.tests.Number],
-	    								 JSConTest.tests.Boolean),
-	    		anz);
-      
+    	var anz = 100000;
+    	JSConTest.tests.add("genBoolean", 
+	   		genBoolean, 
+	   		JSConTest.contracts.Function(
+				[JSConTest.contracts.Boolean,
+				 JSConTest.contracts.Boolean],
+				JSConTest.contracts.Boolean),
+	   		anz);
+		JSConTest.tests.add("genNumber", 
+	   		genNumber, 
+	   		JSConTest.contracts.Function(
+	   			[JSConTest.contracts.Number],
+	 			JSConTest.contracts.Boolean),
+	   		anz);
+	
+		JSConTest.tests.add("genBooleanFail", 
+	   		genBooleanFail, 
+	   		JSConTest.contracts.Function(
+	   			[JSConTest.contracts.Boolean,
+	   			 JSConTest.contracts.Boolean],
+	   			JSConTest.contracts.Boolean),
+	   		anz);
+		JSConTest.tests.add("genNumberFail", 
+	   		genNumberFail, 
+	   		JSConTest.contracts.Function(
+	   			[JSConTest.contracts.Number],
+	   			JSConTest.contracts.Boolean),
+	   		anz);
+		    
 		var dl = JSConTest.events.handler.simple.create('logger',"ul");
 		JSConTest.events.register(dl);
 		var ch = checker(['stat'],[
-   			// genBoolean
-   			{ msg: 'moduleChange' },
-   			{ msg: 'success' },
-   			// genFloat
+ 			// genBoolean
+ 			{ msg: 'moduleChange' },
+ 			{ msg: 'success' },
+ 			// genFloat
 		    { msg: 'moduleChange' },
 			{ msg: 'success' },
-   			// genBooleanFail
-   			{ msg: 'moduleChange' },
-   			{ msg: 'fail' },
-   			// genNumberFail
-   			{ msg: 'moduleChange' },
-   			{ msg: 'fail' },
+ 			// genBooleanFail
+ 			{ msg: 'moduleChange' },
+ 			{ msg: 'fail' },
+ 			// genNumberFail
+ 			{ msg: 'moduleChange' },
+ 			{ msg: 'fail' },
 			// Counter Examples
 			{ msg: 'CExpStart' },
 			{ msg: 'CExp' },

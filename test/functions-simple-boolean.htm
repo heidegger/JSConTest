@@ -6,9 +6,11 @@
     <meta http-equiv="Content-Script-Type" content="text/javascript"/>
     <link href="style.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="../js/jscontest.js"></script>
+    <script type="text/javascript" src="../js/jscontest.contracts.js"></script>
     <script type="text/javascript" src="../js/jscontest.tests.js"></script>
+    <script type="text/javascript" src="../js/jscontest.cexp.js"></script>
     <script type="text/javascript" src="../js/jscontest.events.js"></script>
-    <script type="text/javascript" src="../js/jscontest.events.enum.js"></script>
+    <script type="text/javascript" src="../js/jscontest.events.handler.simple.js"></script>
     <script type="text/javascript" src="checker.js"></script>
   </head>
 
@@ -36,6 +38,9 @@
     <div id="logger"></div>
 
     <script type="text/javascript">
+    	function fail(s) {
+    		document.getElementById('checker').innerHTML += s + "<br />";
+    	}
       	var anz = 1000;
 		function returnTrue() {
 			return true;
@@ -46,31 +51,31 @@
 		
 	    JSConTest.tests.add("returnTrue", 
 	    		returnTrue, 
-	    		JSConTest.tests.Function([],JSConTest.tests.Boolean),
+	    		JSConTest.contracts.Function([],JSConTest.contracts.Boolean),
 	    		anz);
 	    JSConTest.tests.add("returnTrue", 
 	    		returnTrue, 
-	    		JSConTest.tests.Function([],JSConTest.tests.True),
+	    		JSConTest.contracts.Function([],JSConTest.contracts.True),
 	    		anz);
 	    JSConTest.tests.add("returnTrue", 
 	    		returnTrue, 
-	    		JSConTest.tests.Function([],JSConTest.tests.False),
+	    		JSConTest.contracts.Function([],JSConTest.contracts.False),
 	    		anz);
 
 	    JSConTest.tests.add("returnFalse", 
 	    		returnFalse, 
-	    		JSConTest.tests.Function([],JSConTest.tests.Boolean),
+	    		JSConTest.contracts.Function([],JSConTest.contracts.Boolean),
 	    		anz);
 	    JSConTest.tests.add("returnFalse", 
 	    		returnFalse, 
-	    		JSConTest.tests.Function([],JSConTest.tests.True),
+	    		JSConTest.contracts.Function([],JSConTest.contracts.True),
 	    		anz);
 	    JSConTest.tests.add("returnFalse", 
 	    		returnFalse, 
-	    		JSConTest.tests.Function([],JSConTest.tests.False),
+	    		JSConTest.contracts.Function([],JSConTest.contracts.False),
 	    		anz);
       
-		var dl = JSConTest.events.enum.create('logger',"ul");
+		var dl = JSConTest.events.handler.simple.create('logger',"ul");
 		JSConTest.events.register(dl);
 		var ch = checker(['stat'],[
 			// returnTrue

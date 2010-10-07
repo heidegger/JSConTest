@@ -8,27 +8,27 @@ BasicTestCase = TestCase("BasicTestCase");
 BasicTestCase.prototype.testBasic = function () {
 	var anz = 1;
 	
-	var u = JSConTest.tests.Name("u");
-	JSConTest.tests.Let("u",JSConTest.tests.Union(JSConTest.tests.Undefined, u));
-	var x = JSConTest.tests.Name("x");
-	JSConTest.tests.Let("x",JSConTest.tests.Union(JSConTest.tests.Undefined,JSConTest.tests.String));
+	var u = JSConTest.contracts.Name("u");
+	JSConTest.contracts.Let("u",JSConTest.contracts.Union(JSConTest.contracts.Undefined, u));
+	var x = JSConTest.contracts.Name("x");
+	JSConTest.contracts.Let("x",JSConTest.contracts.Union(JSConTest.contracts.Undefined,JSConTest.contracts.String));
 	
 	var contr = [
-		JSConTest.tests.Null,
-		JSConTest.tests.Undefined,
-		JSConTest.tests.True,
-		JSConTest.tests.False,
-		JSConTest.tests.Boolean,
-		JSConTest.tests.Integer,
-		JSConTest.tests.IIntervall(0,5),
-		JSConTest.tests.Number,
-		JSConTest.tests.String,
-		JSConTest.tests.Object,
-		JSConTest.tests.Array(JSConTest.tests.Boolean),
-		JSConTest.tests.Array(JSConTest.tests.Top),
-		JSConTest.tests.Union(JSConTest.tests.Object,JSConTest.tests.Null),
-		JSConTest.tests.Union(JSConTest.tests.Object,JSConTest.tests.String),
-		JSConTest.tests.Union(JSConTest.tests.True,JSConTest.tests.Boolean),
+		JSConTest.contracts.Null,
+		JSConTest.contracts.Undefined,
+		JSConTest.contracts.True,
+		JSConTest.contracts.False,
+		JSConTest.contracts.Boolean,
+		JSConTest.contracts.Integer,
+		JSConTest.contracts.IIntervall(0,5),
+		JSConTest.contracts.Number,
+		JSConTest.contracts.String,
+		JSConTest.contracts.Object,
+		JSConTest.contracts.Array(JSConTest.contracts.Boolean),
+		JSConTest.contracts.Array(JSConTest.contracts.Top),
+		JSConTest.contracts.Union(JSConTest.contracts.Object,JSConTest.contracts.Null),
+		JSConTest.contracts.Union(JSConTest.contracts.Object,JSConTest.contracts.String),
+		JSConTest.contracts.Union(JSConTest.contracts.True,JSConTest.contracts.Boolean),
 		u,
 		x
 	];
