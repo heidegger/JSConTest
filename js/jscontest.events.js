@@ -21,13 +21,13 @@
         if ((h[msg]) && (typeof h[msg] === 'function')) {
           // convert arguments into array, removing the first element
           // pass P as this object ==> never pass the global object
-          h[msg].apply(P, Array.prototype.slice.call( arguments, 1 ));
+          h[msg].apply(this, Array.prototype.slice.call( arguments, 1 ));
         } else {
           if ((h['default']) && (typeof h['default'] === 'function')) {
             // convert arguments into real array
             var args = Array.prototype.slice.call( arguments );
             // default handler get the msg message as first argument
-            h['default'].apply(P, args );
+            h['default'].apply(this, args );
           }
         }
       }
