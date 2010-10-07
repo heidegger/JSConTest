@@ -152,14 +152,14 @@ var JSConTest = (function (P) {
   }
     
   /*** TODO: use YUI Components */
-  function showValue(parent, v) {
+//  function showValue(parent, v) {
     // TODO: create html entry, that represents the value v
     // v : string -> v 
     // v : boolean -> true,false
     // v : object -> TreeView
     // v : array -> TreeView
     // v : function -> TODO
-  }
+//  }
   
   function valueToString(v, nextLine) {
     var modnextLine;
