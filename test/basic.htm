@@ -8,7 +8,7 @@
     <script type="text/javascript" src="../js/jscontest.js"></script>
     <script type="text/javascript" src="../js/jscontest.tests.js"></script>
     <script type="text/javascript" src="../js/jscontest.events.js"></script>
-    <script type="text/javascript" src="../js/jscontest.events.enum.js"></script>
+    <script type="text/javascript" src="../js/jscontest.events.handler.simple.js"></script>
     <script type="text/javascript" src="checker.js"></script>
   </head>
 
@@ -40,7 +40,7 @@
 
     <script type="text/javascript">
     	function fail(s) {
-    		document.getElementById("checker").innerHTML += s;
+    		document.getElementById("checker").innerHTML += s + "<br />";
     	}
 		var anz = 1;
 
@@ -49,6 +49,8 @@
 		var x = JSConTest.tests.Name("x");
 		JSConTest.tests.Let("x",JSConTest.tests.Union(JSConTest.tests.Undefined,JSConTest.tests.String));
 
+		var dl = JSConTest.events.handler.simple.create("logger","ul");
+		JSConTest.events.register(dl);		
 		var contr = [
 			JSConTest.tests.Null,
 			JSConTest.tests.Undefined,
