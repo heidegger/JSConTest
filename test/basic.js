@@ -1,5 +1,5 @@
 /* Test, as in basic.html to use by JsTestDriver
- * http://code.google.com/p/js-test-driver/
+ *   http://code.google.com/p/js-test-driver/
  * to support running the test cases in multiple browsers
  */
 
