@@ -8,7 +8,7 @@
     <script type="text/javascript" src="../js/jscontest.js"></script>
     <script type="text/javascript" src="../js/jscontest.tests.js"></script>
     <script type="text/javascript" src="../js/jscontest.events.js"></script>
-    <script type="text/javascript" src="../js/jscontest.events.enum.js"></script>
+    <script type="text/javascript" src="../js/jscontest.events.handler.simple.js"></script>
     <script type="text/javascript" src="checker.js"></script>
   </head>
 
@@ -54,7 +54,6 @@
 			}
 			return "Error";
 		}
-
 		function genBooleanFail(p1, p2) {
 			if ( p1 && p2 ) {
 				return "Error";
@@ -95,7 +94,7 @@
 	    								 JSConTest.tests.Boolean),
 	    		anz);
       
-		var dl = JSConTest.events.enum.create('logger',"ul");
+		var dl = JSConTest.events.handler.simple.create('logger',"ul");
 		JSConTest.events.register(dl);
 		var ch = checker(['stat'],[
    			// genBoolean
