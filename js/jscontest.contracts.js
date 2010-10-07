@@ -694,8 +694,9 @@
 	};
 
 	/** ******** NAMES ********* */
-	var resetMarked, Name, Let;
 	(function() {
+		var names = {};
+		C.names = names;
 		var ntable = {};
 		var cnames = [];
 		var testTable = function(name, f, g, err) {
@@ -716,7 +717,7 @@
 			;
 
 		};
-		Name = function(name) {
+		names.Name = function(name) {
 			var gcdes = function(i) {
 				return "Name: " + name + ", Image: " + i;
 			};
@@ -771,13 +772,13 @@
 			return o;
 		};
 
-		Let = function(name, c) {
+		names.Let = function(name, c) {
 			ntable[name] = {
 			  name : name,
 			  contract : c
 			};
 		};
-		resetMarked = function() {
+		names.resetMarked = function() {
 			for ( var i in ntable) {
 				var o = ntable[i];
 				o.marked = false;
@@ -812,8 +813,8 @@
 	 * okToString: value -> string; getcdes: void -> string; setcdes: string ->
 	 * void; toString: void -> string; }
 	 */
-	C.Name = Name;
-	C.Let = Let;
+	C.Name = C.names.Name;
+	C.Let = C.names.Let;
 	C.Union = Union;
 
 	/** TODO: needs type signature and docu */

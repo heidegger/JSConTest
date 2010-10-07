@@ -187,7 +187,7 @@
 				}
 			}
 			withTry(!DEBUG, performCheck, errHandler);
-			resetMarked();
+			P.contracts.names.resetMarked();
 			fire.call(P, 'stat', testContracts, testCount, failCount,
 			          verifyContracts, errorContract, wellTestedCount);
 		}
