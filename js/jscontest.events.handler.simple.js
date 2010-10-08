@@ -21,7 +21,7 @@
 	      moduleChange: string -> void;
 	      CExpStart: void -> void;
 	      CExp: CExp -> void;
-	      stat: (totalCNumber, totalTestNumber, failed, verified,
+	      statistic: (totalCNumber, totalTestNumber, failed, verified,
 	             errors, wellTested) -> void;
 	      assertParam:  ;
 	      assertEffectsRead: ;
@@ -144,6 +144,7 @@
 		}
 		;
 		var log_console;
+		var cancel;
 		var initStat = (function() {
 			var init = false;
 			return function() {
@@ -165,26 +166,27 @@
 					var dl = document.createElement("dl");
 					stat.appendChild(dl);
 					dl.setAttribute('id', divId + '_dl');
-					stat.appendChild(newB('cancel all', P.tests.doCancel));
-					stat.appendChild(newB("cancel active contract", P.tests.doCancelAC));
-					stat.appendChild(newB("cancel active modul", P.tests.doCancelAM));
+					stat.appendChild(newB('cancel all', cancel.doCancel));
+					stat.appendChild(newB("cancel active contract", cancel.doCancelAC));
+					stat.appendChild(newB("cancel active modul", cancel.doCancelAM));
 
 					init = true;
 				}
 				;
 			};
 		})();
-		function statistic(totalCNumber, totalTestNumber, failed, verified, errors,
-		                   wellTested) {
+		function statistic(s) {
+			// totalCNumber, totalTestNumber, failed, verified, errors,
+			// wellTested) {
 			initStat();
 			var dl = document.getElementById(divId + '_dl');
-			setDef(dl, 'NoC', "Number of contracts: ", totalCNumber);
-			setDef(dl, 'NovC', "Number of verified contracts: ", verified);
-			setDef(dl, 'NofC', "Number of failed contracts: ", failed);
+			setDef(dl, 'NoC', "Number of contracts: ", s.getTotal());
+			setDef(dl, 'NovC', "Number of verified contracts: ", s.getVerified());
+			setDef(dl, 'NofC', "Number of failed contracts: ", s.getFailed());
 			setDef(dl, 'Noce',
-			       "Number of contracts where check exists with an error: ", errors);
-			setDef(dl, 'Notc', "Number of well tested contracts: ", wellTested);
-			setDef(dl, 'Not', "Number of tests run: ", totalTestNumber);
+			       "Number of contracts where check exists with an error: ", s.getErrors());
+			setDef(dl, 'Notc', "Number of well tested contracts: ", s.getWellTested());
+			setDef(dl, 'Not', "Number of tests run: ", s.getTests());
 		}
 		;
 		var aP = 0;
@@ -229,7 +231,16 @@
 		}
 		;
 		var o = {
-		  fail : function(v, c, anz) {
+		  skipped: function(c,v, anz) {
+		  	var s;
+		  	if (!anz) {
+		  		s = ".";
+		  	} else {
+		  		s = " after " + anz + " test runs."; 
+		  	}
+	  		app(c.failToString(v) + " Conract was canceled" + s);
+ 		  },
+		  fail : function(c, v, anz) {
 		  	// this is the test case
 			  if (!anz) {
 				  var s = c.failToString(v);
@@ -240,8 +251,7 @@
 			  }
 			  ;
 		  },
-		  success : function(v, c, anz) {
-		  	// this is the test case
+		  success : function(c, v, anz) {
 			  if (!anz) {
 				  var s = c.okToString(v);
 				  app(s);
@@ -265,10 +275,13 @@
 		  CExp : function(ce) {
 			  aCE(ce);
 		  },
-		  stat : statistic,
+		  statistic : statistic,
 		  assertParam : assertParam,
 		  assertEffectsRead : assertEffectsRead,
 		  assertEffectsWrite : assertEffectsWrite,
+		  cancel: function (c) {
+		  	cancel = c;
+		  },
 		  "default" : function(msg, param) {
 			  // alert('I do not know what todo with log message: ' + msg);
 		  }

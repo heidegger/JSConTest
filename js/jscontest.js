@@ -62,18 +62,11 @@ var JSConTest = (function (P) {
       return nset;
     }
   } 
-  function max(i1, i2) { 
-    if (i1 < i2) { 
-      return i2;
-    } else { 
-      return i1; 
-    }
-  }
   function compareArray(a, testArr) {
     if (a.length !== testArr.length) {
       return false;
     }
-    for (var i = 0; i < testArr.length ; i = i + 1) {
+    for (var i = 0; i < testArr.length ; i += 1) {
       if (a[i].compare) { 
         if (!a[i].compare(testArr[i])) {
           return false;
@@ -102,7 +95,6 @@ var JSConTest = (function (P) {
       return f();
     }
   }
-  
   function getFun(f1, f2) {
     if (isFunction(f1)) {
       return f1;
@@ -110,11 +102,9 @@ var JSConTest = (function (P) {
       return f2;
     }
   }
-  
   function singleQuote(param) {
     return "'" + param + "'";
   }
-  
   function concat(a, sep, left, right, showProp, showValues, nextLine) {
     var numberOfProp = 0,
       s = "",
@@ -194,12 +184,25 @@ var JSConTest = (function (P) {
       return "" + v;
     }
   }
-  
-  /** Utils Exports */
+	function withTry(flag, f, handler) {
+		if (flag) {
+			try {
+				return f();
+			} catch (e) {
+				if (handler) {
+					return handler(e);
+				}
+			}
+		} else {
+			return f();
+		}
+	}
+
+  /** utils exports */
   P.utils.getFun = getFun;
   P.utils.valueToString = valueToString;
   P.utils.compareArray = compareArray;
-  
+  P.utils.withTry = withTry;
   
   /********** checks **********/
   function isNull(v) { 
@@ -572,13 +575,11 @@ var JSConTest = (function (P) {
         r[p] = c.gen();
       }
     }
-    
     /* If no pl is given, generate a random set of properties,
        which Top Contract */
     if (!exactPropList) {
       exactPropList = genEPL();
     }
-    
     for (j in exactPropList) {
       ep = exactPropList[j];
       if ((ep.name) && (ep.contract)) { // name and contract exists

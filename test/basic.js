@@ -58,7 +58,7 @@ BasicTestCase.prototype.testBasic = function () {
 //	JSConTest.events.register(dl);
 	  
 	  
-	var ch = checker(['stat','CExpStart'],[
+	var ch = checker(['statistic', 'cancel','CExpStart'],[
 	    // Null
 		{ msg: 'moduleChange' },
 		{ msg: 'fail' },

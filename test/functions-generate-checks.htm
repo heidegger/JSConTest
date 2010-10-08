@@ -8,6 +8,7 @@
     <script type="text/javascript" src="../js/jscontest.js"></script>
     <script type="text/javascript" src="../js/jscontest.contracts.js"></script>
     <script type="text/javascript" src="../js/jscontest.cexp.js"></script>
+    <script type="text/javascript" src="../js/jscontest.statistic.js"></script>
     <script type="text/javascript" src="../js/jscontest.tests.js"></script>
     <script type="text/javascript" src="../js/jscontest.events.js"></script>
     <script type="text/javascript" src="../js/jscontest.events.handler.simple.js"></script>
@@ -74,7 +75,7 @@
 			}
 		}
 		
-    	var anz = 100000;
+    	var anz = 50000;
     	JSConTest.tests.add("genBoolean", 
 	   		genBoolean, 
 	   		JSConTest.contracts.Function(
@@ -105,7 +106,7 @@
 		    
 		var dl = JSConTest.events.handler.simple.create('logger',"ul");
 		JSConTest.events.register(dl);
-		var ch = checker(['stat'],[
+		var ch = checker(['statistic', 'cancel'],[
  			// genBoolean
  			{ msg: 'moduleChange' },
  			{ msg: 'success' },

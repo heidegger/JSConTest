@@ -7,6 +7,7 @@
     <link href="style.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="../js/jscontest.js"></script>
     <script type="text/javascript" src="../js/jscontest.tests.js"></script>
+    <script type="text/javascript" src="../js/jscontest.statistic.js"></script>
     <script type="text/javascript" src="../js/jscontest.contracts.js"></script>
     <script type="text/javascript" src="../js/jscontest.events.js"></script>
     <script type="text/javascript" src="../js/jscontest.events.handler.simple.js"></script>
@@ -50,8 +51,6 @@
 		var x = JSConTest.contracts.Name("x");
 		JSConTest.contracts.Let("x",JSConTest.contracts.Union(JSConTest.contracts.Undefined,JSConTest.contracts.String));
 
-		var dl = JSConTest.events.handler.simple.create("logger","ul");
-		JSConTest.events.register(dl);		
 		var contr = [
 			JSConTest.contracts.Null,
 			JSConTest.contracts.Undefined,
@@ -88,7 +87,7 @@
 			var v = vals[j].v;
 			var d = vals[j].d;
 			for (var i in contr) {
-				JSConTest.tests.add(d, v, contr[i],anz);
+				JSConTest.tests.add(d, v, contr[i], anz);
 				// success, fail, error
 			}
 		}
@@ -97,7 +96,7 @@
 		JSConTest.events.register(dl);
       
       
-		var ch = checker(['stat','CExpStart'],[
+		var ch = checker(['statistic', 'cancel','CExpStart'],[
 	        // Null
 			{ msg: 'moduleChange' },
 			{ msg: 'fail' },
@@ -307,7 +306,7 @@
 			{ msg: 'fail' },
 			{ msg: 'fail' },
 			{ msg: 'fail' },
-		]);      
+		]);
 		JSConTest.events.register(ch);
     </script>
     
