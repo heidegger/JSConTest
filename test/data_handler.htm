@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>JSConTest - Test Framework - Basic</title>
+    <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../js/jscontest.js"></script>
+    <script type="text/javascript" src="../js/jscontest.tests.js"></script>
+    <script type="text/javascript" src="../js/jscontest.statistic.js"></script>
+    <script type="text/javascript" src="../js/jscontest.contracts.js"></script>
+    <script type="text/javascript" src="../js/jscontest.events.js"></script>
+    <script type="text/javascript" src="../js/jscontest.events.handler.simple.js"></script>
+    <script type="text/javascript" src="../js/jscontest.events.handler.data.js"></script>
+    <script type="text/javascript" src="checker.js"></script>
+  </head>
+
+  <body onload="JSConTest.tests.run({ afterRun: check_after })">
+    <h1>JSConTest - Test Framework - Data Handler Test</h1>
+    
+    <p>This test suite runs two tests, one successfully and one, that fails. 
+      Each of them has a data handler attached, which should be called during
+      the test evaluation.      
+ 	</p>
+ 		
+ 	<p>	If the data handler for the test cases are not called as expected, 
+ 	  inside of the error log a notice will appear indicating, that the test
+ 	  of this HTML page failed.  
+    </p>
+    
+	<div style="background-color: #999;">
+		<h2>Error log:</h2>
+		<p id="checker" style="color: #A00;"></p>
+	</div>
+    <div id="logger"></div>
+    
+
+    <script type="text/javascript">
+    	function fail(s) {
+    		document.getElementById("checker").innerHTML += s + "<br />";
+    	}
+    	var t1, t2;
+    	function expSuccess() {
+			var sc = false;
+	  		t1 = function () { return sc; };
+    		return {
+    			"fail": function () { fail("Success expected.") },
+    			"error": function () { fail("Success expected.") },
+				"success" : function () { sc = true; }
+    		};
+    	}
+    	function expFail() {
+  			var fc = false;
+    		t2 = function () { return fc; };
+      		return {
+      			"success": function () { fail("Fail expected.") },
+      			"error": function () { fail("Fail expected.") },
+  				"fail" : function () { fc = true; }
+      		};
+      	}
+		function check_after() {
+			if (t1() && t2()) {
+			} else {
+				fail("a handler was not called!");
+			}
+		}
+    	JSConTest.tests.add("Object", {}, JSConTest.contracts.Object, 1, {
+			own_handler: expSuccess()
+		});
+		JSConTest.tests.add("Object", 5.0, JSConTest.contracts.Object, 1, {
+			own_handler: expFail()
+		});
+    	
+		var dl = JSConTest.events.handler.simple.create('logger',"ul");
+		JSConTest.events.register(dl);
+		JSConTest.events.register(JSConTest.events.handler.data.create("own_handler"));      
+      
+    </script>
+    
+  </body>
+</html>

@@ -13,25 +13,31 @@
   
   function fire(msg) {
     var l, // key
-      h;   // handler itself
-
+      slice = Array.prototype.slice,
+      args = slice.call( arguments );
+      
     for (l in handler) {
-      h = handler[l];
-      if (h) {
-        if ((h[msg]) && (typeof h[msg] === 'function')) {
-          // convert arguments into array, removing the first element
-          // pass P as this object ==> never pass the global object
-          h[msg].apply(this, Array.prototype.slice.call( arguments, 1 ));
-        } else {
-          if ((h['default']) && (typeof h['default'] === 'function')) {
-            // convert arguments into real array
-            var args = Array.prototype.slice.call( arguments );
-            // default handler get the msg message as first argument
-            h['default'].apply(this, args );
-          }
+    	// convert arguments into real array and call fire_handler
+    	fire_handler.call(this, handler[l], args);
+    }
+  }
+  
+  function fire_handler(h, params) {
+    var msg = params[0],
+    	slice = Array.prototype.slice;
+    
+  	if (h) {
+      if ((h[msg]) && (typeof h[msg] === 'function')) {
+      	// remove msg from the parameters, since the special handler is called
+      	h[msg].apply(this, slice.call( params, 1 ));
+      } else {
+        if ((h['__default__']) && (typeof h['__default__'] === 'function')) {
+          // keep msg inside of params. This allows the default handler
+        	// to make a case distinction over the massage.
+        	h['__default__'].apply(this, params );
         }
       }
-    }
+    }  	
   }
   
   function register(o) {
@@ -53,5 +59,6 @@
   E.create_fire_function = create_fire_function;
   E.register = register;
   E.fire = fire;
+  E.fire_handler = fire_handler;
   
 })(JSConTest);

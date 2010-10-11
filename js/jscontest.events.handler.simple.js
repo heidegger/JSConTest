@@ -231,7 +231,7 @@
 		}
 		;
 		var o = {
-		  skipped: function(c,v, anz) {
+		  skipped: function(c, v, anz) {
 		  	var s;
 		  	if (!anz) {
 		  		s = ".";
@@ -282,7 +282,7 @@
 		  cancel: function (c) {
 		  	cancel = c;
 		  },
-		  "default" : function(msg, param) {
+		  "__default__" : function(msg, param) {
 			  // alert('I do not know what todo with log message: ' + msg);
 		  }
 		};
