@@ -37,17 +37,24 @@
 			item.innerHTML = s;
 			enLog.appendChild(item);
 		}
-		;
+		function newTree(dl,s1,tree) {
+			var n = document.createElement("dt");
+			n.innerHTML = s1;
+			dl.appendChild(n);
+			var n2 = document.createElement("dd");
+			dl.appendChild(n2);
+			n2.appendChild(tree);
+		}
+
 		function newDef(dl, s1, s2) {
 			setDef(dl, false, s1, s2);
 		}
-		;
+
 		function setDef(dl, id, s1, s2) {
 			var n2;
 			if (id) {
 				n2 = document.getElementById(id);
 			}
-			;
 			if (!n2) {
 				var n = document.createElement("dt");
 				n.innerHTML = s1;
@@ -56,17 +63,14 @@
 				n2.setAttribute('id', id);
 				dl.appendChild(n2);
 			}
-			;
 			n2.innerHTML = s2;
 		}
-		;
 		function hide(id) {
 			var dl = document.getElementById(id);
 			if (dl) {
 				dl.style.display = 'none';
 			}
 		}
-		;
 		function doHide(id) {
 			return (function() {
 				var dl = document.getElementById(id);
@@ -79,7 +83,6 @@
 				}
 			});
 		}
-		;
 		var id = 0;
 		function aCE(ce) {
 			id++;
@@ -94,26 +97,31 @@
 			newDef(dl, "value", ce.valueToString(nextLine));
 			newDef(dl, "contract", ce.contrToString());
 
-			/*** TODO: erzeuge tree view element mithilfe der paramToTreeView methode des ce */
+			// TODO: erzeuge tree view element mithilfe der paramToTreeView methode des ce */
 			//      var treeDiv = document.createElement("div");
 			//      newDef(dl,"parameter",treeDiv);
 			//      ce.paramToTreeView(treeDiv);
-			newDef(dl, "parameter", ce.paramToString(nextLine));
-			newDef(dl, "result", ce.resultToString());
-			/*** END TODO */
+			var treeDiv = document.createElement("div");
+			newTree(dl, "parameters", treeDiv);
+			ce.paramToTreeView(treeDiv);
+
+			treeDiv = document.createElement("div");
+			newTree(dl, "result", treeDiv);
+			ce.resultToTreeView(treeDiv);
+
+			//newDef(dl, "parameter", ce.paramToString(nextLine));
+			//newDef(dl, "result", ce.resultToString());
+			// END TODO */
 
 			// newDef(dl,"expected",ce.resultExpToString());
 			for ( var i = 1; i < id; ++i) {
 				hide("ce_dl_item" + ce.uid + "_" + i);
 			}
-			;
 		}
-		;
 
 		function nextLine() {
 			return "<br/>";
 		}
-		;
 
 		function newHeadding(s, m) {
 			var divLog = document.getElementById(divId);
@@ -125,7 +133,6 @@
 			en.id = enCId;
 			divLog.appendChild(en);
 		}
-		;
 		function newDivHeading(title, c) {
 			var div = document.createElement("div");
 			var h = document.createElement("h2");
@@ -135,14 +142,13 @@
 				div.setAttribute('class', c);
 			return div;
 		}
-		;
 		function newB(title, onclick) {
 			var b = document.createElement('button');
 			b.innerHTML = title;
 			b.onclick = onclick;
 			return b;
 		}
-		;
+
 		var log_console;
 		var cancel;
 		var initStat = (function() {
@@ -172,7 +178,6 @@
 
 					init = true;
 				}
-				;
 			};
 		})();
 		function statistic(s) {
@@ -188,7 +193,7 @@
 			setDef(dl, 'Notc', "Number of well tested contracts: ", s.getWellTested());
 			setDef(dl, 'Not', "Number of tests run: ", s.getTests());
 		}
-		;
+
 		var aP = 0;
 		function assertParam(cl, pl, str) {
 			aP++;
@@ -198,9 +203,7 @@
 				                        + cl + ", " + P.utils.valueToString(pl)
 				                        + "<br/>\n";
 			}
-			;
 		}
-		;
 		function strEffect(obj, prop, effl_str, eff_str, kind) {
 			return "Effect Error, " + kind + " access not allowed! "
 			       + "You try to read the property <b>" + prop + "</b>"
@@ -208,7 +211,6 @@
 			       + "Permissions you have to respect: " + effl_str + "<br />\n"
 			       + "The following was not respected: " + eff_str + "<br />\n";
 		}
-		;
 		function assertEffectsWrite(o, p, effl_str, eff_str) {
 			log_console.innerHTML += "<b>" + module + "</b>: "
 			                         + strEffect(o, p, effl_str, eff_str, "write");
@@ -218,7 +220,6 @@
 			log_console.innerHTML += "<b>" + module + "</b>: "
 			                         + strEffect(o, p, effl_str, eff_str, "read");
 		}
-		;
 
 		var aR = 0;
 		function assertReturn(cl, v) {
@@ -227,9 +228,7 @@
 				log_console.innerHTML = log_console.innerHTML + "Return value of " + cl
 				                        + " not valid: " + P.utils.valueToString(v);
 			}
-			;
 		}
-		;
 		var o = {
 		  skipped: function(c, v, anz) {
 		  	var s;
@@ -288,7 +287,6 @@
 		};
 		return o;
 	}
-	;
 
 	R.create = create;
 

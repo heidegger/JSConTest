@@ -28,13 +28,12 @@
 			return contract.getcdes();
 		}
 
-		/**
-		 * * TODO: parameter to String sollte durch ein TreeView Steuerelement
-		 * ersetzt werden
-		 */
-		/** * paramToTreeView(parent) parent = html eltern element */
 		function paramToTreeView(parent) {
-			initTree(tparams, parent);
+			P.treeView.init(tparams, parent);
+		}
+
+		function resultToTreeView(parent) {
+			P.treeView.init(result, parent);
 		}
 
 		function paramToString(nextLine) {
@@ -62,6 +61,8 @@
 		this.contrToString = contrToString;
 
 		/** * this.f = f (paramToTreeView) */
+		this.paramToTreeView = paramToTreeView;
+		this.resultToTreeView = resultToTreeView;
 		this.paramToString = paramToString;
 		this.resultToString = resultToString;
 		this.moduleToString = function() {
