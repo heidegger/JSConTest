@@ -3,9 +3,16 @@
  * to support running the test cases in multiple browsers
  */
 
-BasicTestCase = TestCase("BasicTestCase");
+//BasicTestCase = TestCase("BasicTestCase");
 
-BasicTestCase.prototype.testBasic = function () {
+//BasicTestCase.prototype.testBasic = function () {
+//}
+(function () {
+	function registerForJSTestDriver(m, i, test, f) {
+		var tc = TestCase(m + " - " + i);
+		tc.prototype["test" + i] = f;				
+	}
+
 	var anz = 1;
 	
 	var u = JSConTest.contracts.Name("u");
@@ -270,5 +277,6 @@ BasicTestCase.prototype.testBasic = function () {
 		{ msg: 'fail' },
 	]);
 	JSConTest.events.register(ch);
-	JSConTest.tests.run();
-};
+
+	JSConTest.tests.runLazy(registerForJSTestDriver);
+}());

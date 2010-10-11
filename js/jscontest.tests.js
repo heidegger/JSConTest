@@ -39,12 +39,12 @@
 		}
 	}
 	function logTest(contract, value, result, count) {
-		if (result === true) {
+		if (result.normal === true) {
 			fire.call(this, 'success', contract, value, count);
-		} else if (result === false) {
+		} else if (result.normal === false) {
 			fire.call(this, 'fail', contract, value, count);
-		} else {
-			fire.call(this, 'error', result, contract);
+		} else if (result.error) {
+			fire.call(this, 'error', result.error, contract);
 		}
 	}
 
@@ -68,14 +68,20 @@
 		var contract = test.contract,
 			value = test.value;
 			result = P.utils.withTry(!DEBUG, 
-			                         function () { return contract.check(value); }, 
-			                         function (e) { return e; });
+			                         function () { 
+																 return { 
+																	 normal: contract.check(value) 
+																 }; 
+															 }, 
+			                         function (e) { 
+																 return { error: e }; 
+															 });
 		if (stat) {
-			if (result === true) {
+			if (result.normal === true) {
 				stat.incVerified();
-			} else if (result === false) {
+			} else if (result.normal === false) {
 				stat.incFailed();
-			} else {
+			} else if (result.error) {
 				stat.incErrors();
 			}
 		}
@@ -91,11 +97,11 @@
 
 		for (i = 0; cont && i < count; i += 1) {			
 			result = checker(test);
-			cont = cont && (result === true);
+			cont = cont && (result.normal === true);
 		}
 		stat.incTests(i);
 		test.done = done + i;
-		if (result !== true) {
+		if (result.normal === false || (result.error)) {
 			failedCheck(test);
 		}
 		if (P.check.isFunction(resultHandler)) {
@@ -113,19 +119,19 @@
 	// So if the result handler is called, please do not call the
 	// iterator again. It just will call the result handler another time.
 	function incTester(perCall) {
-		var result = true;
+		var result = { normal : true };
 		function rH(r) {
 			result = r;
 		}
 		return (function (test, stat, count, resultHandler) {
 			return (function () {
 				var doInThisCall  = Math.min(count - test.done, perCall);
-				if ( doInThisCall < 1  || result !== true) {
-					if (result === true) {
+				if ( doInThisCall < 1  || result.error || result.normal === false ) {
+					if (result.normal === true) {
 						stat.incWellTested();
-					} else if (result === false) {
+					} else if (result.normal === false) {
 						stat.incFailed();
-					} else {
+					} else if (result.error) {
 						stat.incErrors();
 					}
 					resultHandler(result);
@@ -142,8 +148,14 @@
 	//	(test, statistic) -> result, 
 	//  (test, statistic, int, (result) -> result) -> (() -> ()) )  
 	// 	->  
-	//  (() -> ())
-	function testOrCheck(test, stat, resultHandler, checker, tester) {
+	//  (() -> () || { normal: boolean } || { error : error } 
+	function testOrCheck(param) {
+		var test = param["test"],
+			stat = param["stat"],
+			resultHandler = param["resultHandler"] || function (r) { return r; },
+			checker = param["checker"] || checker,
+			tester = param["tester"] || simpleTester;
+
 		function testrH(result) {
 			logTest.call(test, test.contract, test.value, result, test.done);
 			return resultHandler(result);
@@ -152,13 +164,15 @@
 			value = test.value;
 		if (contract.genNeeded && (contract.genNeeded(value))) {
 			test.done = 0;
+			// returns a function
 			return tester(test, stat, test.count, testrH);
 		} else {
 			return (function () {
 				var result = checker(test, stat);
 				logTest.call(test, test.contract, test.value, result);
-				resultHandler(result);
-				return;
+				// passes the result of the checker  and returns the 
+				// result of the result handler
+				return resultHandler(result);
 			});
 		}
 	}
@@ -244,13 +258,18 @@
 				testIter = false;
 				return r;
 			}
-			if (testIter) {
+			if (P.check.isFunction(testIter)) {
 				testIter(); 
 			} else {
 				if (toDoT.length > 0) {
 					// test and testIter are local variable of run
 					test = toDoT.pop();
-					testIter = testOrCheck(test, statistic, resultHandler, checker, incTester(testCountPerStep));					
+					testIter = testOrCheck({ test: test, 
+																	 stat: statistic, 
+																	 checker: checker,
+																	 tester: incTester(testCountPerStep),
+																	 resultHandler : resultHandler
+																 });					
 					doOneStep();
 				} else { // => toDoM.length > 0, since toDoT.length < 0 and !testIter
 					runModule();
@@ -287,6 +306,23 @@
 		return cancel;
 	}	
 
+	function runLazy(f, stat) {	
+		var statistic = stat || P.statistic.Statistic();
+		for (var m in tests ) {
+			//jstestdriver.console.log("outer loop");
+			for (var i = 0; i < tests[m].length; i += 1) {
+				//jstestdriver.console.log("inner loop" + i);
+				(function (m, i, test) {
+					function run() {
+						return testOrCheck({ test: test, 
+							statistic: statistic });
+					}	
+					f(m, i, test, run);				
+				})(m, i, tests[m][i]);
+			}	
+		}
+	}
+	
 	function add(module, value, contract, count, data) {
 		if (!(tests[module])) {
 			tests[module] = [];
@@ -420,6 +456,7 @@
 	/* Interface */
 	/******************************/
 	T.run = run;
+	T.runLazy = runLazy;
 	T.add = add;
 	T.setStepCount = function(ns) {
 		testCountPerStep = ns;
