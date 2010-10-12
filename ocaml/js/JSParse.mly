@@ -41,6 +41,7 @@ let string_of_constant c =
 %token <Annotation.t> Lline_terminator
 %token <Annotation.t * string> Lcomment
 %token <Annotation.t * string> LDcomment
+%token <Annotation.t * string> LCcomment
 %token <Annotation.t> LInitBegin
 %token <Annotation.t> LInitEnd
 
@@ -238,7 +239,7 @@ function_declaration :
   {(Function_declaration ((default_annotation $1 $8),"",fsto3 $2, fsto3 $4,None, fsto3 $7),
     $1, $8)}
 |
-  LDcomment  
+  LCcomment  
   KWfunction identifier Llparen formal_parameter_list Lrparen
   Llbrace function_body Lrbrace 
   {(Function_declaration ((default_annotation (fst $1) $9),snd $1,fsto3 $3, fsto3 $5, None, fsto3 $8),

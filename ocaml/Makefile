@@ -40,7 +40,7 @@ SOURCES = date.ml \
 		  main.ml
 
 ANNOTATE=yes
-RESULT  = parser
+RESULT  = jscontest
 BCSUFFIX = bc
 NCSUFFIX = opt
 

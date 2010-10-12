@@ -48,6 +48,11 @@ let regexp not_star           =
   (* Anything but star *)
   [0-0x0029] | [0x002b-0xffff] 
 
+let regexp not_star_not_c =
+  (* Anything but star or c *)
+  [0-0x0029] | [0x002b-0x0062] | [0x0064-0xffff] 
+
+
 let regexp not_star_not_slash =
   (* Anything but star and slash *)
   [0-0x0029] | [0x002b-0x002e] | [0x0030-0xffff]
@@ -173,9 +178,11 @@ let regexp re_character     =
   
 (* ignorable Stuff *)
 let regexp traditional_comment =
-  "/*" not_star+ "*"+ (not_star_not_slash not_star* "*"+)* '/'
+  "/*" not_star_not_c+ "*"+ (not_star_not_slash not_star* "*"+)* '/'
 let regexp documentation_comment =
   "/**" "*"* (not_star_not_slash not_star* "*"+)* '/'
+let regexp contract_comment =
+  "/*c" "*"* (not_star_not_slash not_star* "*"+)* '/'
 let regexp documentation_comment_init_begin = "/** CONTRACT INIT BEGIN */"
 let regexp documentation_comment_init_end = "/** CONTRACT INIT END */"
 let regexp end_of_line_comment =
@@ -519,6 +526,8 @@ let (mainlexer) =
           LInitEnd (set_ending ann)
       | documentation_comment -> 
           LDcomment ((set_ending ann), (Ulexing.utf8_lexeme lexbuf))
+      | contract_comment -> 
+          LCcomment ((set_ending ann), (Ulexing.utf8_lexeme lexbuf))
       | end_of_line_comment   -> 
           Lcomment ((set_ending ann), (Ulexing.utf8_lexeme lexbuf))
           
@@ -655,16 +664,18 @@ let (mainlexer) =
       | line_terminator       -> Stack.push DivMode s;
           Lline_terminator (set_ending ann)
         
-      | traditional_comment   -> Stack.push DivMode s; 
-	      Lcomment ((set_ending ann),  (Ulexing.utf8_lexeme lexbuf))
+      | traditional_comment   -> 
+          Lcomment ((set_ending ann), (Ulexing.utf8_lexeme lexbuf))
       | documentation_comment_init_begin ->
           LInitBegin (set_ending ann)
       | documentation_comment_init_end ->
           LInitEnd (set_ending ann)
-      | documentation_comment -> Stack.push DivMode s; 
-	      Lcomment ((set_ending ann),  (Ulexing.utf8_lexeme lexbuf))
-      | end_of_line_comment   -> Stack.push DivMode s; 
-	      Lcomment ((set_ending ann),  (Ulexing.utf8_lexeme lexbuf))
+      | documentation_comment -> 
+          LDcomment ((set_ending ann), (Ulexing.utf8_lexeme lexbuf))
+      | contract_comment -> 
+          LCcomment ((set_ending ann), (Ulexing.utf8_lexeme lexbuf))
+      | end_of_line_comment   -> 
+          Lcomment ((set_ending ann), (Ulexing.utf8_lexeme lexbuf))
             
 	  (* Division, bzw. kleiner *)
       | lt                    -> Lless (set_ending ann)
