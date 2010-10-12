@@ -125,20 +125,26 @@ let spec =
    ("-t",Unit (set_test_mode)," shortcut for --test");
    ("--test",Unit (set_test_mode),
     " run all unit tests and exits (compiles nothing)");
-   ("--test-js-namespace",String (Etc.set_javascript_test_namespace),
+   ("--js-namespace",String (Etc.set_javascript_namespace),
     " sets the namespace that is used to interact "^
-      "with the library (DEFAULT: JSConTest.test)");
+      "with the library (DEFAULT: JSConTest)");
+   ("--jsn",String (Etc.set_javascript_namespace),
+    " shortcut for --js-namespace");
+
+   ("--test-js-namespace",String (Etc.set_javascript_test_namespace),
+    " sets the namespace to interact "^
+      "with the test part of the library (DEFAULT: tests)");
    ("-tjsn",String (Etc.set_javascript_test_namespace),
     " shortcut for --test-js-namespace");
    ("-h", Unit (fun () -> raise (Bad ""))," Display this list of options");
    ("--generate-tests",Unit (fun () -> Etc.set_generate_tests true),
     " the compiler generate code, that generates the "^
-      "tests for contracts. This is the default.");
+      "tests for contracts. (default)");
    ("--no-generate-tests",Unit (fun () -> Etc.set_generate_tests false),
     " the compiler does not generate code, that generates "^
       "the tests for contracts.");
    ("--generate-asserts",Unit (fun () -> Etc.set_generate_asserts true),
-    " the compiler generate code with asserts. (Default)");
+    " the compiler generate code with asserts. (default)");
    ("--no-generate-asserts",Unit (fun () -> Etc.set_generate_asserts false),
     " the compiler does not generate asserts.");
    ("--test-number",Int (Etc.set_test_count),
@@ -152,7 +158,7 @@ let spec =
     " shortcut for --version");
    ("--trans-js-namespace",String (Etc.set_javascript_trans_namespace),
     " sets the namespace used to interact with the "^
-      "transaction library (DEFAULT: JSConTest.trans)");
+      "transaction library (DEFAULT: trans)");
    ("--trans-no-transformation",Unit 
       (fun () -> Etc.set_effect_state Effect.NoTrans),
     " the compiler does modify the code under test to "^
@@ -180,7 +186,7 @@ let spec =
     " shortcut for --effects");
    ("--effect-js-namespace",String (Etc.set_javascript_effect_namespace),
     " sets the namespace used to interact with the "^
-      "transaction library (DEFAULT: JSConTest.effect)");
+      "transaction library (DEFAULT: effect)");
   ]
 let get_spec () = 
   Arg.align spec
