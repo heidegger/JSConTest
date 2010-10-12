@@ -133,9 +133,16 @@ let spec =
 
    ("--test-js-namespace",String (Etc.set_javascript_test_namespace),
     " sets the namespace to interact "^
-      "with the test part of the library (DEFAULT: tests)");
+      "with the test part of the library (DEFAULT: tests)");   
    ("-tjsn",String (Etc.set_javascript_test_namespace),
     " shortcut for --test-js-namespace");
+   ("--contract-js-namespace",String (Etc.set_javascript_contract_namespace),
+    " sets the namespace to interact "^
+      "with the test part of the library (DEFAULT: contracts)");   
+   ("-cjsn",String (Etc.set_javascript_contract_namespace),
+    " shortcut for --contract-js-namespace");
+
+
    ("-h", Unit (fun () -> raise (Bad ""))," Display this list of options");
    ("--generate-tests",Unit (fun () -> Etc.set_generate_tests true),
     " the compiler generate code, that generates the "^

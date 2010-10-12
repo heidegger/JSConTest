@@ -43,7 +43,7 @@ let get_local_scope_prefix,set_local_scope_prefix =
 let get_javascript_namespace, set_javascript_namespace =
   create_string_ref_getter_setter (fun () -> "JSConTest")
 let get_javascript_contract_namespace, set_javascript_contract_namespace =
-  create_string_ref_getter_setter (fun () -> "contract")
+  create_string_ref_getter_setter (fun () -> "contracts")
 let get_javascript_test_namespace, set_javascript_test_namespace =
   create_string_ref_getter_setter (fun () -> "tests")
 let get_javascript_trans_namespace, set_javascript_trans_namespace =
