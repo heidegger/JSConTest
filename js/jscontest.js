@@ -79,11 +79,11 @@ var JSConTest = (function (P) {
     return true;
   }
   function unSafePick(a) {
-    return a[Math.floor(Math.random() * (a.length - 1))];
+    return a[Math.floor(Math.random() * a.length)];
   }
   function pick(a) {
     if (isSArray(a)) {
-      return a[Math.floor(Math.random() * (a.length - 1))];
+      return a[Math.floor(Math.random() * a.length)];
     } else {
       throw "Call pick with an array";
     }
@@ -199,6 +199,8 @@ var JSConTest = (function (P) {
 	}
 
   /** utils exports */
+	P.utils.smem = smem;
+	P.utils.sadd = sadd;
   P.utils.getFun = getFun;
   P.utils.valueToString = valueToString;
   P.utils.compareArray = compareArray;

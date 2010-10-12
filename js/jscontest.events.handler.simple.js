@@ -94,24 +94,16 @@
 			var dl = document.createElement("dl");
 			dl.setAttribute('id', uid);
 			item.appendChild(dl);
-			newDef(dl, "value", ce.valueToString(nextLine));
-			newDef(dl, "contract", ce.contrToString());
+			newDef(dl, "value", P.utils.valueToString(ce.getValue()));
+			newDef(dl, "contract", ce.getContract().getcdes());
 
-			// TODO: erzeuge tree view element mithilfe der paramToTreeView methode des ce */
-			//      var treeDiv = document.createElement("div");
-			//      newDef(dl,"parameter",treeDiv);
-			//      ce.paramToTreeView(treeDiv);
 			var treeDiv = document.createElement("div");
 			newTree(dl, "parameters", treeDiv);
-			ce.paramToTreeView(treeDiv);
+			P.treeView.init(ce.getParams(), treeDiv);
 
 			treeDiv = document.createElement("div");
 			newTree(dl, "result", treeDiv);
-			ce.resultToTreeView(treeDiv);
-
-			//newDef(dl, "parameter", ce.paramToString(nextLine));
-			//newDef(dl, "result", ce.resultToString());
-			// END TODO */
+			P.treeView.init(ce.getResult(), treeDiv);
 
 			// newDef(dl,"expected",ce.resultExpToString());
 			for ( var i = 1; i < id; ++i) {

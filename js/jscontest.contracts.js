@@ -33,6 +33,12 @@
 			return 0;
 		}
 	}
+	function fire(msg) {
+		var slice = Array.prototype.slice, args = slice.apply(arguments);
+		if (P.events && P.events.fire && (typeof P.events.fire === 'function')) {
+			P.events.fire.apply(this, args);
+		}
+	}
 
 	/* contractType: 
 	 * check: 
@@ -180,8 +186,8 @@
 		if (!iList) {
 			iList = [ 0, 1 ];
 		}
-		iList = sadd(0, iList);
-		iList = sadd(1, iList);
+		iList = P.utils.sadd(0, iList);
+		iList = P.utils.sadd(1, iList);
 		if (!fList) {
 			fList = C.ABasicFuns;
 		}
