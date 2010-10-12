@@ -435,7 +435,7 @@
 			return lcvs;
 		};
 		c.registerEffects = function(pl, fname) {
-			if (C.callback.registerEffect) {
+			if (P.tests.callback.registerEffect) {
 				// call registerEffect, which will return a uid
 				// create new object, that has a method called
 				// unregisterEffect, that is able to call
