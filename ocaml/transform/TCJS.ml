@@ -18,7 +18,9 @@ type c = (bc,a,d,DependDown.t) Contract.contract
 type 'a env = {
   tests: bool;
   asserts: bool;
+  js_namespace: string;
   js_test_namespace: string;
+  js_contract_namespace: string;
   variable_prefix: string;
   effects_env: 'a;
 }
@@ -114,7 +116,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
         (Testlib.set_var 
            test_prefix
            rvar
-           (do_mcall_el
+           (do_mcalle_el
               test_prefix 
               "assertParams"
               [cl;
@@ -128,8 +130,10 @@ module Make(T: TRANS) : S with type t = T.t = struct
     end
 
   (* generate code for contracts *)
-  let generate_top_contract 
-      test_prefix tmp_prefix 
+  let generate_top_contract
+      tests_prefix
+      contract_prefix 
+      tmp_prefix 
       labels_exp strings_exp numbers_exp
       fname_org
       gen_tests tc =
@@ -137,7 +141,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
     (* print_endline "generate top contract"; *)
     let add_test e testNumber =
       let exp = 
-        do_mcall_el test_prefix "add" 
+        do_mcalle_el tests_prefix "add" 
           [c_to_e (s_to_c (so_i fname_org));
            i_to_e fname_org;
            e;
@@ -149,7 +153,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
     let register e =
       let new_global_name = Testlib.gen_lib_var_name () in
       let register_contract =
-        Testlib.set_var test_prefix new_global_name e
+        Testlib.set_var tests_prefix new_global_name e
       in
         new_global_name,register_contract
     in
@@ -187,10 +191,10 @@ module Make(T: TRANS) : S with type t = T.t = struct
                   else []))
               
           in
-            do_mcall_el test_prefix "EObject" [ple],List.flatten sel1
+            do_mcalle_el contract_prefix "EObject" [ple],List.flatten sel1
       | BArray c ->
           let e,sel = generate_contract c in
-            do_mcall_el test_prefix "Array" [e],sel
+            do_mcalle_el contract_prefix "Array" [e],sel
       | CBase (bc,al,depl) -> generate_basecontract al bc
       | CFunction (cl,c,dd,effects) -> 
           let effects_compl = TCssEffJS.js_of_t (ASTUtil.i_to_s fname_org) effects in
@@ -216,15 +220,15 @@ module Make(T: TRANS) : S with type t = T.t = struct
               in
                 new_var 
                   tmp_prefix 
-                  (do_mcall_el test_prefix "DFunction" 
+                  (do_mcalle_el contract_prefix "DFunction" 
                      [new_array el;e;
                       new_array oe;
                       new_array de
                      ])
             end else begin
               new_var tmp_prefix 
-                (do_mcall_el 
-                   test_prefix "Function" 
+                (do_mcalle_el 
+                   contract_prefix "Function" 
                    [(new_array el); (* Parameter *)
                     e;              (* return *)
                     effects_compl]  (* effekte *)
@@ -237,11 +241,11 @@ module Make(T: TRANS) : S with type t = T.t = struct
     tc expression * tc source_element list 
     = fun al bc -> match bc with 
       | BId ->
-          read_prop test_prefix "Id",[]
+          read_prop_e contract_prefix "Id",[]
       | BTop -> 
-          read_prop test_prefix "Top",[]
+          read_prop_e contract_prefix "Top",[]
       | BVoid | BUndf -> 
-          read_prop test_prefix "Undefined",[]
+          read_prop_e contract_prefix "Undefined",[]
       | BJavaScriptVar jsv ->
           if (List.length al > 0) then begin
             let params = 
@@ -264,54 +268,54 @@ module Make(T: TRANS) : S with type t = T.t = struct
             i_to_e (s_to_i jsv),[]
           end
       | BSBool b -> 
-          read_prop test_prefix (if b then "True" else "False"),[]
-      | BBool -> read_prop test_prefix "Boolean",[]
+          read_prop_e contract_prefix (if b then "True" else "False"),[]
+      | BBool -> read_prop_e contract_prefix "Boolean",[]
       | BInteger ->
           if (List.mem Numbers al) then begin
-            do_mcall_el test_prefix "AInteger" [numbers_exp],[]
+            do_mcalle_el contract_prefix "AInteger" [numbers_exp],[]
           end else begin
-            read_prop test_prefix "Integer",[]
+            read_prop_e contract_prefix "Integer",[]
           end
       | BSInteger i ->
-          (do_mcall_el 
-             test_prefix 
+          (do_mcalle_el 
+             contract_prefix 
              "SingletonContract"
              [int_to_exp i; s_to_e (string_of_int i)],
            [])
       | BIInterval (left,right) ->
-          do_mcall_el test_prefix "IIntervall" 
+          do_mcalle_el contract_prefix "IIntervall" 
             [int_to_exp left;int_to_exp right], []
 
       | BFInterval (f1,f2) -> 
-          do_mcall_el test_prefix "NIntervall" 
+          do_mcalle_el contract_prefix "NIntervall" 
             [float_to_exp f1; float_to_exp f2],[]
       | BSFloat f ->
-          (do_mcall_el 
-             test_prefix 
+          (do_mcalle_el 
+             contract_prefix 
              "SingletonContract"
              [float_to_exp f; s_to_e (string_of_float f)],
            [])
       | BFloat ->
           if (List.mem Numbers al) then begin
-            do_mcall_el test_prefix "ANumber" [numbers_exp],[]
+            do_mcalle_el contract_prefix "ANumber" [numbers_exp],[]
           end else begin
-            read_prop test_prefix "Number",[]
+            read_prop_e contract_prefix "Number",[]
           end
             
       | BString ->
           if (List.mem Strings al) then begin
-            do_mcall_el test_prefix "AString" [strings_exp],[]
+            do_mcalle_el contract_prefix "AString" [strings_exp],[]
           end else begin
-            read_prop test_prefix "String",[]
+            read_prop_e contract_prefix "String",[]
           end
       | BSString s -> 
-          do_mcall_el test_prefix "Singlton" 
+          do_mcalle_el contract_prefix "Singlton" 
             [c_to_e (s_to_c s)], []
       | BObject ->
           if (List.mem Labels al) then begin
-            do_mcall_el test_prefix "PObject" [labels_exp],[]
+            do_mcalle_el contract_prefix "PObject" [labels_exp],[]
           end else begin
-            read_prop test_prefix "Object",[]
+            read_prop_e contract_prefix "Object",[]
           end
     in
       
@@ -352,7 +356,9 @@ module Make(T: TRANS) : S with type t = T.t = struct
          Depend.string_of)
          c); *)
     let contracts = generate_top_contract
-      (s_to_i env.js_test_namespace) env.variable_prefix
+      (read_prop (s_to_i env.js_namespace) env.js_test_namespace) 
+      (read_prop (s_to_i env.js_namespace) env.js_contract_namespace) 
+      env.variable_prefix
       labels_exp strings_exp numbers_exp
       fname_org env.tests c 
     in
@@ -373,7 +379,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
       then begin
         (* print_endline "intro asserts"; *)
         introduce_asserts 
-          (s_to_i env.js_test_namespace)
+          (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
           cis fbody fname_own fname_org
       end
       else begin
@@ -386,8 +392,8 @@ module Make(T: TRANS) : S with type t = T.t = struct
          [fcode;
           (g_se_s 
              (g_s_e 
-                (do_mcall_el
-                   (s_to_i env.js_test_namespace)
+                (do_mcalle_el
+                   (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
                    "overrideToStringOfFunction" 
                    [i_to_e fname_own;i_to_e fname_org]
                 )))]]
@@ -418,17 +424,6 @@ module Make(T: TRANS) : S with type t = T.t = struct
       let add_number e = add e numbers in
       let add_string s = add s strings in
       let add_label l = add l labels in
-        (*     let print_numbers str = 
-               let s = String_of.string_of_list 
-               (fun l -> 
-               String_of.string_of_list
-               string_of_float
-               l)
-               !numbers      
-               in 
-               print_string str;
-               print_endline s
-               in *)
       let print_numbers _ = () in
       let new_scope () = 
         labels := [] :: !labels; 
@@ -467,7 +462,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
           String (an,s)
       | c -> c
     in
-    let transform_se gt ga js_ns = function
+    let transform_se = function
       | Function_declaration (a,c,n,pl,_,sel) as forg ->
           let mod_fd =
             gen_and_introduce 
@@ -499,10 +494,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
       AST.visit
         ~ba_c:(fun x -> x)
         ~ba_constant:ba_constant
-        ~a_source_element:(transform_se 
-                             env.tests 
-                             env.asserts 
-                             env.js_test_namespace)
+        ~a_source_element:transform_se
         ~a_expression:transform_e
         ~b_source_element:
         (function 

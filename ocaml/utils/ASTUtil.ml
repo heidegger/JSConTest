@@ -69,6 +69,10 @@ let new_array : 'c expression list -> 'c expression =
 let read_prop : 'c identifier -> string -> 'c expression=
   fun prefix prop -> 
     Object_access (null_annotation,i_to_e prefix,s_to_i prop)
+let read_prop_e : 'c expression -> string -> 'c expression=
+  fun prefix prop -> 
+    Object_access (null_annotation,prefix,s_to_i prop)
+
 let do_mcalle_el : 'c expression -> string -> 'c expression list -> 'c expression =
   fun prefix methode parameters ->
     (Method_call (null_annotation, prefix, s_to_i methode, parameters))

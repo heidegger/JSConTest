@@ -51,7 +51,9 @@ let parse_c progsref prog =
 let create_transform_env effect_env =
   { tests = Etc.get_generate_tests ();
     asserts = Etc.get_generate_asserts ();
+    js_namespace = Etc.get_javascript_namespace ();
     js_test_namespace = Etc.get_javascript_test_namespace ();
+    js_contract_namespace = Etc.get_javascript_contract_namespace ();
     variable_prefix = Etc.get_prefix ();
     effects_env = effect_env;
   }      

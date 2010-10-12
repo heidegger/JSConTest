@@ -29,6 +29,7 @@ val set_jsvar :
 val new_array : 'a AST.expression list -> 'a AST.expression
 
 val read_prop : 'a AST.identifier -> string -> 'a AST.expression
+val read_prop_e : 'a AST.expression -> string -> 'a AST.expression
 val do_mcall_el :
   'a AST.identifier -> string -> 'a AST.expression list -> 'a AST.expression
 val do_mcalle_el :

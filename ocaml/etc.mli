@@ -8,20 +8,32 @@
     @author: Phillip Heidegger
 *)
 
-(** Function to get the test namespace, Default: 'PROGLANG.tests' *)
-val get_javascript_test_namespace : unit -> string
+(** Function to get the test namespace, Default: 'JSConTest' *)
+val get_javascript_namespace : unit -> string
 
 (** Function to set the test namespace. *)
+val set_javascript_namespace : string -> unit
+
+(** Function to get the test namespace, Default: 'contract' *)
+val get_javascript_contract_namespace : unit -> string
+
+(** Function to set the test namespace. *)
+val set_javascript_contract_namespace : string -> unit
+
+
+(** Function to get the transaction namespace, Default: 'tests' *)
+val get_javascript_test_namespace : unit -> string
+
+(** Function to set the transaction namespace. *)
 val set_javascript_test_namespace : string -> unit
 
-
-(** Function to get the transaction namespace, Default: 'PROGLANG.trans' *)
+(** Function to get the transaction namespace, Default: 'trans' *)
 val get_javascript_trans_namespace : unit -> string
 
 (** Function to set the transaction namespace. *)
 val set_javascript_trans_namespace : string -> unit
 
-(** Function to get the effect namespace, Default: 'PROGLANG.effect' *)
+(** Function to get the effect namespace, Default: 'effect' *)
 val get_javascript_effect_namespace : unit -> string
 
 (** Function to set the effect namespace. *)

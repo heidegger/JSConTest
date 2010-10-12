@@ -8,7 +8,9 @@ open AST
 type 'a env = {
   tests: bool;
   asserts: bool;
+  js_namespace: string;
   js_test_namespace: string;
+  js_contract_namespace: string;
   variable_prefix: string;
   effects_env: 'a;
 }
