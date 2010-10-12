@@ -154,14 +154,15 @@
 			stat = param["stat"],
 			resultHandler = param["resultHandler"] || function (r) { return r; },
 			checker = param["checker"] || checker,
-			tester = param["tester"] || simpleTester;
+			tester = param["tester"] || simpleTester,
+			contract = test.contract,
+			value = test.value;
 
+		//jstestdriver.console.log("JsTestDriver", "Run test case.");
 		function testrH(result) {
 			logTest.call(test, test.contract, test.value, result, test.done);
 			return resultHandler(result);
 		}
-		var contract = test.contract,
-			value = test.value;
 		if (contract.genNeeded && (contract.genNeeded(value))) {
 			test.done = 0;
 			// returns a function
@@ -314,8 +315,7 @@
 				//jstestdriver.console.log("inner loop" + i);
 				(function (m, i, test) {
 					function run() {
-						return testOrCheck({ test: test, 
-							statistic: statistic });
+						return (testOrCheck({ test: test, statistic: statistic }))();
 					}	
 					f(m, i, test, run);				
 				})(m, i, tests[m][i]);
