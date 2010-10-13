@@ -6,7 +6,8 @@
 type ('b,'a,'dup,'ddown) contract =
   | CBase of 'b * 'a list * 'dup list
   | CFunction of 
-      ('b,'a,'dup,'ddown) contract list  (* parameter list *)
+      ('b,'a,'dup,'ddown) contract option  (* this object *)
+      * ('b,'a,'dup,'ddown) contract list  (* parameter list *)
       * ('b,'a,'dup,'ddown) contract     (* result *)
       * 'ddown                           (* information about dependency *)
       * Csseff.t                         (* effects *)

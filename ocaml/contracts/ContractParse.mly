@@ -114,7 +114,7 @@ contract:
 
 fun_contract:
   | fun_contract_without_effect effects           { let (cl,al) = $1 in                                                     
-                                                      CFunction (cl,al,(),Csseff.create_effect_list $2)
+                                                      CFunction (None,cl,al,(),Csseff.create_effect_list $2)
                                                   }
 
 ;

@@ -22,7 +22,7 @@ module Test = struct
     let b_to_c_dep b depl = CBase (b,[],depl) in
 
     let tc_fun pl r = Contract.create_tgI 
-      [CFunction (pl,r,(),Csseff.create ()),
+      [CFunction (None,pl,r,(),Csseff.create ()),
        GenInfo.create ()]
       (None) in
     let tc_cl cl = Contract.create_tgI 
@@ -41,7 +41,7 @@ module Test = struct
       let tc = parse s in
         assert_equal
           ~printer:so_t
-          (tc_cl [CFunction ([ci],ci,(),Csseff.create ())])
+          (tc_cl [CFunction (None,[ci],ci,(),Csseff.create ())])
           tc;
         match Contract.get_clgI tc with
           | [c,gi] -> 
@@ -64,7 +64,7 @@ module Test = struct
         assert_equal 
           ~printer:so_t
           (tc_fun 
-             [CFunction ([ci],ci,(),Csseff.create ());ci]
+             [CFunction (None,[ci],ci,(),Csseff.create ());ci]
              (b_to_c (BSString "bla"))
           )
           tc;
@@ -90,7 +90,7 @@ module Test = struct
       let tc = parse s in
         assert_equal 
           ~printer:so_t
-          (tc_fun [ci] (CFunction ([ci],ci,(),Csseff.create ())))
+          (tc_fun [ci] (CFunction (None,[ci],ci,(),Csseff.create ())))
           tc
     in
     let t6 () =
@@ -99,7 +99,7 @@ module Test = struct
         assert_equal
           ~printer:so_t
           (tc_fun [csb false; cb] 
-             (CFunction ([csb true],cs,(),Csseff.create ())) )
+             (CFunction (None,[csb true],cs,(),Csseff.create ())) )
           tc
     in
     let t7 () =
@@ -119,9 +119,9 @@ module Test = struct
         assert_equal
           ~printer:so_t
           (tc_cl 
-             [CFunction ([ci],CBase (BBool,[],[Depend.create 2 3]),
+             [CFunction (None,[ci],CBase (BBool,[],[Depend.create 2 3]),
                          (),Csseff.create ()); 
-              CFunction ([b_to_c_dep (BSBool true) [Depend.create 3 13]],
+              CFunction (None,[b_to_c_dep (BSBool true) [Depend.create 3 13]],
                          b_to_c_dep (BSBool false) 
                            [Depend.create 1 1],(),Csseff.create ())])
           tc
@@ -159,7 +159,7 @@ module Test = struct
                 (["name",b_to_c (BSInteger 1);
                   ("contract1",
                    BObjectPL (["getCount", 
-                               CFunction ([ci],ci,(),Csseff.create ())],
+                               CFunction (None,[ci],ci,(),Csseff.create ())],
                               false,
                               [],
                               [])
@@ -172,8 +172,8 @@ module Test = struct
     in
     let t12 () =
       let s = "/*c int -> int ~noAsserts | int -> bool #Tests:10 */" in 
-      let c1 = CFunction ([ci],ci,(),Csseff.create ()) in
-      let c2 = CFunction ([ci],cb,(),Csseff.create ()) in
+      let c1 = CFunction (None,[ci],ci,(),Csseff.create ()) in
+      let c2 = CFunction (None,[ci],cb,(),Csseff.create ()) in
       let gi1,gi2 = GenInfo.create (),GenInfo.create () in
       let _ = GenInfo.noAsserts gi1 in
       let _ = GenInfo.setTestNumber gi2 10 in
@@ -204,7 +204,7 @@ module Test = struct
       let tc = parse s in
         assert_equal
           ~printer:so_t
-          (tc_cl [CFunction ([BObjectPL (["a",ci],false,[],[])],ci,(),
+          (tc_cl [CFunction (None,[BObjectPL (["a",ci],false,[],[])],ci,(),
 			     Csseff.create_effect_list ([
 							Csseff.Prop(Csseff.Parameter 1,"a")
 						      ]))])
@@ -222,7 +222,7 @@ module Test = struct
       let tc = parse s in
         assert_equal
           ~printer:so_t
-          (tc_cl [CFunction ([BObjectPL (["b",ci],false,[],[])],ci,(),
+          (tc_cl [CFunction (None,[BObjectPL (["b",ci],false,[],[])],ci,(),
 			     Csseff.create_effect_list ([
 							Csseff.Prop(Csseff.Parameter 1,"b")
 						      ]))])
@@ -241,7 +241,8 @@ module Test = struct
         assert_equal
           ~printer:so_t
           (tc_cl [CFunction 
-                    ([BObjectPL ([("a",ci);("b",ci)],false,[],[])],ci,(),
+                    (None,
+                     [BObjectPL ([("a",ci);("b",ci)],false,[],[])],ci,(),
 			         Csseff.create_effect_list 
                        ([Csseff.Prop(Csseff.Parameter 1,"b");
 						 Csseff.Prop(Csseff.Parameter 1,"a")
@@ -259,7 +260,7 @@ module Test = struct
       let tc = parse s in
         assert_equal
           ~printer:so_t
-          (tc_cl [CFunction ([b_to_c BObject],ci,(),
+          (tc_cl [CFunction (None,[b_to_c BObject],ci,(),
 			     Csseff.create_effect_list 
                    ([Csseff.Prop 
                        (Csseff.Question 
@@ -278,7 +279,7 @@ module Test = struct
       let tc = parse s in
         assert_equal
           ~printer:so_t
-          (tc_cl [CFunction ([b_to_c BObject],ci,(),
+          (tc_cl [CFunction (None,[b_to_c BObject],ci,(),
 			     Csseff.create_effect_list 
                    ([Csseff.Star (Csseff.Prop (Csseff.Parameter 1,"a"))
 					]))])

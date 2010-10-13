@@ -196,7 +196,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
           let e,sel = generate_contract c in
             do_mcalle_el contract_prefix "Array" [e],sel
       | CBase (bc,al,depl) -> generate_basecontract al bc
-      | CFunction (cl,c,dd,effects) -> 
+      | CFunction (th,cl,c,dd,effects) -> 
           let effects_compl = TCssEffJS.js_of_t (ASTUtil.i_to_s fname_org) effects in
           let el,sel1 = List.split (generate_contractl cl) in
           let sel1 = List.flatten sel1 in
@@ -226,13 +226,28 @@ module Make(T: TRANS) : S with type t = T.t = struct
                       new_array de
                      ])
             end else begin
-              new_var tmp_prefix 
-                (do_mcalle_el 
-                   contract_prefix "Function" 
-                   [(new_array el); (* Parameter *)
-                    e;              (* return *)
-                    effects_compl]  (* effekte *)
-                )
+
+              match th with
+                | None -> 
+                    new_var tmp_prefix 
+                      (do_mcalle_el 
+                         contract_prefix "Function" 
+                         [(new_array el); (* Parameter *)
+                          e;              (* return *)
+                          effects_compl]  (* effekte *)
+                      )
+                | Some o -> let the,sel = generate_contract o in
+                    new_var tmp_prefix 
+                      (do_mcalle_el 
+                         contract_prefix "Method" 
+                         [the;            (* this object*)  
+                          (new_array el); (* Parameter *)
+                          e;              (* return *)
+                          effects_compl]  (* effekte *)
+                      )
+                   
+          
+
             end
           in
             i_to_e i, sel1 @ sel2 @ sel3
@@ -549,7 +564,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
                 get_order,next
             in
             let compute_order = function
-              | CFunction (cl,r,dd,eff) -> 
+              | CFunction (th,cl,r,dd,eff) -> 
                   (* let c_to_s = 
                      Contract.so_contract
                      BaseContract.string_of
@@ -580,7 +595,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
                      string_of_int
                      is); *)
                   DependDown.set_order dd is;
-                  CFunction (cl,r,dd,eff)
+                  CFunction (th,cl,r,dd,eff)
             | c -> c
           in
           let new_scope,get_scope,add_dul = 
@@ -604,7 +619,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
             | CBase (_,_,dul) as c -> 
                 (* print_endline (string_of_list Depend.string_of dul); *)
                 add_dul dul; c
-            | CFunction (pl,r,dd,_) as c ->
+            | CFunction (th,pl,r,dd,_) as c ->
                 DependDown.set_paramnr dd ((List.length pl) + 1);
                 DependDown.register_dinfo dd (get_scope ());
                 let dul = DependDown.get_dul dd in

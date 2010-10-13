@@ -39,7 +39,7 @@ let create contract =
   let scope = ref [] in
   let get_param s n =
     match s with
-      | CFunction (pl,_,_,_) -> 
+      | CFunction (_,pl,_,_,_) -> 
           List.nth pl (n-1)
       | _ -> failwith "Parameter does not exists"
   in
@@ -162,11 +162,11 @@ module Test = struct
 (*      let s = "/** (int,int($1)) -> bool($2) | true -> false($1) */" in *)
       let c1 = CBase (BSBool true,[],[]) in
       let c2 = CBase (BSBool false,[],[Depend.create 1 1]) in
-      let c3 = CFunction ([c1],c2,(),Csseff.create ()) in
+      let c3 = CFunction (None,[c1],c2,(),Csseff.create ()) in
       let c4 = CBase (BInteger,[],[]) in
       let c5 = CBase (BInteger,[],[Depend.create 1 1]) in
       let c6 = CBase (BBool, [], [Depend.create 1 2]) in
-      let c7 = CFunction ([c4; c5],c6,(),Csseff.create ()) in
+      let c7 = CFunction (None,[c4; c5],c6,(),Csseff.create ()) in
       let tc = create_tgI [c3,GenInfo.create ();c7,GenInfo.create ()] None in
         match create tc with
           | None -> assert_failure 

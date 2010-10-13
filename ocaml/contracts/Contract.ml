@@ -4,7 +4,8 @@ open ExtList
 type ('b,'a,'dup,'ddown) contract =
   | CBase of 'b * 'a list * 'dup list
   | CFunction of 
-      ('b,'a,'dup,'ddown) contract list  (* parameter list *)
+        ('b,'a,'dup,'ddown) contract option  (* this object *)
+      * ('b,'a,'dup,'ddown) contract list  (* parameter list *)
       * ('b,'a,'dup,'ddown) contract     (* result *)
       * 'ddown                           (* information about dependency *)
       * Csseff.t                         (* effects *)
@@ -68,10 +69,13 @@ and so_contract so_b so_a so_d = function
       ^ "}"
       ^(so_al so_a al)
       ^(so_dl so_d dl)
-  | CFunction (cl,c,_,eff) -> 
+  | CFunction (th,cl,c,_,eff) -> 
       let effs = Csseff.string_of eff in
-        
-      "{" ^ so_contractl so_b so_a so_d cl 
+      let this = match th with
+        | None -> ""
+        | Some o -> so_contract so_b so_a so_d o
+      in
+      this ^ "{" ^ so_contractl so_b so_a so_d cl 
       ^ " -> " ^ so_contract so_b so_a so_d c 
       ^ (if (String.length effs > 0) then " with " ^ effs else "")
       ^ "}"
@@ -140,11 +144,14 @@ let transform :
             let al = List.map ba_analyse al in
             let dl = List.map ba_depend_up dl in
               CBase (bc,al,dl)
-        | CFunction (cl,c,ddown,eff) -> 
+        | CFunction (th,cl,c,ddown,eff) -> 
+            let th = match th with 
+              | None -> None
+              | Some o -> Some (visit_c o) in
             let cl = List.map visit_c cl in
             let c = visit_c c in
             let ddown = ba_depend_down ddown in
-              CFunction (cl,c,ddown,eff)
+              CFunction (th,cl,c,ddown,eff)
         | BObjectPL (pl,r,al,dl) ->
             let pl = visit_pl pl in
             let al = List.map ba_analyse al in
