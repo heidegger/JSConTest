@@ -37,7 +37,7 @@ module Test = struct
     in
 
     let t1 () =
-      let s = "/** int -> int */" in
+      let s = "/*c int -> int */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -51,7 +51,7 @@ module Test = struct
           | _ -> assert_failure "get_clgI does not work correct"
     in
     let t2 () =
-      let s = "/** (true,false) -> bool */" in
+      let s = "/*c (true,false) -> bool */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -59,7 +59,7 @@ module Test = struct
           tc
     in
     let t3 () =
-      let s = "/** (int -> int, int) -> \"bla\" */" in
+      let s = "/*c (int -> int, int) -> \"bla\" */" in
       let tc = parse s in
         assert_equal 
           ~printer:so_t
@@ -77,7 +77,7 @@ module Test = struct
 
     in
     let t4 () =
-      let s = "/** */" in
+      let s = "/*c */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -86,7 +86,7 @@ module Test = struct
 
     in
     let t5 () =
-      let s = "/** int -> int -> int */" in
+      let s = "/*c int -> int -> int */" in
       let tc = parse s in
         assert_equal 
           ~printer:so_t
@@ -94,7 +94,7 @@ module Test = struct
           tc
     in
     let t6 () =
-      let s = "/** (false,bool) -> (true-> string) */" in
+      let s = "/*c (false,bool) -> (true-> string) */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -103,7 +103,7 @@ module Test = struct
           tc
     in
     let t7 () =
-      let s = "/** (int@numbers, js:intn@numbers) -> bool */" in
+      let s = "/*c (int@numbers, js:intn@numbers) -> bool */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -114,7 +114,7 @@ module Test = struct
           tc
     in
     let t8 () =
-      let s = "/** int -> bool($$3) | true($$$13) -> false($1) */" in
+      let s = "/*c int -> bool($$3) | true($$$13) -> false($1) */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -129,7 +129,7 @@ module Test = struct
 
 
     let t9 () =
-      let s = "/** (int,int($1)) -> bool($2) */" in
+      let s = "/*c (int,int($1)) -> bool($2) */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -140,7 +140,7 @@ module Test = struct
 
     in
     let t10 () =
-      let s = "/** { name : int } -> int */" in
+      let s = "/*c { name : int } -> int */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -150,7 +150,7 @@ module Test = struct
           tc
     in
     let t11 () =
-      let s = "/** { name : 1, contract1: {getCount: int -> int} } -> object */" in
+      let s = "/*c { name : 1, contract1: {getCount: int -> int} } -> object */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -171,7 +171,7 @@ module Test = struct
           tc
     in
     let t12 () =
-      let s = "/** int -> int ~noAsserts | int -> bool #Tests:10 */" in 
+      let s = "/*c int -> int ~noAsserts | int -> bool #Tests:10 */" in 
       let c1 = CFunction ([ci],ci,(),Csseff.create ()) in
       let c2 = CFunction ([ci],cb,(),Csseff.create ()) in
       let gi1,gi2 = GenInfo.create (),GenInfo.create () in
@@ -184,7 +184,7 @@ module Test = struct
           tc
     in
     let t13 () =
-      let s = "/** { name: int, ...} -> object */" in
+      let s = "/*c { name: int, ...} -> object */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -200,7 +200,7 @@ module Test = struct
           | _ -> assert_failure "get_clgI does not work correct"
     in
     let t14 () =
-      let s = "/** {a:int} -> int  with [ $1.a ] */" in
+      let s = "/*c {a:int} -> int  with [ $1.a ] */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -218,7 +218,7 @@ module Test = struct
 
     in 
     let t15 () =
-      let s = "/** {b:int} -> int  with [ $1.b ] */" in
+      let s = "/*c {b:int} -> int  with [ $1.b ] */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -236,7 +236,7 @@ module Test = struct
               
     in 
     let t16 () =
-      let s = "/** {a:int, b:int} -> int  with [ $1.b, $1.a ] */" in
+      let s = "/*c {a:int, b:int} -> int  with [ $1.b, $1.a ] */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -255,7 +255,7 @@ module Test = struct
           | _ -> assert_failure "get_clgI does not work correct"
     in 
     let t17 () =
-      let s = "/** object -> int  with [ $1.a.?.c ] */" in
+      let s = "/*c object -> int  with [ $1.a.?.c ] */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -274,7 +274,7 @@ module Test = struct
           | _ -> assert_failure "get_clgI does not work correct"
     in 
     let t18 () =
-      let s = "/** object -> int  with [ $1.a.* ] */" in
+      let s = "/*c object -> int  with [ $1.a.* ] */" in
       let tc = parse s in
         assert_equal
           ~printer:so_t
@@ -295,14 +295,14 @@ module Test = struct
       ["Parse int -> int", t1;
        "Parse (true,false) -> bool", t2;
        "Parse (int -> int, int) -> \"bla\" */", t3;
-       "Parse /** */", t4;
+       "Parse /*c */", t4;
        "Parse int -> int -> int",t5;
        "Parse (false,bool) -> (true -> string)",t6;
        "Parse (int@numbers, js:intn@numbers) -> bool",t7;
        "Parse int -> bool($$3) | true($$$13) -> false($1)",t8;
-       "Parse /** (int,int($1)) -> bool($2) | true -> false($1)",t9;
-       "Parse /** {name: int} -> int */", t10;
-       "Parse /** { name : 1, contract1: {getCount: int -> int} } -> object */", t11;
+       "Parse /*c (int,int($1)) -> bool($2) | true -> false($1)",t9;
+       "Parse /*c {name: int} -> int */", t10;
+       "Parse /*c { name : 1, contract1: {getCount: int -> int} } -> object */", t11;
        "Parse ~NoAsserts Test", t12;
        "Parse { ... } Test", t13;
        "Parse {a: int} -> int with $1.a",t14;
