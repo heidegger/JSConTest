@@ -50,6 +50,7 @@ let regexp rnbtest = "#Tests:" digit+
 let regexp rnoeffects = "~noEffects" | "~noeffects"
 let regexp reffects = "~Effects" | "~effects"
 
+let regexp rthis = "this"
 let regexp rwith = "with" | "With"
 let regexp rquestionmark = "?"
 
@@ -104,6 +105,7 @@ let rec token = lexer
   | rnoasserts      -> LNoAsserts
   | rnoeffects      -> LNoEffects
   | reffects        -> LEffects
+  | rthis           -> LThis
   | rwith           -> LWith
   | rquestionmark   -> LQUESTION
   | identifier      -> 

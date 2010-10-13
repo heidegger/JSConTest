@@ -41,6 +41,7 @@ let map f fall = function
 let rec string_of_effect = function
   | Parameter i -> "$" ^ string_of_int i
   | Var s -> s
+  | This -> "this"
   | Prop (e,s) -> 
       let se = string_of_effect e in
         se ^ "." ^ s
@@ -152,6 +153,24 @@ module Test = struct
           "$2.@"
           ts
     in
+
+    let t10 () =
+      let t = El [Var "blub"] in
+      let ts = string_of t in
+        assert_equal
+          ~printer:(fun x -> x)
+          "blub"
+          ts
+    in
+
+    let t11 () =
+      let t = El [This] in
+      let ts = string_of t in
+        assert_equal
+          ~printer:(fun x -> x)
+          "this"
+          ts
+    in
     ["to string of $1: ",t1;
      "to string of test: ", t2;
      "to string of $5.acd._fd: ",t3;    
@@ -162,7 +181,9 @@ module Test = struct
      "to string of $2.b.?",t7; 
      "to string of $2.?",t7a; 
      "to string of $2.b.?.c",t8;
-     "to string of $2.@",t9
+     "to string of $2.@",t9;
+     "to string of blub",t10;
+     "to string of this",t11
     ]
 
   let _ = 

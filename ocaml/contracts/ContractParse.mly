@@ -28,6 +28,7 @@
 %token LEffects
 %token <int> LNumberTests
 %token LWith
+%token LThis
 
 %token LBool
 %token Ltrue
@@ -145,6 +146,8 @@ css_path:
                                          if (scope == 1) 
                                             then (Csseff.Parameter nr) 
                                             else failwith "TODO: Too many dollars" }
+  | LThis                           { Csseff.This }
+  | LIdentifier                     { Csseff.Var $1 }
   | css_path LDOT LIdentifier       { Csseff.Prop ($1,$3) }
   | css_path LDOT LSTAR             { Csseff.Star $1 }
   | css_path LDOT LQUESTION         { Csseff.Question $1 }
