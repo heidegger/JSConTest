@@ -25,6 +25,7 @@ let js_of_effect fname =
     | Var s ->
         ASTUtil.new_object
           [("type", ASTUtil.int_to_exp vAR_TYPE);
+           ("name", ASTUtil.c_to_e (ASTUtil.s_to_c fname));
            ("fname", ASTUtil.c_to_e (ASTUtil.s_to_c fname));
           ]
     | Prop (e,s) -> 
