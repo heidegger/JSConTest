@@ -195,7 +195,7 @@ module Test = struct
                   assert_bool "false($1) -> true" (G.mem_edge sg c1 c2);
     in
     let t2 () =
-      let s = "/** (int,int($1)) -> bool($2) | true -> false($1) */" in
+      let s = "/*c (int,int($1)) -> bool($2) | true -> false($1) */" in
       let tc = parse s in
         match check tc with
           | Some [g1;g2] -> 
@@ -203,7 +203,7 @@ module Test = struct
           | _ -> assert_failure "No cycles should be found in for this contracts"
     in
     let t3 () =
-      let s = "/** (int($2),int($1)) -> bool($2) */" in
+      let s = "/*c (int($2),int($1)) -> bool($2) */" in
       let tc = parse s in
         match check tc with
           | None -> ()
@@ -211,7 +211,7 @@ module Test = struct
     in
 
     let t4 () =
-      let s = "/** (int($2),int) -> bool */" in
+      let s = "/*c (int($2),int) -> bool */" in
       let tc = parse s in
         match check tc with
           | Some [g] ->
@@ -233,7 +233,7 @@ module Test = struct
           | _ -> assert_failure "Graph was not computed correctly"
     in
     let t5 () =
-      let s = "/** (int($2),int,int($1)) -> bool */" in
+      let s = "/*c (int($2),int,int($1)) -> bool */" in
       let tc = parse s in
         match check tc with
           | Some [g] ->
