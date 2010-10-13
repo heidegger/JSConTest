@@ -21,7 +21,7 @@
 	 * 		moduleToString: void -> string; 
 	 * }
 	 */
-	function CExp(value, contract, params, result, module) {
+	function CExp(value, contract, params, result, module, thisValue) {
 		var tparams = params.slice(0);
 		this.getParams = function() {
 			return tparams;
@@ -38,50 +38,18 @@
 		this.getModule = function() {
 			return module;
 		};
-
-		//function contrToString(nextLine) {
-		//	return contract.getcdes();
-		//}
-
-		//function paramToTreeView(parent) {
-		//	P.treeView.init(tparams, parent);
-		//}
-
-		//function resultToTreeView(parent) {
-		//	P.treeView.init(result, parent);
-		//}
-
-		//function paramToString(nextLine) {
-		//	return P.utils.valueToString(tparams, nextLine);
-		//}
-
-		//function resultToString(nextLine) {
-		//	return P.utils.valueToString(result, nextLine);
-		//}
+		this.getThisValue = function() {
+			return thisValue;
+		};
 		this.compare = function(that) {
-			return ((value === that.value) && (contract === that.contract)
-			        && P.utils.compareArray(tparams, that.params) 
-			        && (result === that.result));
+			return ((value === that.getValue()) && (contract === that.getContract())
+			        && P.utils.compareArray(tparams, that.getParams()) 
+			        && (result === that.getResult())
+			        && (thisValue === that.getThisValue()));
 		};
 		this.isCExp = function() {
 			return true;
 		};
-		//this.value = value;
-		//this.contract = contract;
-		//this.params = tparams;
-		//this.result = result;
-		//this.module = module;
-		//this.valueToString = function() {
-		//	return P.utils.valueToString(value);
-		//};
-		//this.contrToString = contrToString;
-		//this.paramToTreeView = paramToTreeView;
-		//this.resultToTreeView = resultToTreeView;
-		//this.paramToString = paramToString;
-		//this.resultToString = resultToString;
-		//this.moduleToString = function() {
-		//	return module;
-		//};
 	}	
 	function CExpUnion(c, ce1, ce2, module) {
 		this.isCExp = function() {
