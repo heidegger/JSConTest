@@ -1,6 +1,7 @@
 type effect =
   | Parameter of int
   | Var of string
+  | This
   | Prop of effect * string
   | Star of effect
   | Question of effect

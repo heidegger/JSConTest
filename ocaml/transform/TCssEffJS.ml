@@ -17,18 +17,16 @@ let js_of_effect fname =
            ("number", ASTUtil.int_to_exp i);
            ("fname", ASTUtil.c_to_e (ASTUtil.s_to_c fname));
           ]
-    | Var s ->
-        if (String.compare s "this" == 0) then begin
+    | This -> 
           ASTUtil.new_object
             [("type", ASTUtil.int_to_exp tHIS_TYPE);
              ("fname", ASTUtil.c_to_e (ASTUtil.s_to_c fname))
             ]
-        end else begin
-          ASTUtil.new_object
-            [("type", ASTUtil.int_to_exp vAR_TYPE);
-             ("fname", ASTUtil.c_to_e (ASTUtil.s_to_c fname));
-            ]
-        end
+    | Var s ->
+        ASTUtil.new_object
+          [("type", ASTUtil.int_to_exp vAR_TYPE);
+           ("fname", ASTUtil.c_to_e (ASTUtil.s_to_c fname));
+          ]
     | Prop (e,s) -> 
         ASTUtil.new_object
           [("type", ASTUtil.int_to_exp pROP_TYPE);
