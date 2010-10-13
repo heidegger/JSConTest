@@ -148,6 +148,7 @@ css_path:
   | css_path LDOT LIdentifier       { Csseff.Prop ($1,$3) }
   | css_path LDOT LSTAR             { Csseff.Star $1 }
   | css_path LDOT LQUESTION         { Csseff.Question $1 }
+  | css_path LDOT LAT               { Csseff.NoProp $1 }
 ;
 
 paraml:

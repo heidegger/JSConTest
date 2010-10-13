@@ -46,6 +46,7 @@ let rec string_of_effect = function
         se ^ "." ^ s
   | Star e -> (string_of_effect e) ^ ".*"
   | Question e -> (string_of_effect e) ^ ".?"
+  | NoProp e -> (string_of_effect e) ^ ".@"
 
 let is_empty = function
   | El t -> List.length t < 1
@@ -143,7 +144,14 @@ module Test = struct
           "$2.b.?.c"
           ts
     in
-      
+    let t9 () =
+      let t = El [NoProp (Parameter 2)] in
+      let ts = string_of t in
+        assert_equal
+          ~printer:(fun x -> x)
+          "$2.@"
+          ts
+    in
     ["to string of $1: ",t1;
      "to string of test: ", t2;
      "to string of $5.acd._fd: ",t3;    
@@ -153,7 +161,8 @@ module Test = struct
      "to string of $2.b.*.c",t6;
      "to string of $2.b.?",t7; 
      "to string of $2.?",t7a; 
-     "to string of $2.b.?.c",t8
+     "to string of $2.b.?.c",t8;
+     "to string of $2.@",t9
     ]
 
   let _ = 
