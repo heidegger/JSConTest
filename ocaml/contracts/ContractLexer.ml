@@ -38,11 +38,19 @@ let regexp rlabels = "labels"
 let regexp digit = ['0'-'9']
 let regexp exponent = ['e' 'E'] ['+' '-'] digit+
 let regexp floating = (digit+ '.' digit* | digit* '.' digit+) exponent?
-let regexp string = '"' ([^'"']* | "\\\"") '"'
+
+let regexp escape_sequence = 
+  "\\b" | "\\t" | "\\n" | "\\f" | "\\r" |
+  "\\\"" | "\\" "'" | "\\\\" 
+let regexp upper = ['A' - 'Z']
+let regexp lower = ['a' - 'z']
+let regexp char = lower | upper | digit | '_'| escape_sequence
+let regexp string = '"' char* '"'
 let regexp jsident = "js:" ['a'-'z' 'A'-'Z' '0'-'9' '_']* 
 let regexp identifier = ['a'-'z' 'A'-'Z' '0'-'9' '_']* 
 let regexp dependend = ("$")+ ['1'-'9'] digit*
 let regexp rlet = "let"
+
 
 let regexp rnotest = "~noTests"
 let regexp rnoasserts = "~noAsserts"
@@ -71,6 +79,7 @@ let rec token = lexer
   | string          -> 
       let s = Ulexing.utf8_lexeme lexbuf in
       let s = String.sub s 1 (String.length s - 2) in
+      let s = String.escaped s in
         LSingleString s
   | rtrue           -> Ltrue
   | rfalse          -> Lfalse

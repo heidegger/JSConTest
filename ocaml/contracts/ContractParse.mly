@@ -153,6 +153,7 @@ css_path:
                                             else failwith "TODO: Too many dollars" }
   | LThis                           { Csseff.This }
   | LIdentifier                     { Csseff.Var $1 }
+  | LSingleString                   { Csseff.Var $1 } 
   | css_path LDOT LIdentifier       { Csseff.Prop ($1,$3) }
   | css_path LDOT LSTAR             { Csseff.Star $1 }
   | css_path LDOT LQUESTION         { Csseff.Question $1 }
@@ -222,6 +223,9 @@ base:
 propl_ne:
   | LIdentifier LCOLON contract                 { [($1,$3)] }
   | LIdentifier LCOLON contract LCOMMA propl_ne { ($1,$3) :: $5 }
+  | LSingleString LCOLON contract                 { [($1,$3)] }
+  | LSingleString LCOLON contract LCOMMA propl_ne { ($1,$3) :: $5 }
+
 ;
 
 propl:
