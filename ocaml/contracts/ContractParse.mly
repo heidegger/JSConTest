@@ -113,8 +113,8 @@ contract:
 ;
 
 fun_contract:
-  | fun_contract_without_effect effects           { let (cl,al) = $1 in                                                     
-                                                      CFunction (None,cl,al,(),Csseff.create_effect_list $2)
+  | fun_contract_without_effect effects           { let (th,cl,al) = $1 in                                                  
+                                                      CFunction (th,cl,al,(),Csseff.create_effect_list $2)
                                                   }
 
 ;
@@ -126,10 +126,15 @@ effects:
 ;
 
 fun_contract_without_effect:
-  | contract LARROW contract                      { ([$1],$3) }
-  | paraml LARROW contract                        { ($1,$3) }
-  | contract LARROW LPARAN contract RPARAN        { ([$1],$4) }
-  | paraml LARROW LPARAN contract RPARAN          { ($1,$4) }
+  | contract LDOT LPARAN contract RPARAN LARROW contract        { (Some $1,[$4],$7) }
+  | contract LDOT paraml LARROW contract                        { (Some $1,$3,$5) }
+  | contract LDOT LPARAN contract RPARAN LARROW LPARAN contract RPARAN  {(Some $1,[$4],$8) }
+  | contract LDOT paraml LARROW LPARAN contract RPARAN          { (Some $1,$3,$6) }
+
+  | contract LARROW contract                      { (None,[$1],$3) }
+  | paraml LARROW contract                        { (None,$1,$3) }
+  | contract LARROW LPARAN contract RPARAN        { (None,[$1],$4) }
+  | paraml LARROW LPARAN contract RPARAN          { (None,$1,$4) }
 ;
 
 css_list:

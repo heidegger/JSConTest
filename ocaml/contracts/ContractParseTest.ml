@@ -291,6 +291,21 @@ module Test = struct
                 (not (GenInfo.getEffects gi))
           | _ -> assert_failure "get_clgI does not work correct"
     in 
+    let t19 () =
+      let s = "/*c {a:int}.(int) -> int */" in
+      let th = BObjectPL (["a",ci],false,[],[]) in
+      let tc = parse s in
+        assert_equal
+          ~printer:so_t
+          (tc_cl [CFunction (Some th,[ci],ci,(),Csseff.create ())])
+          tc;
+        match Contract.get_clgI tc with
+          | [c,gi] -> 
+              assert_bool
+                "Effects does not exists, but GenInfo.getEffects returns true"
+                (not (GenInfo.getEffects gi))
+          | _ -> assert_failure "get_clgI does not work correct"
+    in
 
 
       ["Parse int -> int", t1;
@@ -311,6 +326,7 @@ module Test = struct
        "Parse {a : int, b : int} -> int with [$1.a, $1.b]",t16;
        "Parse object -> int with [$1.a.?.c]",t17;
        "Parse object -> int with [$1.*]",t18;
+       "Parse {a:int}.(int) -> int", t19;
       ]
         
   let _ = 
