@@ -51,7 +51,7 @@ let (next_lexeme,set_location) =
               linenumber := !linenumber + (String.countnl s);
               collumn := String.length s - String.rindex s '\n' - 1;
             end;
-            r
+            nl lexbuf
         | JSParse.Lline_terminator i ->
             linenumber := !linenumber + 1 ;
             collumn := 0 ;
