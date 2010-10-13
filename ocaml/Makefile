@@ -51,7 +51,7 @@ etc.cmi etc.cmo:	do_date
 
 do_date:	
 		echo "let date = \"`date '+%F - %H:%M:%S'`\"" > date.ml
-		ocamlc date.ml
+		ocamlc -c date.ml
 		rm date.ml
 
 -include OCamlMakefile
