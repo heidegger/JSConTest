@@ -32,8 +32,7 @@
 		var node = new YAHOO.widget.TextNode(str, parent, false);
 		node.data = value;
 	    } else {
-		str += value.toString();
-	//	str += " : " + typeof value;
+		str += "" + value;
 		var node = new YAHOO.widget.TextNode(str, parent, false);
 	        node.isLeaf = true;
 		node.data = value;

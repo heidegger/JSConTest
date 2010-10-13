@@ -11,6 +11,7 @@
     <script type="text/javascript" src="../../js/jscontest.statistic.js"></script>
     <script type="text/javascript" src="../../js/jscontest.tests.js"></script>
     <script type="text/javascript" src="../../js/jscontest.events.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.ddmin.js"></script>
     <script type="text/javascript" src="../../js/jscontest.events.handler.simple.js"></script>
     <script type="text/javascript" src="../../js/jscontest.treeView.js"></script>
 
@@ -67,7 +68,13 @@
 	  	function fail(s) {
   			document.getElementById('checker').innerHTML += s + "<br />";
 	  	}
-		function genBoolean(p1, p2) {
+	  	function genObject(o) {
+				if (o.test && o.blablubtest) {
+					return "wrong string";
+				}
+				return true; 
+			}
+	  	function genBoolean(p1, p2) {
 			if (JSConTest.check.isBoolean(p1) 
 				&& JSConTest.check.isBoolean(p2)) {
 				return true;
@@ -123,6 +130,12 @@
 	   			[JSConTest.contracts.Number],
 	   			JSConTest.contracts.Boolean),
 	   		anz);
+		JSConTest.tests.add("genObject", 
+	            	   		genObject, 
+	            	   		JSConTest.contracts.Function(
+	            	   			[JSConTest.contracts.PObject(["test", "blablubtest"])],
+	            	   			JSConTest.contracts.Boolean),
+	            	   		anz);
 		    
 		var dl = JSConTest.events.handler.simple.create('logger',"ul");
 		JSConTest.events.register(dl);

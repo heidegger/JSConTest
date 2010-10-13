@@ -197,6 +197,11 @@ var JSConTest = (function (P) {
 			return f();
 		}
 	}
+	function bind(f, that) {
+		return (function () {
+			return f.apply(that, Array.prototype.slice.call(arguments));
+		});
+	}
 
   /** utils exports */
 	P.utils.smem = smem;
@@ -205,6 +210,8 @@ var JSConTest = (function (P) {
   P.utils.valueToString = valueToString;
   P.utils.compareArray = compareArray;
   P.utils.withTry = withTry;
+  P.utils.bind = bind;
+  P.utils.gObj = (function () { return this; }());
   
   /********** checks **********/
   function isNull(v) { 
@@ -254,6 +261,17 @@ var JSConTest = (function (P) {
     }
     return true;
   }
+  function isEmptyObject(v) {
+  	if (!isObject(v)) {
+  		return false;
+  	}
+  	for (p in v) {
+  		if (v.hasOwnProperty(p)) {
+  			return false;
+  		}
+  	}
+  	return true;
+  }
   function isSArray(obj) {
     if (!obj) {
       return false;
@@ -296,6 +314,7 @@ var JSConTest = (function (P) {
   P.check.isArray = isArray;
   P.check.isSArray = isSArray;
   P.check.isObject = isObject;
+  P.check.isEmptyObject = isEmptyObject;
   
   
   /********** generator **********/
@@ -500,9 +519,9 @@ var JSConTest = (function (P) {
     if (!gS) {
       gS = genString;
     }
-    for (j = 0; j < l; j = j + 1) {
+    for (j = 0; j < l; j += 1) {
       pn = gS();
-      pl.push({name: pn, contract: P.tests.TopOUndef});
+      pl.push({name: pn, contract: P.contracts.TopOUndef});
     }
     return pl;
   }
@@ -578,7 +597,7 @@ var JSConTest = (function (P) {
       }
     }
     /* If no pl is given, generate a random set of properties,
-       which Top Contract */
+       with Top Contract */
     if (!exactPropList) {
       exactPropList = genEPL();
     }
@@ -597,7 +616,7 @@ var JSConTest = (function (P) {
           rand = genLength();
         }
         for (i = 0; i < ep.random; j = j + 1) {
-          addProp(genString(), r, P.tests.TopOUndef);
+          addProp(genString(), r, P.contract.TopOUndef);
         }
       }
     }
@@ -630,7 +649,7 @@ var JSConTest = (function (P) {
       length = genLength();
     }
     if (!contract) {
-      contract = P.tests.Top;
+      contract = P.contracts.Top;
     }
     for (j = 0; j < length; j = j + 1) {
       a.push(contract.gen());
