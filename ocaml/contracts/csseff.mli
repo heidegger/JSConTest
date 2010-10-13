@@ -4,6 +4,7 @@ type effect =
   | Prop of effect * string
   | Star of effect
   | Question of effect
+  | NoProp of effect
 
 type t 
 type ('a,'b) either =

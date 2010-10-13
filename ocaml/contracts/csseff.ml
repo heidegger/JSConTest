@@ -4,6 +4,7 @@ type effect =
   | Prop of effect * string
   | Star of effect
   | Question of effect
+  | NoProp of effect
 
 
 type t = El of effect list | All
@@ -13,15 +14,21 @@ type ('a,'b) either =
 
 let create () = El []
 let create_all () = All
-let create_effect_list el =
-  let rec rem_var = function
+let create_effect_list el = El el
+
+(* let rec rem_var = function
     | Parameter i as e -> e
-    | Var s -> Prop (Parameter 0, s)
+    | Var s -> 
+        if (String.compare s "this") then begin
+          Var s
+        else begin 
+          Prop (Parameter 0, s)
+        end
     | Prop (e,s) -> Prop (rem_var e, s)
     | Star e -> Star (rem_var e)
     | Question e -> Question (rem_var e)
   in
-    El (List.map rem_var el)
+    El (List.map rem_var el) *)
 
 let get_effects = function
   | El el -> el

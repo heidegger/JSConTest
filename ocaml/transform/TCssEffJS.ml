@@ -6,6 +6,8 @@ let pROP_TYPE = 3
 let qUESTION = 4
 let sTAR_TYPE = 5
 let aLL = 6
+let nOPROP = 7
+let tHIS = 8
       
 let js_of_effect fname = 
   let rec js_of_effect = function
@@ -15,7 +17,15 @@ let js_of_effect fname =
            ("number", ASTUtil.int_to_exp i);
            ("fname", ASTUtil.c_to_e (ASTUtil.s_to_c fname));
           ]
-    | Var s -> failwith "not suppoted right now"
+    | Var s ->
+        if (String.compare s "this" == 0) then begin
+          ASTUtil.new_object
+            [("type", ASTUtil.int_to_exp tHIS);
+             ("fname", ASTUtil.c_to_e (ASTUtil.s_to_c fname))
+            ]
+        end else begin
+          failwith "not suppoted right now"
+        end
     | Prop (e,s) -> 
         ASTUtil.new_object
           [("type", ASTUtil.int_to_exp pROP_TYPE);
