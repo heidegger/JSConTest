@@ -16,6 +16,7 @@ module Test = struct
     in
     let b_to_c b = CBase (b,[],[]) in
     let ci = b_to_c BInteger in
+    let cundf = b_to_c BUndf in
     let csb b = b_to_c (BSBool b) in
     let cb = b_to_c BBool in
     let cs = b_to_c BString in
@@ -42,6 +43,20 @@ module Test = struct
         assert_equal
           ~printer:so_t
           (tc_cl [CFunction (None,[ci],ci,(),Csseff.create ())])
+          tc;
+        match Contract.get_clgI tc with
+          | [c,gi] -> 
+              assert_bool
+                "Effects does not exists, but GenInfo.getEffects returns true"
+                (not (GenInfo.getEffects gi))
+          | _ -> assert_failure "get_clgI does not work correct"
+    in
+    let t1a () =
+      let s = "/*c () -> undefined */" in
+      let tc = parse s in
+        assert_equal
+          ~printer:so_t
+          (tc_cl [CFunction (None,[],cundf,(),Csseff.create ())])
           tc;
         match Contract.get_clgI tc with
           | [c,gi] -> 
@@ -325,6 +340,7 @@ module Test = struct
 
 
       ["Parse int -> int", t1;
+       "Parse () -> undefined", t1a;
        "Parse (true,false) -> bool", t2;
        "Parse (int -> int, int) -> \"bla\" */", t3;
        "Parse /*c */", t4;
