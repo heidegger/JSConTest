@@ -161,6 +161,7 @@ css_path:
 ;
 
 paraml:
+  | LPARAN RPARAN                 { [] }
   | LPARAN paramll_m2 RPARAN      { $2 }
 ;
 
