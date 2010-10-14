@@ -74,7 +74,7 @@
 		if (P.check.isFunction(p.check)) {
 			contract.check = P.utils.bind(p.check, contract);
 		} else {
-			contract.check = function () { return p.check; };
+			contract.check = function (v) { return v === p.check; };
 		}
 		//contract.simpl = P.utils.bind(sv, contract);
 		contract.failToString = function(v) {
@@ -139,7 +139,7 @@
 		}
 	}
 	function SingletonContract(value, cdes, genNeeded) {
-		return Contract.call(this, {
+		return new Contract({
 		  contractType : ctBasic,
 		  check : value,
 		  generate : value,
@@ -580,7 +580,6 @@
 					return false;
 				}
 			}
-			;
 			return true;
 		};
 		c.checkReturn = function(v) {
@@ -588,7 +587,6 @@
 			if (!ok) {
 				fire.call(P, 'assertReturn', c, v);
 			}
-			;
 		};
 		c.get_last_created_values = function() {
 			return lcvs;
@@ -605,7 +603,6 @@
 				simplRules.push(sr);
 			}
 		}
-		;
 		function createUnion(c1, c2) {
 			function check(v) {
 				var c1r = c1.check(v);
@@ -626,19 +623,14 @@
 								if (ce2) {
 									this.registerCExp(ce2);
 								}
-								;
 							}
-							;
 						}
-						;
 						return false;
 					} else {
 						return true;
 					}
-					;
 				}
 			}
-			;
 			function generate() {
 				var r = Math.random();
 				if (r < 0.5) {
@@ -647,18 +639,15 @@
 					return c2.gen();
 				}
 			}
-			;
 			function getcdes() {
 				return ("(" + c1.getcdes() + " or " + c2.getcdes() + ")");
 			}
-			;
 			for ( var i in simplRules) {
 				var sr = simplRules[i];
 				var c = sr(c1, c2);
 				if (c)
 					return c;
 			}
-			;
 			var p = {
 			  contractType : ctComplex,
 			  check : check,
@@ -668,7 +657,7 @@
 			// return new Contract(ctComplex,check,generate,getcdes);
 			return new Contract(p);
 		}
-		;
+
 		Union = createUnion;
 		UnionAddSimplRule = addSimpl;
 
@@ -681,13 +670,10 @@
 			} else {
 				return false;
 			}
-			;
 		}
-		;
 		function simplIntervall(c1, c2) {
 
 		}
-		;
 
 		addSimpl(simplTrueFalseBool);
 	})();

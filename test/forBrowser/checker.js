@@ -5,7 +5,7 @@
 function checker(ignore, expected) {
 	expected.reverse();
 	var o = { 
-		"default": function(msg) {
+		"__default__": function(msg) {
 			for (i in ignore) {
 				if (ignore.hasOwnProperty(i)) {
 					if (msg === ignore[i]) {
@@ -19,15 +19,15 @@ function checker(ignore, expected) {
 					switch (msg) {
 					case "fail": 
 						fail( "Expected: " + e.msg 
-					    			+ ", got message: " + msg 
-									+ ", value: " + arguments[1]
-									+ ", constraint: " + arguments[2]);
+				    			+ ", <br /><b>got message</b>: " + msg 
+									+ ", value: " + arguments[2]
+									+ ", constraint: " + arguments[1]);
 						break;
 					case "success":
 					  	fail( "Expected: " + e.msg 
 					    			+ ", <br /><b>got message</b>: " + msg 
-									+ ", value: " + arguments[1]
-									+ ", constraint: " + arguments[2]);
+									+ ", value: " + arguments[2]
+									+ ", constraint: " + arguments[1]);
 						break;
 					case "error":
 					  	fail( "Expected</b>: " + e.msg 
