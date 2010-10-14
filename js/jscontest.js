@@ -212,6 +212,7 @@ var JSConTest = (function (P) {
   P.utils.withTry = withTry;
   P.utils.bind = bind;
   P.utils.gObj = (function () { return this; }());
+  P.utils.concat = concat;
   
   /********** checks **********/
   function isNull(v) { 
