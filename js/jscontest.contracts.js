@@ -297,13 +297,13 @@
 			  return P.gen.genObject(pl);
 		  },
 		  getcdes : function() {
-			  var s = "eobject{";
+			  var s = "{";
 			  var pls = [];
 			  var random = false;
 			  for (j in pl) {
 				  var p = pl[j];
 				  if (p.name && p.contract) {
-					  pls.push(p.name + ":" + p.contract.getcdes());
+					  pls.push(p.name + ": " + p.contract.getcdes());
 				  } else {
 					  if (p.random) {
 						  random = true;
@@ -315,7 +315,7 @@
 				  ;
 			  }
 			  ;
-			  s += concat(pls, ",", "", "", false);
+			  s += P.utils.concat(pls, ",", "", "", false);
 			  if (random) {
 				  s += ",...";
 			  }
@@ -323,7 +323,7 @@
 			  return s + "}";
 		  }
 		};
-		var o = new Contract();
+		var o = new Contract(p);
 		return o;
 	};
 	/* An Array. t is the type of the elements. */
@@ -353,7 +353,7 @@
 	 * parameter, then call the function and checking, if the result value
 	 * fulfills rt.
 	 */
-	function FunctionBaseConstructor(pl,rt, thisC) {
+	function FunctionBaseConstructor(pl, rt, thisC) {
 		var lcvs, contract,
 			pldes = "",
 			p = {	contractType : ctFunction,
@@ -432,6 +432,7 @@
 		contract = new Contract(p);
 		if (thisC && P.check.isFunction(thisC.gen) ) {
 			genThis = thisC.gen;
+			pldes = thisC.getcdes() + ".(" + pldes + ")"; 
 		} else {
 			genThis = function () { return P.utils.gObj; };
 		}
@@ -469,8 +470,8 @@
 		contract.registerEffects = registerEffects;
 		return contract;
 	};
-	C.Method = function(this_contract, pl, result, eff) {
-		contract = Function(pl, rt, eff, this_contract);		
+	C.Method = function(this_contract, pl, rt, eff) {
+		var contract = C.Function(pl, rt, eff, this_contract);		
 		return contract;
 	};
 	
