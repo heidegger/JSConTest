@@ -68,7 +68,7 @@
 	  	function fail(s) {
   			document.getElementById('checker').innerHTML += s + "<br />";
 	  	}
-	  	function genObject(o) {
+	  	function genObjectFail(o) {
 				if (o.test && o.blablubtest) {
 					return "wrong string";
 				}
@@ -109,13 +109,13 @@
 				[JSConTest.contracts.Boolean,
 				 JSConTest.contracts.Boolean],
 				JSConTest.contracts.Boolean),
-	   		anz);
+	   		1);
 		JSConTest.tests.add("genNumber", 
 	   		genNumber, 
 	   		JSConTest.contracts.Function(
 	   			[JSConTest.contracts.Number],
 	 			JSConTest.contracts.Boolean),
-	   		anz);
+	   		1);
 	
 		JSConTest.tests.add("genBooleanFail", 
 	   		genBooleanFail, 
@@ -130,8 +130,8 @@
 	   			[JSConTest.contracts.Number],
 	   			JSConTest.contracts.Boolean),
 	   		anz);
-		JSConTest.tests.add("genObject", 
-	            	   		genObject, 
+		JSConTest.tests.add("genObjectFail", 
+	            	   		genObjectFail, 
 	            	   		JSConTest.contracts.Function(
 	            	   			[JSConTest.contracts.PObject(["test", "blablubtest"])],
 	            	   			JSConTest.contracts.Boolean),
@@ -152,10 +152,16 @@
  			// genNumberFail
  			{ msg: 'moduleChange' },
  			{ msg: 'fail' },
+ 			// genObjectFail
+ 			{ msg: 'moduleChange' },
+ 			{ msg: 'fail' },
 			// Counter Examples
 			{ msg: 'CExpStart' },
 			{ msg: 'CExp' },
 			{ msg: 'CExp' },
+			// since dd is activated, we set keep here, to allow multiple
+			// cexp for the module genObjectFail
+			{ msg: 'CExp', keep : true },
 		]);
 		JSConTest.events.register(ch);
     </script>
