@@ -162,7 +162,7 @@
 		var test = param["test"],
 			stat = param["stat"],
 			resultHandler = param["resultHandler"] || function (r) { return r; },
-			checker = param["checker"] || checker,
+			ch = param["checker"] || checker,
 			tester = param["tester"] || simpleTester,
 			contract = test.contract,
 			value = test.value;
@@ -178,7 +178,7 @@
 			return tester(test, stat, test.count, testrH);
 		} else {
 			return (function () {
-				var result = checker(test, stat);
+				var result = ch(test, stat);
 				logTest.call(test, test.contract, test.value, result);
 				// passes the result of the checker  and returns the 
 				// result of the result handler
