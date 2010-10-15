@@ -108,7 +108,9 @@
 			result = checker(test);
 			cont = cont && (result.normal === true);
 		}
-		stat.incTests(i);
+		if (stat && P.check.isFunction(stat.incTests)) {
+			stat.incTests(i);
+		}
 		test.done = done + i;
 		if (result.normal === false || (result.error)) {
 			failedCheck(test);
@@ -163,7 +165,12 @@
 			stat = param["stat"],
 			resultHandler = param["resultHandler"] || function (r) { return r; },
 			ch = param["checker"] || checker,
-			tester = param["tester"] || simpleTester,
+			tester = param["tester"] || 
+				function (t,s,c,tH) {
+					return (function () {
+						simpleTester(t,s,c,tH);
+					});
+				},
 			contract = test.contract,
 			value = test.value;
 
@@ -317,14 +324,14 @@
 	}	
 
 	function runLazy(f, stat) {	
-		var statistic = stat || P.statistic.Statistic();
+		var statistic = stat || P.statistic.Statistic;
 		for (var m in tests ) {
 			//jstestdriver.console.log("outer loop");
 			for (var i = 0; i < tests[m].length; i += 1) {
 				//jstestdriver.console.log("inner loop" + i);
 				(function (m, i, test) {
 					function run() {
-						return (testOrCheck({ test: test, statistic: statistic }))();
+						return testOrCheck({ test: test, statistic: statistic })();
 					}	
 					f(m, i, test, run);				
 				})(m, i, tests[m][i]);

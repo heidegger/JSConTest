@@ -3,45 +3,7 @@
  * to support running the test cases in multiple browsers
  */
 
-//BasicTestCase = TestCase("BasicTestCase");
-
-//BasicTestCase.prototype.testBasic = function () {
-//}
 (function () {
-	function registerForJSTestDriver(m, i, test, f) {
-		var tc = TestCase(m + " - " + i);
-		tc.prototype["test" + i] = f;				
-	}
-	function makeChecker(exp) {
-		return {"__default__": 
-  		function (msg) {
-  			if (exp !== msg) {
-					switch (msg) {
-					case "fail": 
-						fail( "Expected: " + exp 
-					    			+ ", got message: " + msg 
-									+ ", value: " + arguments[1]
-									+ ", constraint: " + arguments[2]);
-						break;
-					case "success":
-					  	fail( "Expected: " + exp 
-					    			+ ", got message: " + msg 
-									+ ", value: " + arguments[1]
-									+ ", constraint: " + arguments[2]);
-						break;
-					case "error":
-					  	fail( "Expected: " + exp 
-					    			+ ", got message: " + msg 
-									+ ", error message: " + arguments[1]
-									+ ", constraint: " + arguments[2]);
-						break;
-					}
-				}
-  	  }
-  	};
-	}
-	
-	
 	var anz = 1;
 	
 	var u = JSConTest.contracts.Name("u");
@@ -141,7 +103,6 @@
 			}(v, d, contr[i], exp));
 		}
 	}
-	  
+	
 	JSConTest.events.register(JSConTest.events.handler.data.create("checker"));  
-	JSConTest.tests.runLazy(registerForJSTestDriver);
 }());
