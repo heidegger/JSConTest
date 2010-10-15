@@ -10,6 +10,7 @@ let regexp rstring = "string" | "String"
 let regexp rfloat = "float" | "Float"
 let regexp rundf = "undf" | "undefined"
 let regexp rvoid = "void"
+let regexp rnull = "null"
 let regexp rtop = "top" | "T" | "Top"
 let regexp rid = "id" | "ID" | "Id"
 let regexp robject = "Object" | "object"
@@ -73,6 +74,7 @@ let rec token = lexer
   | rdotdotdot      -> L3D
   | rundf           -> LUndf
   | rvoid           -> LVoid
+  | rnull           -> LNull
   | rtop            -> LTop
   | floating        -> LSingleFloat (float_of_string (Ulexing.utf8_lexeme lexbuf))
   | digit+          -> LSingleInteger (int_of_string (Ulexing.utf8_lexeme lexbuf))

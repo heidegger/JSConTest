@@ -1,6 +1,7 @@
 type t = 
   | BUndf
   | BVoid
+  | BNull
   | BTop
   | BSBool of bool
   | BBool
@@ -19,6 +20,7 @@ type t =
 let string_of = function
   | BUndf -> "undf"
   | BVoid -> "void"
+  | BNull -> "null"
   | BTop -> "T"
   | BJavaScriptVar v -> "js:"^v
   | BSBool b -> if b then "true" else "false"
