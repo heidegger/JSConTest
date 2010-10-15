@@ -5,6 +5,13 @@
 		}
 		return;
 	}
+	function genIInt(x) {
+		if ((x > 0) && (x < 10)) {
+			return {};
+		} else {
+			return "Error";
+		}
+	}
 	
 	function genObjectFail(o) {
 		if (o.test && o.blablubtest) {
@@ -46,7 +53,7 @@
 		}
 	}
 	
-	var anz = 1000;
+	var anz = 100;
   JSConTest.tests.add("genBoolean", 
   		genBoolean, 
   		JSConTest.contracts.Function([JSConTest.contracts.Boolean,
@@ -100,6 +107,20 @@
                   		JSConTest.contracts.Function([JSConTest.contracts.AInteger([0,1,2,10]),
                   		                              JSConTest.contracts.AInteger([0,1,2,10])],
                   								  JSConTest.contracts.Undefined),
+                  		anz,
+                  		{ checker: makeChecker("fail") }
+                  );
+  JSConTest.tests.add("genIInt", 
+                  		genIInt, 
+                  		JSConTest.contracts.Function([JSConTest.contracts.IIntervall(1,9)],
+                  								  JSConTest.contracts.Object),
+                  		anz,
+                  		{ checker: makeChecker("success") }
+                  );
+  JSConTest.tests.add("genIInt", 
+                  		genIInt, 
+                  		JSConTest.contracts.Function([JSConTest.contracts.IIntervall(0,9)],
+                  								  JSConTest.contracts.Object),
                   		anz,
                   		{ checker: makeChecker("fail") }
                   );
