@@ -621,7 +621,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
             | CBase (_,_,dul) as c -> 
                 (* print_endline (string_of_list Depend.string_of dul); *)
                 add_dul dul; c
-            | CFunction (th,pl,r,dd,_) as c ->
+            | CFunction (None,pl,r,dd,_) as c ->
                 DependDown.set_paramnr dd ((List.length pl) + 1);
                 DependDown.register_dinfo dd (get_scope ());
                 let dul = DependDown.get_dul dd in

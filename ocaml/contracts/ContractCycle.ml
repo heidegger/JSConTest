@@ -256,11 +256,58 @@ module Test = struct
           | _ -> assert_failure "Graph was not computed correctly"
     in
 
+    let t6 () = 
+      let s = "/*c { \"lengh\" : int }.() -> int */" in
+      let tc = parse s in
+        match check tc with
+          | Some [g] -> begin
+              match get_order [g] with
+                | [vl] -> 
+                    assert_equal
+                      ~printer:(fun s -> s)
+                      "[{lengh: int}{{} -> int};{lengh: int};int]"
+                      (String_of.string_of_list
+                         (fun v ->   
+                            (Contract.so_contract 
+                               BaseContract.string_of 
+                               Analyse.string_of
+                               Depend.string_of v))
+                         vl)                    
+                |_ -> failwith "This should neve happen"
+            end
+          | _ -> assert_failure "Graph was not computed correctly"
+      ()
+    in
+    let t7 () = 
+      let s = "/*c { \"_length\" : int, \"_head\" : {} }.(int) -> undefined */" in
+      let tc = parse s in
+        match check tc with
+          | Some [g] -> begin
+              match get_order [g] with
+                | [vl] -> 
+                    assert_equal
+                      ~printer:(fun s -> s)
+                      "[undf;{};{_length: int, _head: {}};{_length: int, _head: {}}{{int} -> undf};int]"
+                      (String_of.string_of_list
+                         (fun v ->   
+                            (Contract.so_contract 
+                               BaseContract.string_of 
+                               Analyse.string_of
+                               Depend.string_of v))
+                         vl)                    
+                |_ -> failwith "This should neve happen"
+            end
+          | _ -> assert_failure "Graph was not computed correctly"
+      ()
+    in
+
       ["Parse Cycle Test", t1;
        "Check Cycle Test 1", t2;
        "Check Cycle Test 2", t3;
        "Check Cycle Test, Order 3", t4;
-       "Check Cycle Test, Order 4", t5;       
+       "Check Cycle Test, Order 4", t5;      
+       "Check Cycle Test, Methods", t6;
+       "Check Cycle Test, Methods", t7
       ]
         
   let _ = 

@@ -8,7 +8,7 @@ type t
 (** [create scope parameter] 
     creates a new value of type t that
     represents a dependency from a contract value
-    that you get, when you work [scope] arrows
+    that you get, when you go [scope] arrows
     up, and choose the parameter with number
     [parameter]. 
     Hence [create 1 1] is equal to $1, and
