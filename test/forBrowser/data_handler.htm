@@ -41,27 +41,29 @@
     	}
     	var t1, t2;
     	function expSuccess() {
-			var sc = false;
+			var sc = 0;
 	  		t1 = function () { return sc; };
     		return {
     			"fail": function () { fail("Success expected.") },
     			"error": function () { fail("Success expected.") },
-				"success" : function () { sc = true; }
+				"success" : function () { sc += 1; }
     		};
     	}
     	function expFail() {
-  			var fc = false;
+  			var fc = 0;
     		t2 = function () { return fc; };
       		return {
       			"success": function () { fail("Fail expected.") },
       			"error": function () { fail("Fail expected.") },
-  				"fail" : function () { fc = true; }
+  				"fail" : function () { fc += 1; }
       		};
       	}
 		function check_after() {
-			if (t1() && t2()) {
+			if (t1() == 1 && t2() == 1) {
 			} else {
-				fail("a handler was not called!");
+				fail("is is expected, that each handler was called once." +
+				     " Number the handler expSuccess was called: " + t1() + "." +
+				     " Number the handler expFail was called: " + t2() + " .");
 			}
 		}
     	JSConTest.tests.add("Object", {}, JSConTest.contracts.Object, 1, {
