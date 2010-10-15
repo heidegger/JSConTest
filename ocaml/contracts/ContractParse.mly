@@ -20,6 +20,7 @@
 
 %token LUndf
 %token LVoid
+%token LNull
 %token LTop
 %token LId
 %token LNoTests
@@ -201,6 +202,7 @@ base_anl:
 base:
   | LUndf            { BUndf }
   | LVoid            { BVoid }
+  | LNull            { BNull }
   | LTop             { BTop  }
   | Ltrue            { BSBool true  }
   | Lfalse           { BSBool false }

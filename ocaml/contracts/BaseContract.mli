@@ -9,6 +9,7 @@
 type t =
   | BUndf
   | BVoid
+  | BNull
   | BTop
   | BSBool of bool
   | BBool

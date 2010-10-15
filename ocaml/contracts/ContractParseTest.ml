@@ -15,6 +15,8 @@ module Test = struct
            (Ulexing.from_utf8_string s))
     in
     let b_to_c b = CBase (b,[],[]) in
+    let cnull = b_to_c BNull in
+    let ctop = b_to_c BTop in
     let ci = b_to_c BInteger in
     let cundf = b_to_c BUndf in
     let csb b = b_to_c (BSBool b) in
@@ -339,6 +341,66 @@ module Test = struct
     in
 
 
+    let t22 () =
+      let s = "/*c () -> null */" in
+      let tc = parse s in
+        assert_equal
+          ~printer:so_t
+          (tc_cl [CFunction (None,[],cnull,(),Csseff.create ())])
+          tc;
+        match Contract.get_clgI tc with
+          | [c,gi] -> 
+              assert_bool
+                "Effects does not exists, but GenInfo.getEffects returns true"
+                (not (GenInfo.getEffects gi))
+          | _ -> assert_failure "get_clgI does not work correct"
+    in
+
+    let t23 () =
+      let s = "/*c () -> top */" in
+      let tc = parse s in
+        assert_equal
+          ~printer:so_t
+          (tc_cl [CFunction (None,[],ctop,(),Csseff.create ())])
+          tc;
+        match Contract.get_clgI tc with
+          | [c,gi] -> 
+              assert_bool
+                "Effects does not exists, but GenInfo.getEffects returns true"
+                (not (GenInfo.getEffects gi))
+          | _ -> assert_failure "get_clgI does not work correct"
+    in
+
+    let t24 () =
+      let s = "/*c () -> [int] */" in
+      let tc = parse s in
+        assert_equal
+          ~printer:so_t
+          (tc_cl [CFunction (None,[],BArray(ci),(),Csseff.create ())])
+          tc;
+        match Contract.get_clgI tc with
+          | [c,gi] -> 
+              assert_bool
+                "Effects does not exists, but GenInfo.getEffects returns true"
+                (not (GenInfo.getEffects gi))
+          | _ -> assert_failure "get_clgI does not work correct"
+    in
+
+    let t25 () =
+      let s = "/*c () -> [[string]] */" in
+      let tc = parse s in
+        assert_equal
+          ~printer:so_t
+          (tc_cl [CFunction (None,[],BArray(BArray(cs)),(),Csseff.create ())])
+          tc;
+        match Contract.get_clgI tc with
+          | [c,gi] -> 
+              assert_bool
+                "Effects does not exists, but GenInfo.getEffects returns true"
+                (not (GenInfo.getEffects gi))
+          | _ -> assert_failure "get_clgI does not work correct"
+    in
+
       ["Parse int -> int", t1;
        "Parse () -> undefined", t1a;
        "Parse (true,false) -> bool", t2;
@@ -360,6 +422,10 @@ module Test = struct
        "Parse object -> int with [$1.*]",t18;
        "Parse {a:int}.(int) -> int", t19;
        "Parse {\"_a\":int}.(int) -> int", t20;
+       "Parse () -> null", t22;
+       "Parse () -> top", t23;
+       "Parse () -> [int]", t24;
+       "Parse () -> [[string]]", t25; 
       ]
         
   let _ = 

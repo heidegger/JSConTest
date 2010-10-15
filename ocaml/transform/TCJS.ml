@@ -261,6 +261,8 @@ module Make(T: TRANS) : S with type t = T.t = struct
           read_prop_e contract_prefix "Top",[]
       | BVoid | BUndf -> 
           read_prop_e contract_prefix "Undefined",[]
+      | BNull -> 
+          read_prop_e contract_prefix "Null",[]
       | BJavaScriptVar jsv ->
           if (List.length al > 0) then begin
             let params = 
