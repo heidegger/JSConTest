@@ -141,7 +141,7 @@
 					if (result.normal === true) {
 						stat.incWellTested();
 					} else if (result.normal === false) {
-						stat.incFailed();
+						stat.incFailTested();
 					} else if (result.error) {
 						stat.incErrors();
 					}
@@ -166,9 +166,19 @@
 			resultHandler = param["resultHandler"] || function (r) { return r; },
 			ch = param["checker"] || checker,
 			tester = param["tester"] || 
-				function (t,s,c,tH) {
+				function (t,s,c,rH) {
+					function statrH(r) {
+						if (result.normal === true) {
+							stat.incWellTested();
+						} else if (result.normal === false) {
+							stat.incFailTested();
+						} else if (result.error) {
+							stat.incErrors();
+						}						
+						return rH(r);
+					}
 					return (function () {
-						simpleTester(t,s,c,tH);
+						simpleTester(t,s,c,statrH);
 					});
 				},
 			contract = test.contract,
@@ -324,14 +334,14 @@
 	}	
 
 	function runLazy(f, stat) {	
-		var statistic = stat || P.statistic.Statistic;
+		var statistic = stat || P.statistic.Statistic();
 		for (var m in tests ) {
 			//jstestdriver.console.log("outer loop");
 			for (var i = 0; i < tests[m].length; i += 1) {
 				//jstestdriver.console.log("inner loop" + i);
 				(function (m, i, test) {
 					function run() {
-						return testOrCheck({ test: test, statistic: statistic })();
+						return testOrCheck({ test: test, stat: statistic })();
 					}	
 					f(m, i, test, run);				
 				})(m, i, tests[m][i]);
@@ -378,7 +388,6 @@
 			if (!P.check.isSArray(vars[vname])) {
 				vars[vname] = [];
 			}
-			;
 			vars[vname].push(value);
 		};
 		T.popVar = function(vname) {
@@ -387,7 +396,6 @@
 			} else {
 				return vars[vname].pop();
 			}
-			;
 		};
 	})();
 
@@ -396,15 +404,12 @@
 		function intoTest() {
 			inTestMode = true;
 		}
-		;
 		function leafTest() {
 			inTestMode = false;
 		}
-		;
 		function getTestMode() {
 			return inTestMode;
 		}
-		;
 		return {
 		  iT : intoTest,
 		  lT : leafTest,

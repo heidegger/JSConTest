@@ -1,4 +1,23 @@
 (function () {
+	function genAInt(x, y) {
+		if ( x == 2 * y + 10 ) {
+			return 0;
+		}
+		return;
+	}
+	
+	function genObjectFail(o) {
+		if (o.test && o.blablubtest) {
+			return "wrong string";
+		}
+		return true; 
+	}
+	function genTOUndef(nudef) {
+		if (nudef === undefined) {
+			return "Error";
+		}
+		return 0;
+	}
 	function genBoolean(p1, p2) {
 		if (JSConTest.check.isBoolean(p1) 
 				&& JSConTest.check.isBoolean(p2)) {
@@ -27,7 +46,7 @@
 		}
 	}
 	
-	var anz = 100000;
+	var anz = 1000;
   JSConTest.tests.add("genBoolean", 
   		genBoolean, 
   		JSConTest.contracts.Function([JSConTest.contracts.Boolean,
@@ -60,4 +79,28 @@
   		anz,
   		{ checker: makeChecker("fail") }
   );
+	JSConTest.tests.add("genObjectFail", 
+	            	   		genObjectFail, 
+	            	   		JSConTest.contracts.Function(
+	            	   			[JSConTest.contracts.PObject(["test", "blablubtest"])],
+	            	   			JSConTest.contracts.Boolean),
+	            	   		anz,
+                  		{ checker: makeChecker("fail") }
+	);
+  JSConTest.tests.add("genTOUndef", 
+                  		genTOUndef, 
+                  		JSConTest.contracts.Function([JSConTest.contracts.TopOUndef],
+                  								  JSConTest.contracts.Number),
+                  		anz,
+                  		{ checker: makeChecker("success") }
+                  );
+
+  JSConTest.tests.add("genAInt", 
+                  		genAInt, 
+                  		JSConTest.contracts.Function([JSConTest.contracts.AInteger([0,1,2,10]),
+                  		                              JSConTest.contracts.AInteger([0,1,2,10])],
+                  								  JSConTest.contracts.Undefined),
+                  		anz,
+                  		{ checker: makeChecker("fail") }
+                  );
 }());

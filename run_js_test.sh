@@ -4,3 +4,8 @@ java -jar JsTestDriver/JsTestDriver-1.2.2.jar \
     --testOutput ./test-reports \
     --config jsTestDriver.conf \
     --tests all
+
+cd test-reports
+genhtml jsTestDriver.conf-coverage.dat
+cd ..
+google-chrome test-reports/index.html

@@ -13,7 +13,10 @@
     <script type="text/javascript" src="../../js/jscontest.events.js"></script>
     <script type="text/javascript" src="../../js/jscontest.ddmin.js"></script>
     <script type="text/javascript" src="../../js/jscontest.events.handler.simple.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.events.handler.data.js"></script>
+    <script type="text/javascript" src="../forJsTestDriver/makeChecker.js"></script>
     <script type="text/javascript" src="../../js/jscontest.treeView.js"></script>
+    <script type="text/javascript" src="../forJsTestDriver/fun_gen_check.js"></script>
 
 	<!-- Required CSS -->
 	<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.8.1/build/treeview/assets/skins/sam/treeview.css">
@@ -32,8 +35,6 @@
 	<!-- TreeView source file --> 
 	<script src="http://yui.yahooapis.com/2.8.1/build/treeview/treeview-min.js" ></script>
 
-
-    <script type="text/javascript" src="checker.js"></script>
   </head>
 
   <body onload="JSConTest.tests.run()">
@@ -67,103 +68,9 @@
     <script type="text/javascript">
 	  	function fail(s) {
   			document.getElementById('checker').innerHTML += s + "<br />";
-	  	}
-	  	function genObjectFail(o) {
-				if (o.test && o.blablubtest) {
-					return "wrong string";
-				}
-				return true; 
-			}
-	  	function genBoolean(p1, p2) {
-			if (JSConTest.check.isBoolean(p1) 
-				&& JSConTest.check.isBoolean(p2)) {
-				return true;
-			}
-			return "Error"; 
-		}
-		function genNumber(f) {
-			if (JSConTest.check.isNumber(f)) {
-				return true;
-			}
-			return "Error";
-		}
-		function genBooleanFail(p1, p2) {
-			if ( p1 && p2 ) {
-				return "Error";
-			} else {
-				return false;
-			}
-		}
-		function genNumberFail(f) {
-			if (f > 0) {
-				return "Error";
-			} else {
-				return false;
-			}
-		}
-		
-    	var anz = 50000;
-    	JSConTest.tests.add("genBoolean", 
-	   		genBoolean, 
-	   		JSConTest.contracts.Function(
-				[JSConTest.contracts.Boolean,
-				 JSConTest.contracts.Boolean],
-				JSConTest.contracts.Boolean),
-	   		1);
-		JSConTest.tests.add("genNumber", 
-	   		genNumber, 
-	   		JSConTest.contracts.Function(
-	   			[JSConTest.contracts.Number],
-	 			JSConTest.contracts.Boolean),
-	   		1);
-	
-		JSConTest.tests.add("genBooleanFail", 
-	   		genBooleanFail, 
-	   		JSConTest.contracts.Function(
-	   			[JSConTest.contracts.Boolean,
-	   			 JSConTest.contracts.Boolean],
-	   			JSConTest.contracts.Boolean),
-	   		anz);
-		JSConTest.tests.add("genNumberFail", 
-	   		genNumberFail, 
-	   		JSConTest.contracts.Function(
-	   			[JSConTest.contracts.Number],
-	   			JSConTest.contracts.Boolean),
-	   		anz);
-		JSConTest.tests.add("genObjectFail", 
-	            	   		genObjectFail, 
-	            	   		JSConTest.contracts.Function(
-	            	   			[JSConTest.contracts.PObject(["test", "blablubtest"])],
-	            	   			JSConTest.contracts.Boolean),
-	            	   		anz);
-		    
+	  	}		    
 		var dl = JSConTest.events.handler.simple.create('logger',"ul");
 		JSConTest.events.register(dl);
-		var ch = checker(['statistic', 'cancel'],[
- 			// genBoolean
- 			{ msg: 'moduleChange' },
- 			{ msg: 'success' },
- 			// genFloat
-		    { msg: 'moduleChange' },
-			{ msg: 'success' },
- 			// genBooleanFail
- 			{ msg: 'moduleChange' },
- 			{ msg: 'fail' },
- 			// genNumberFail
- 			{ msg: 'moduleChange' },
- 			{ msg: 'fail' },
- 			// genObjectFail
- 			{ msg: 'moduleChange' },
- 			{ msg: 'fail' },
-			// Counter Examples
-			{ msg: 'CExpStart' },
-			{ msg: 'CExp' },
-			{ msg: 'CExp' },
-			// since dd is activated, we set keep here, to allow multiple
-			// cexp for the module genObjectFail
-			{ msg: 'CExp', keep : true },
-		]);
-		JSConTest.events.register(ch);
     </script>
     
 

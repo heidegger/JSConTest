@@ -465,54 +465,54 @@ var JSConTest = (function (P) {
     }
     return genTree(isInt, iList, fList, p);
   }
-  function genAIntOld(iList, fList, p) {
-    function genFInt(p) {
-      var op = pick(fList),
-        tl = [],
-        arity = op.arity,
-        newp = p / arity,
-        j, r;
-      for (j = 0; j < arity; j = j + 1) {
-        tl.push(gen(newp));
-      }
-      r = op.f.apply(null, tl);
-      if (isInt(r)) {
-        return r;
-      } else {
-        return gen(p * 0.9);
-      }
-    }
-    function gen(p) {
-      var r;
-      if (Math.random() < p) {
-        r = genFInt(p);
-        return r;
-      }
-      if (Math.random() < q) {
-        return genInt();
-      }
-      r = pick(iList);      
-      if (isInt(r)) {
-        return r;
-      }
-      return gen(p * 0.9);
-    }
-    
-    if (!fList || !fList.length || fList.length < 1) {
-      return pick(iList);
-    }
-    if (p === undefined) {
-      p = 0.5;
-    }
-    if (!isNumber(p)) {
-      p = 0.5;
-    }
-    var q = 0.5;
-    if (iList.length > 0) {
-      q = 1 / iList.length;
-    }
-    return gen(p);
-  }
+//  function genAIntOld(iList, fList, p) {
+//    function genFInt(p) {
+//      var op = pick(fList),
+//        tl = [],
+//        arity = op.arity,
+//        newp = p / arity,
+//        j, r;
+//      for (j = 0; j < arity; j = j + 1) {
+//        tl.push(gen(newp));
+//      }
+//      r = op.f.apply(null, tl);
+//      if (isInt(r)) {
+//        return r;
+//      } else {
+//        return gen(p * 0.9);
+//      }
+//    }
+//    function gen(p) {
+//      var r;
+//      if (Math.random() < p) {
+//        r = genFInt(p);
+//        return r;
+//      }
+//      if (Math.random() < q) {
+//        return genInt();
+//      }
+//      r = pick(iList);      
+//      if (isInt(r)) {
+//        return r;
+//      }
+//      return gen(p * 0.9);
+//    }
+//    
+//    if (!fList || !fList.length || fList.length < 1) {
+//      return pick(iList);
+//    }
+//    if (p === undefined) {
+//      p = 0.5;
+//    }
+//    if (!isNumber(p)) {
+//      p = 0.5;
+//    }
+//    var q = 0.5;
+//    if (iList.length > 0) {
+//      q = 1 / iList.length;
+//    }
+//    return gen(p);
+//  }
   function genEPL(gS) {
     var l = genLength(),
       pl = [], 

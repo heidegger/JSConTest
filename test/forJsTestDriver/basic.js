@@ -28,66 +28,75 @@
 		JSConTest.contracts.Union(JSConTest.contracts.Object,JSConTest.contracts.String),
 		JSConTest.contracts.Union(JSConTest.contracts.True,JSConTest.contracts.Boolean),
 		u,
-		x
+		x,
+		JSConTest.contracts.NIntervall(0,5),
+		JSConTest.contracts.TopOUndef
 	];
 	var vals = [
 		{ v: null, 
 			d: "Null", 
 		  expected: ['success', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail',
 			           'fail', 'fail', 'fail', 'fail', 'fail', 'success', 'fail', 'fail',
-			           'error', 'fail']
+			           'error', 'fail', 'fail', "success"]
 		},
 		{ v: undefined, 
 			d: "Udf",
 		  expected: ['fail', 'success', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail',
 		             'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail',
-		             'error', 'success']
+		             'error', 'success', 'fail', 'fail']
 		},
 		{ v: true, 
 			d: "True",
 			expected: ['fail', 'fail', 'success', 'fail', 'success', 'fail', 'fail', 'fail', 'fail', 
-			           'fail', 'fail', 'fail', 'fail', 'fail', 'success', 'error', 'fail']
+			           'fail', 'fail', 'fail', 'fail', 'fail', 'success', 'error', 'fail', 
+			           'fail', "success"]
 		},
 		{ v: false, 
 			d: "False",
 			expected: ['fail', 'fail', 'fail', 'success', 'success', 'fail', 'fail', 'fail', 'fail',
-			           'fail', 'fail', 'fail', 'fail', 'fail', 'success', 'error', 'fail']
+			           'fail', 'fail', 'fail', 'fail', 'fail', 'success', 'error', 
+			           'fail', 'fail', "success"]
 		},
 		{ v: 0, 
 			d: "Integer",
 			expected: ['fail', 'fail', 'fail', 'fail', 'fail', 'success', 'success', 'success', 
-			           'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'error', 'fail'
-			           ]				
+			           'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'error', 
+			           'fail', 'success', "success"]				
 		},
 		{ v: Number.NaN, 
 			d: "NaN", 
 			expected: ['fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 
-			           'fail', 'fail', 'fail', 'fail', 'fail', 'error', 'fail']
+			           'fail', 'fail', 'fail', 'fail', 'fail', 'error', 'fail', 'fail', "success"]
 		},
 		{ v: 1.5, 
 			d: "Float",
 			expected: ['fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'success',
-			           'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'error', 'fail']
+			           'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'error', 
+			           'fail', 'success', "success"]
 		},
 		{ v: "str", 
 			d: "String",
 			expected: ['fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'success', 
-			           'fail', 'fail', 'fail', 'fail', 'success', 'fail', 'error', 'success']
+			           'fail', 'fail', 'fail', 'fail', 'success', 'fail', 'error', 
+			           'success', 'fail', "success"]
 		},
 		{ v: {}, 
 			d: "Obj",
 			expected: ['fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 
-			           'success', 'fail', 'fail', 'success', 'success', 'fail', 'error', 'fail']			
+			           'success', 'fail', 'fail', 'success', 'success', 'fail', 'error', 
+			           'fail', 'fail', "success"]			
 		},
 		{ v: [1,2], 
 			d: "Array[int]",
 			expected: ['fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 
-			           'success', 'fail', 'success', 'success', 'success', 'fail', 'error', 'fail']
+			           'success', 'fail', 'success', 'success', 'success', 'fail', 'error', 
+			           'fail', 'fail', "success"]
 		},
 		{ v: [true,false,true], 
 			d: "Array[boolean]", 
 			expected: ['fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 'fail', 
-				         'success', 'success', 'success', 'success', 'success', 'fail', 'error', 'fail']
+				         'success', 'success', 'success', 'success', 'success', 'fail', 'error', 
+				         'fail', 'fail', "success"]
 		},
 	];
 	
@@ -103,6 +112,4 @@
 			}(v, d, contr[i], exp));
 		}
 	}
-	
-	JSConTest.events.register(JSConTest.events.handler.data.create("checker"));  
 }());

@@ -12,7 +12,11 @@
     <script type="text/javascript" src="../../js/jscontest.cexp.js"></script>
     <script type="text/javascript" src="../../js/jscontest.events.js"></script>
     <script type="text/javascript" src="../../js/jscontest.events.handler.simple.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.events.handler.data.js"></script>
     <script type="text/javascript" src="../../js/jscontest.treeView.js"></script>
+    <script type="text/javascript" src="../forJsTestDriver/makeChecker.js"></script>
+    <script type="text/javascript" src="../forJsTestDriver/register_data_checker.js"></script>
+    <script type="text/javascript" src="../forJsTestDriver/fun_simple_boolean.js"></script>
 
 	<!-- Required CSS -->
 	<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.8.1/build/treeview/assets/skins/sam/treeview.css">
@@ -61,59 +65,8 @@
     	function fail(s) {
     		document.getElementById('checker').innerHTML += s + "<br />";
     	}
-      	var anz = 1000;
-		function returnTrue() {
-			return true;
-		}
-		function returnFalse() {
-			return false;
-		}
-		
-	    JSConTest.tests.add("returnTrue", 
-	    		returnTrue, 
-	    		JSConTest.contracts.Function([],JSConTest.contracts.Boolean),
-	    		anz);
-	    JSConTest.tests.add("returnTrue", 
-	    		returnTrue, 
-	    		JSConTest.contracts.Function([],JSConTest.contracts.True),
-	    		anz);
-	    JSConTest.tests.add("returnTrue", 
-	    		returnTrue, 
-	    		JSConTest.contracts.Function([],JSConTest.contracts.False),
-	    		anz);
-
-	    JSConTest.tests.add("returnFalse", 
-	    		returnFalse, 
-	    		JSConTest.contracts.Function([],JSConTest.contracts.Boolean),
-	    		anz);
-	    JSConTest.tests.add("returnFalse", 
-	    		returnFalse, 
-	    		JSConTest.contracts.Function([],JSConTest.contracts.True),
-	    		anz);
-	    JSConTest.tests.add("returnFalse", 
-	    		returnFalse, 
-	    		JSConTest.contracts.Function([],JSConTest.contracts.False),
-	    		anz);
-      
-		var dl = JSConTest.events.handler.simple.create('logger',"ul");
-		JSConTest.events.register(dl);
-		var ch = checker(['statistic', 'cancel'],[
-			// returnTrue
-		    { msg: 'moduleChange' },
-			{ msg: 'fail' },
-			{ msg: 'success' },
-			{ msg: 'success' },
-			// returnFalse
-			{ msg: 'moduleChange' },
-			{ msg: 'success' },
-			{ msg: 'fail' },
-			{ msg: 'success' },
-			// Counter Examples
-			{ msg: 'CExpStart' },
-			{ msg: 'CExp' },
-			{ msg: 'CExp' }
-		]);
-		JSConTest.events.register(ch);
+    	var dl = JSConTest.events.handler.simple.create('logger',"ul");
+    	JSConTest.events.register(dl);
     </script>
     
 
