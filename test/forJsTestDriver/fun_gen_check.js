@@ -13,7 +13,9 @@
 		}
 	}
 	var genTopCheck = (function () {
-		var bools = 0, 
+		var trues = 0,
+			falses = 0, 
+			bools = 0, 
 			numbers = 0, 
 			ints = 0, 
 			undefs = 0, 
@@ -24,6 +26,12 @@
 			count = 0;
 		return (function (t) {
 			count += 1;
+			if (JSConTest.check.isTrue(t)) {
+				trues += 1;
+			}
+			if (JSConTest.check.isFalse(t)) {
+				falses += 1;
+			}
 			if (JSConTest.check.isBoolean(t)) {
 				bools += 1;
 			}
@@ -49,7 +57,8 @@
 				arrays += 1;
 			}			
 			if (count > 4000) {
-				if (bools < 1 || numbers < 1 || ints < 1 || undefs < 1 || nulls < 1 || strings < 1 || objs < 1 || arrays < 1) {
+				if (bools < 1 || numbers < 1 || ints < 1 || undefs < 1 || nulls < 1 || strings < 1 
+						|| objs < 1 || arrays < 1 || trues < 1 || falses < 1) {
 					return "Error";
 				}
 			}
@@ -136,6 +145,17 @@
 	            	   		genObjectFail, 
 	            	   		JSConTest.contracts.Function(
 	            	   			[JSConTest.contracts.PObject(["test", "blablubtest"])],
+	            	   			JSConTest.contracts.Boolean),
+	            	   		anz,
+                  		{ checker: makeChecker("fail") }
+	);
+	JSConTest.tests.add("genObjectFail", 
+	            	   		genObjectFail, 
+	            	   		JSConTest.contracts.Function(
+	            	   			[JSConTest.contracts.EObject([{ name: "test", 
+	            	   																			contract : JSConTest.contracts.Boolean },
+	            	   																		{ name: "blablubtest", 
+            	   																				contract: JSConTest.contracts.String }])],
 	            	   			JSConTest.contracts.Boolean),
 	            	   		anz,
                   		{ checker: makeChecker("fail") }
