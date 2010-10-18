@@ -201,6 +201,12 @@ module Make(T: TRANS) : S with type t = T.t = struct
           let el,sel1 = List.split (generate_contractl cl) in
           let sel1 = List.flatten sel1 in
           let e,sel2 = generate_contract c in
+          let theo, sel_obj = 
+            match th with
+              | None -> None, []
+              | Some o -> let the,sel = generate_contract o in
+                  Some the, sel
+          in
           let i,sel3 = 
             if (DependDown.is_depend dd) then begin
               let int_of_exp i = float_to_exp (float_of_int i) in
@@ -226,8 +232,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
                       new_array de
                      ])
             end else begin
-
-              match th with
+              match theo with
                 | None -> 
                     new_var tmp_prefix 
                       (do_mcalle_el 
@@ -236,7 +241,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
                           e;              (* return *)
                           effects_compl]  (* effekte *)
                       )
-                | Some o -> let the,sel = generate_contract o in
+                | Some the -> 
                     new_var tmp_prefix 
                       (do_mcalle_el 
                          contract_prefix "Method" 
@@ -245,12 +250,9 @@ module Make(T: TRANS) : S with type t = T.t = struct
                           e;              (* return *)
                           effects_compl]  (* effekte *)
                       )
-                   
-          
-
             end
           in
-            i_to_e i, sel1 @ sel2 @ sel3
+            i_to_e i, sel1 @ sel2 @ sel3 @ sel_obj
 
     and generate_basecontract : a list -> bc -> 
     tc expression * tc source_element list 
