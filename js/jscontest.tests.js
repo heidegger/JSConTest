@@ -85,6 +85,7 @@
 			                         function (e) { 
 																 return { error: e }; 
 															 });
+		P.gen.initGen();
 		if (stat) {
 			if (result.normal === true) {
 				stat.incVerified();

@@ -12,7 +12,49 @@
 			return "Error";
 		}
 	}
-	
+	var genTopCheck = (function () {
+		var bools = 0, 
+			numbers = 0, 
+			ints = 0, 
+			undefs = 0, 
+			nulls = 0, 
+			strings = 0, 
+			objs = 0, 
+			arrays = 0, 
+			count = 0;
+		return (function (t) {
+			count += 1;
+			if (JSConTest.check.isBoolean(t)) {
+				bools += 1;
+			}
+			if (JSConTest.check.isNumber(t)) {
+				numbers += 1;
+			}
+			if (JSConTest.check.isInt(t)) {
+				ints += 1;
+			}
+			if (JSConTest.check.isUndefined(t)) {
+				undefs += 1;
+			}
+			if (JSConTest.check.isNull(t)) {
+				nulls += 1;
+			}
+			if (JSConTest.check.isString(t)) {
+				strings += 1;
+			}
+			if (JSConTest.check.isObject(t)) {
+				objs += 1;
+			}
+			if (JSConTest.check.isSArray(t)) {
+				arrays += 1;
+			}			
+			if (count > 4000) {
+				if (bools < 1 || numbers < 1 || ints < 1 || undefs < 1 || nulls < 1 || strings < 1 || objs < 1 || arrays < 1) {
+					return "Error";
+				}
+			}
+		});
+	}());
 	function genObjectFail(o) {
 		if (o.test && o.blablubtest) {
 			return "wrong string";
@@ -54,7 +96,11 @@
 	}
 	
 	var anz = 100;
-  JSConTest.tests.add("genBoolean", 
+	JSConTest.tests.add("genTopCheck",
+	                    genTopCheck,
+	                    JSConTest.contracts.Function([JSConTest.contracts.Top], JSConTest.contracts.Undefined),
+	                    5000);
+	JSConTest.tests.add("genBoolean", 
   		genBoolean, 
   		JSConTest.contracts.Function([JSConTest.contracts.Boolean,
   								  JSConTest.contracts.Boolean],

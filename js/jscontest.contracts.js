@@ -710,8 +710,6 @@
 				throw ("Invalid contract! There exists no contract with name: '" + name
 				       + "'. " + err);
 			}
-			;
-
 		};
 		names.Name = function(name) {
 			var gcdes = function(i) {
@@ -720,7 +718,6 @@
 			function throwRecError(cstr) {
 				throw ("Invalid Contract '" + cstr + "'! Recursion, but no function contract visted");
 			}
-			;
 			function check(v) {
 				var r = testTable(name, function(c) {
 					var tmp = c.check(v);
@@ -730,7 +727,6 @@
 				}, "Invalid call of check.");
 				return r;
 			}
-			;
 			function generate() {
 				var r = testTable(name, function(c) {
 					var tmp = c.gen();
@@ -741,7 +737,6 @@
 
 				return r;
 			}
-			;
 			function getcdes() {
 				var r = testTable(name, function(c) {
 					var tmp = c.getcdes();
@@ -751,7 +746,6 @@
 				}, "Name: " + name + "(no Image)");
 				return r;
 			}
-			;
 			var p = {
 			  contractType : ctName,
 			  check : check,

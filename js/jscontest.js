@@ -67,7 +67,7 @@ var JSConTest = (function (P) {
       return false;
     }
     for (var i = 0; i < testArr.length ; i += 1) {
-      if (a[i].compare) { 
+      if (a[i] && a[i].compare) { 
         if (!a[i].compare(testArr[i])) {
           return false;
         }
@@ -813,6 +813,8 @@ var JSConTest = (function (P) {
   P.gen.initGen = initGen;
   P.gen.genPObject = genPObject;
   P.gen.genTopOUndef = genTopOUndef; 
+  P.gen.genTop = genTop;
+  P.gen.initGen = initGen;
   
   return P;
 }({}));

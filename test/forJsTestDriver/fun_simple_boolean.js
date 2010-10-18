@@ -6,40 +6,63 @@
 	function returnFalse() {
 		return false;
 	}
-	
-    JSConTest.tests.add("returnTrue", 
+	function unionf(x) {
+		if (x === true) {
+			throw "Error";
+		}
+		return true;
+	}
+		
+	var contr = JSConTest.contracts;
+	JSConTest.tests.add("UnionFun",
+	                    unionf,
+	                    contr.Function([contr.Union(contr.Boolean, contr.String)],
+	                                   contr.Boolean),
+	                    1000,
+	                    { checker: makeChecker("error") });
+	JSConTest.tests.add("simpleFun",
+	                    true,
+	                    contr.Function([],contr.Top),
+	                    1,
+	                    { checker: makeChecker("fail") } );
+  JSConTest.tests.add("simpleFun",
+                      function () { throw "error" },
+                      contr.Function([], contr.Top),
+                      1,
+                      { checker: makeChecker("error") });
+	JSConTest.tests.add("returnTrue", 
     		returnTrue, 
-    		JSConTest.contracts.Function([],JSConTest.contracts.Boolean),
+    		contr.Function([],contr.Boolean),
     		anz,
     		{ checker: makeChecker("success") }
     );
     JSConTest.tests.add("returnTrue", 
     		returnTrue, 
-    		JSConTest.contracts.Function([],JSConTest.contracts.True),
+    		contr.Function([],contr.True),
     		anz,
     		{ checker: makeChecker("success") }
     );
     JSConTest.tests.add("returnTrue", 
     		returnTrue, 
-    		JSConTest.contracts.Function([],JSConTest.contracts.False),
+    		contr.Function([],contr.False),
     		anz,
     		{ checker: makeChecker("fail") }
     );
     JSConTest.tests.add("returnFalse", 
     		returnFalse, 
-    		JSConTest.contracts.Function([],JSConTest.contracts.Boolean),
+    		contr.Function([],contr.Boolean),
     		anz,
     		{ checker: makeChecker("success") }
     );
     JSConTest.tests.add("returnFalse", 
     		returnFalse, 
-    		JSConTest.contracts.Function([],JSConTest.contracts.True),
+    		contr.Function([],contr.True),
     		anz,
     		{ checker: makeChecker("fail") }
     );
     JSConTest.tests.add("returnFalse", 
     		returnFalse, 
-    		JSConTest.contracts.Function([],JSConTest.contracts.False),
+    		contr.Function([],contr.False),
     		anz,
     		{ checker: makeChecker("success") }
     );
