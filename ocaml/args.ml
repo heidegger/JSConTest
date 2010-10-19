@@ -184,7 +184,7 @@ let spec =
     " the compiler rewrites the code under test, such that css effects will "
       ^"be tracked.");
    ("-ce", Unit (fun () -> Etc.set_css_effect_observation true),
-    " shortcut for --css-effects");
+    " shortcut for --trans-css-effects");
    ("-effects", Unit (fun () -> Etc.set_effect_observation true),
     " the compiler rewrites the code under test, such that effects will "
     ^ "be tracked. This feature can not be combined with transactions and "

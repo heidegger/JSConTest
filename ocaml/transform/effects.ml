@@ -10,19 +10,21 @@ type t = {
   propAcc: string;
   propAss: string;
   mCall: string;
+  unop: string;
   box_var: string;
   box_param : string;
   unbox: string;
 }
 
 let create_t ~js_namespace ~variable_prefix 
-    ~propAcc ~propAss ~mCall ~box_var ~box_param ~unbox
+    ~propAcc ~propAss ~mCall ~unop ~box_var ~box_param ~unbox
     =
   { js_namespace = js_namespace;
     variable_prefix = variable_prefix;
     propAcc = propAcc;
     propAss = propAss;
     mCall = mCall;
+    unop = unop;
     box_var = box_var;
     box_param = box_param;
     unbox = unbox;
@@ -43,9 +45,9 @@ let transform env effects pl sel =
       ) as e -> e
     | Sequence (a,el) -> Sequence (a,List.map t_e el)
     | Array_construction (a,eol) -> 
-        Array_construction (a,List.map (t_o t_e) eol)
+        Array_construction (a,List.map (t_o ub_e) eol)
     | Object_construction (a,pnel) ->
-        Object_construction (a,List.map (fun (p,e) -> t_pn p, t_e e) pnel)
+        Object_construction (a,List.map (fun (p,e) -> t_pn p, ub_e e) pnel)
     | Array_access (a,e1,e2) ->
         do_mcalle_el prefix (env.propAcc) [t_e e1; t_e e2]
     | Object_access (a,e,i) ->
@@ -58,24 +60,69 @@ let transform env effects pl sel =
                              t_o (List.map t_i) ilo,
                              List.map t_se body)
     | Assign (a,lhs,aop,rhs) ->
-        (* TODO *)
-        Assign (a,lhs,aop,rhs)
+        begin
+          match lhs with
+            | Object_access (a1,le,li) ->
+                do_mcalle_el 
+                  prefix 
+                  (env.propAss)
+                  [t_e le; s_to_e (i_to_s li); t_e rhs]
+            | _ -> Assign (a,t_e lhs,aop,t_e rhs)
+        end
     | Unop_without_sideeffect (a,e,uop) ->
         (* TODO *)
-        Unop_without_sideeffect (a,e,uop)
+        Unop_without_sideeffect (a,t_e e,uop)
     | Unop (a,e,Delete a1) ->
         (* TODO: transform delete operator into method call of
            library *)
-        Unop (a,e,Delete a1)
+        
+        
+        Unop (a,t_e e,Delete a1)
     | Unop (a,e,uop) -> 
-        let e = t_e e in
         begin
-          match uop with
-            | Incr_postfix _ 
-            | Decr_postfix _
-            | Incr_prefix _ 
-            | Decr_prefix _ -> Unop (a,ub_e e, uop)
-            | Delete _ -> failwith "Internal error"
+          (* TODO: Does not work always, correct the transformation *)
+          let do_op op =
+            let vn = (gen_var_name env.variable_prefix ()) in
+              g_e_sel
+                [init_var vn (t_e e);
+                 g_se_s 
+                   (g_s_e 
+                      (t_e 
+                         (Assign (null_annotation, 
+                                  e, 
+                                  Regular_assign null_annotation, 
+                                  Binop(null_annotation, 
+                                        e, 
+                                        op, 
+                                        int_to_exp 1)))));
+                   g_return (i_to_e (s_to_i vn))
+                ]
+          in
+            match e with
+              | Constant _ | This _ -> Unop (a,e,uop)
+              | Variable (an,v) -> Unop (a,e,uop)
+              | Sequence (an, el) -> failwith "Sequence as lhs of an Unop is not valid."
+              | Array_construction _ | Object_construction _ -> Unop (a,e,uop)
+              | Array_access (an,e1,e2) ->
+                  (* check_read_write e1 e2 *)
+                  failwith "Array access inside of Unop not supported right now"
+              | Object_access (an,e1,i) ->
+                  do_mcalle_el 
+                    prefix 
+                    (env.unop) 
+                    [ s_to_e (so_unary_op uop); t_e e1; s_to_e (i_to_s (t_i i))] 
+              | Function_expression _ ->
+                  failwith "Function call as lhs for an Unop is not valid."
+              | Binop _ -> failwith "Binop as lhs for an Unop is not valid."
+              | _ -> failwith "This unop is not supported right now."
+
+(*             match uop with *)
+(*               | Incr_postfix _ -> do_op (Plus null_annotation) *)
+(*               | Decr_postfix _ -> do_op (Minus null_annotation) *)
+(*               | Incr_prefix _  *)
+(*               | Decr_prefix _ ->  *)
+(*                   failwith "++e and --e is not supported right now" *)
+(*               | Delete _ -> failwith "delete e is not supported right now" *)
         end
     | Binop (a,e1,bop,e2) ->
         let e1 = t_e e1 in
@@ -127,25 +174,49 @@ let transform env effects pl sel =
     | XMLInitialiser (a,xmle) -> XMLInitialiser (a,t_xmle xmle)
     | XMLListInitialiser (a,xmle) -> XMLListInitialiser (a,t_xmle xmle)
 
+  and do_box bf e =
+    match e with
+      | Constant _ -> e
+      | Unop_without_sideeffect (_,e,_) ->
+          begin
+            match e with 
+              | Constant _ -> e
+              | _ -> bf e
+          end
+      | _ -> bf e
+
   and wb_e i e = 
     (* TODO: depending on the structure of e, do the method call *)
-    do_mcalle_el 
-      (i_to_e (s_to_i env.js_namespace)) 
-      (env.box_var) 
-      [s_to_e (i_to_s i); e] 
+    do_box 
+      (fun e -> 
+         match e with
+           | Object_access _ | Array_access _ -> e 
+           | _ -> 
+               do_mcalle_el 
+                 (i_to_e (s_to_i env.js_namespace)) 
+                 (env.box_var) 
+                 [s_to_e (i_to_s i); e]) 
+      e
   and wbp_e index e =
     (* TODO: depending on the structure of e, do the method call *)
-    do_mcalle_el 
-      (i_to_e (s_to_i env.js_namespace)) 
-      (env.box_param)
-      [c_to_e (n_to_c (float_of_int (index + 1))); e]
+    do_box 
+      (fun e -> 
+         match e with
+           | Object_access _ | Array_access _ -> e 
+           | _ -> 
+               do_mcalle_el 
+                 (i_to_e (s_to_i env.js_namespace)) 
+                 (env.box_param)
+                 [c_to_e (n_to_c (float_of_int (index + 1))); e]) 
+      e
 
   and ub_e e =
     (* TODO: depending of the structure of e, do the method call *)
-    do_mcalle_el
-      (s_to_e env.js_namespace)
-      env.unbox
-      [e]
+    do_box (fun e -> 
+              do_mcalle_el
+                (i_to_e (s_to_i env.js_namespace))
+                env.unbox
+                [e]) e
 
   and t_xmle = function
     | XMLElement (a,xmlel,xmleo,xmlel2) ->
@@ -282,7 +353,8 @@ module TestEffects = struct
       variable_prefix = "tmp";
       box_var = "box";
       box_param = "box_param";
-      unbox = "unbox"
+      unbox = "unbox";
+      unop = "doUnop"
     } 
     in
     let na = null_annotation in

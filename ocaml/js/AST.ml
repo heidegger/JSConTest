@@ -918,9 +918,8 @@ let to_string c_to_string =
           (so_assign_op ao)^
           (so_expression indent e2)
     | Unop_without_sideeffect (ann,e, uo) ->
-        (soa ann)^(so_expression indent e)^
-          (so_sefree_unary_op uo)
-    | Unop (ann,e, uo)                    ->
+        (soa ann)^(so_sefree_unary_op uo)^(so_expression indent e)
+    | Unop (ann, e, uo)                    ->
         let r =
 	      match uo with 
               Incr_postfix ann | Decr_postfix ann ->

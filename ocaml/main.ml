@@ -9,6 +9,11 @@ let test () =
 
 module TCJS_csseff = TCJS.Make(Transactify)
 module TCJS_effects = TCJS.Make(Effects)
+module TCJS_noeffects = TCJS.Make(
+  struct 
+    type t = unit
+    let transform () _ _ e = e
+  end)
 
 let string_of_program p =
   AST.string_of_ast 
@@ -81,11 +86,12 @@ let gen_js_of_c_effects nprog =
   let _ = print_endline "Transform Contracts (use effect system)" in
   let effect_env =
     Effects.create_t 
-      (Etc.get_javascript_effect_namespace ())
+      ((Etc.get_javascript_namespace()) ^ "." ^ (Etc.get_javascript_effect_namespace ()))
       (Etc.get_prefix ())
       "propAcc"
       "propAss"
       "mCall"
+      "unOp"
       "box"
       "box_param"
       "unbox"
@@ -94,11 +100,21 @@ let gen_js_of_c_effects nprog =
   let _ = print_endline "success" in
     nprog
 
+let gen_js_no_effects nprog =
+  let _ = print_endline "Transform Contracts and do not use any effect system" in
+  let nprog = TCJS_noeffects.transform (create_transform_env ()) nprog in
+  let _ = print_endline "success" in
+    nprog
+
 let gen_js_of_c nprog = 
   if (Etc.get_effect_observation ()) then begin
     gen_js_of_c_effects nprog
   end else begin
-    gen_js_of_c_css_effects nprog
+    if (Etc.get_css_effect_observation () ) then begin
+      gen_js_of_c_css_effects nprog
+    end else begin
+      gen_js_no_effects nprog
+    end
   end
 
 let write_output ofn genprog =
