@@ -1,8 +1,8 @@
 var LinkedList = (function  () {
       function LinkedList_own ()  {
-            JSConTest.tests.setVar("c_6", JSConTest.tests.assertParams(["c_1"], arguments, LinkedList_own, "LinkedList"));
-            trans.propAss(this, "_length", 0. , undefined);
-            trans.propAss(this, "_head", null, undefined);
+            JSConTest.tests.setVar("c_2", JSConTest.tests.assertParams(["c_1"], arguments, LinkedList_own, "LinkedList"));
+            this._length = 0. ;
+            this._head = null;
           };
         (function  () {
           function LinkedList () /* with lv: */ {
@@ -15,8 +15,8 @@ var LinkedList = (function  () {
     })();
   var size = (function  () {
       function size_own ()  {
-            JSConTest.tests.setVar("c_9", JSConTest.tests.assertParams(["c_8"], arguments, size_own, "size"));
-            return JSConTest.tests.getVar("c_9").assertReturn(this._length);
+            JSConTest.tests.setVar("c_5", JSConTest.tests.assertParams(["c_4"], arguments, size_own, "size"));
+            return JSConTest.tests.getVar("c_5").assertReturn(this._length);
           };
         (function  () {
           function size () /* with lv: */ {
@@ -28,22 +28,14 @@ var LinkedList = (function  () {
     })();
   var toArray = (function  () {
       function toArray_own ()  {
-            JSConTest.tests.setVar("c_13", JSConTest.tests.assertParams(["c_11"], arguments, toArray_own, "toArray"));
+            JSConTest.tests.setVar("c_8", JSConTest.tests.assertParams(["c_7"], arguments, toArray_own, "toArray"));
             var result = [],
                 current = this._head;
             while (current) {
-                trans.mCall(result, "push", [current.data]);
-                (function  () {
-                trans.pushUndo((function  () {
-                    var g0351d1f5864066f3a52a042545e3315712 = current;
-                      return (function  () {
-                        current = g0351d1f5864066f3a52a042545e3315712;
-                      });
-                  })());
-                  return current = current.next;
-              })();
+                result.push(current.data);
+                current = current.next;
               }
-            return JSConTest.tests.getVar("c_13").assertReturn(result);
+            return JSConTest.tests.getVar("c_8").assertReturn(result);
           };
         (function  () {
           function toArray () /* with lv: result,current*/ {
@@ -61,8 +53,8 @@ var LinkedList = (function  () {
     })();
   var toString = (function  () {
       function toString_own ()  {
-            JSConTest.tests.setVar("c_16", JSConTest.tests.assertParams(["c_15"], arguments, toString_own, "toString"));
-            return JSConTest.tests.getVar("c_16").assertReturn(trans.mCall(trans.mCall(this, "toArray", []), "toString", []));
+            JSConTest.tests.setVar("c_12", JSConTest.tests.assertParams(["c_11"], arguments, toString_own, "toString"));
+            return JSConTest.tests.getVar("c_12").assertReturn(this.toArray().toString());
           };
         (function  () {
           function toString () /* with lv: */ {
@@ -73,23 +65,26 @@ var LinkedList = (function  () {
         return toString_own;
     })();
   (function  () {
-    var g0351d1f5864066f3a52a042545e331570 = JSConTest.contracts.Function([], JSConTest.contracts.Top, []);
-      JSConTest.tests.add("LinkedList", LinkedList, g0351d1f5864066f3a52a042545e331570, 1000. );
-      JSConTest.tests.setVar("c_1", g0351d1f5864066f3a52a042545e331570);
+    var g6819aaf9022347d7ed9a5885ce9feb440 = JSConTest.contracts.Function([], JSConTest.contracts.Top, []);
+      JSConTest.tests.add("LinkedList", LinkedList, g6819aaf9022347d7ed9a5885ce9feb440, 1000. );
+      JSConTest.tests.setVar("c_1", g6819aaf9022347d7ed9a5885ce9feb440);
   })();
   (function  () {
-    var g0351d1f5864066f3a52a042545e331577 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "_length", contract : JSConTest.contracts.Integer}]), [], JSConTest.contracts.Integer, []);
-      JSConTest.tests.add("size", size, g0351d1f5864066f3a52a042545e331577, 1000. );
-      JSConTest.tests.setVar("c_8", g0351d1f5864066f3a52a042545e331577);
+    var g6819aaf9022347d7ed9a5885ce9feb443 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "_length", contract : JSConTest.contracts.Integer}]), [], JSConTest.contracts.Integer, []);
+      JSConTest.tests.add("size", size, g6819aaf9022347d7ed9a5885ce9feb443, 1000. );
+      JSConTest.tests.setVar("c_4", g6819aaf9022347d7ed9a5885ce9feb443);
   })();
   (function  () {
-    var g0351d1f5864066f3a52a042545e3315710 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "_head", contract : JSConTest.contracts.EObject([])}]), [], JSConTest.contracts.Array(JSConTest.contracts.Top), []);
-      JSConTest.tests.add("toArray", toArray, g0351d1f5864066f3a52a042545e3315710, 1000. );
-      JSConTest.tests.setVar("c_11", g0351d1f5864066f3a52a042545e3315710);
+    var g6819aaf9022347d7ed9a5885ce9feb446 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "_head", contract : JSConTest.contracts.EObject([])}]), [], JSConTest.contracts.Array(JSConTest.contracts.Top), []);
+      JSConTest.tests.add("toArray", toArray, g6819aaf9022347d7ed9a5885ce9feb446, 1000. );
+      JSConTest.tests.setVar("c_7", g6819aaf9022347d7ed9a5885ce9feb446);
   })();
   (function  () {
-    var g0351d1f5864066f3a52a042545e3315714 = JSConTest.contracts.Method(JSConTest.contracts.EObject([]), [], JSConTest.contracts.String, []);
-      JSConTest.tests.add("toString", toString, g0351d1f5864066f3a52a042545e3315714, 1000. );
-      JSConTest.tests.setVar("c_15", g0351d1f5864066f3a52a042545e3315714);
+
+var g6819aaf9022347d7ed9a5885ce9feb449 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "_head", contract : JSConTest.contracts.EObject([])}]), [], JSConTest.contracts.Array(JSConTest.contracts.Top), []);
+    var g6819aaf9022347d7ed9a5885ce9feb4410 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "toArray", contract : g6819aaf9022347d7ed9a5885ce9feb449}]), [], JSConTest.contracts.String, []);
+      
+      JSConTest.tests.add("toString", toString, g6819aaf9022347d7ed9a5885ce9feb4410, 1000. );
+      JSConTest.tests.setVar("c_11", g6819aaf9022347d7ed9a5885ce9feb4410);
   })();
   LinkedList.prototype = {constructor : LinkedList, size : size, toArray : toArray, toString : toString};

@@ -6,35 +6,43 @@
     <meta http-equiv="Content-Script-Type" content="text/javascript"/>
     <link href="style.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="../../js/jscontest.js"></script>
-    <script type="text/javascript" src="../../js/jscontest.tests.js"></script>
-    <script type="text/javascript" src="../../js/jscontest.statistic.js"></script>
     <script type="text/javascript" src="../../js/jscontest.contracts.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.cexp.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.statistic.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.tests.js"></script>
     <script type="text/javascript" src="../../js/jscontest.events.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.ddmin.js"></script>
     <script type="text/javascript" src="../../js/jscontest.events.handler.simple.js"></script>
     <script type="text/javascript" src="../../js/jscontest.events.handler.data.js"></script>
     <script type="text/javascript" src="../forJsTestDriver/makeChecker.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.treeView.js"></script>
     <script type="text/javascript" src="../forJsTestDriver/linked-list-test.js"></script>
 
+	<!-- Required CSS -->
+	<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.8.1/build/treeview/assets/skins/sam/treeview.css">
+	<!-- Optional CSS for for date editing with Calendar-->
+	<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.8.1/build/calendar/assets/skins/sam/calendar.css">
+	 
+	<!-- Dependency source file --> 
+	<script src="http://yui.yahooapis.com/2.8.1/build/yahoo-dom-event/yahoo-dom-event.js" ></script>
+	<!-- Optional dependency source file --> 
+	<script src="http://yui.yahooapis.com/2.8.1/build/animation/animation-min.js" type="text/javascript"></script>
+	<!-- Optional dependency source file for date editing with Calendar--> 
+	<script src="http://yui.yahooapis.com/2.8.1/build/calendar/calendar-min.js" ></script>
+	<!-- Optional dependency source file to decode contents of yuiConfig markup attribute--> 
+	<script src="http://yui.yahooapis.com/2.8.1/build/json/json-min.js" ></script>
+	 
+	<!-- TreeView source file --> 
+	<script src="http://yui.yahooapis.com/2.8.1/build/treeview/treeview-min.js" ></script>
+  
   </head>
 
   <body onload="JSConTest.tests.run()">
-    <h1>JSConTest - Test Framework - Basic</h1>
+    <h1>JSConTest - Test Framework - Linked List</h1>
     
-    <p>This test suite runs a lot of basic contracts against a set
-    	of values. It is expected to test 187 contracts. 29 should
-    	be verified, 147 should fail, and 11 should exit with an
-    	error. This is checked automatically, since 
-        two event handlers are registered. One checks if the contract
- 		behaves as expected. The other prints the usual contract 
- 		output to the page.     
+    <p>This test suite runs contracts against a this implementation of a single-linked list.
  	</p>
  		
- 	<p>	If something unexpected happens, the first event handler will 
- 		add an log message into the error box below. This may indicate, 
- 		that JSConTest does not work correctly in your browser, either
- 		due to the fact that your browser does not support a feature JSConTest
- 		rely on, or because JSConTest has an error. 
-    </p>
     
 	<div style="background-color: #999;">
 		<h2>Error log:</h2>
