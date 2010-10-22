@@ -190,7 +190,7 @@ let transform env effects pl sel =
     do_box 
       (fun e -> 
          match e with
-           | Object_access _ | Array_access _ -> e 
+           | Object_access _ -> e 
            | _ -> 
                do_mcalle_el 
                  (i_to_e (s_to_i env.js_namespace)) 
@@ -200,14 +200,13 @@ let transform env effects pl sel =
   and wbp_e index e =
     (* TODO: depending on the structure of e, do the method call *)
     do_box 
-      (fun e -> 
-         match e with
-           | Object_access _ | Array_access _ -> e 
-           | _ -> 
-               do_mcalle_el 
-                 (i_to_e (s_to_i env.js_namespace)) 
-                 (env.box_param)
-                 [c_to_e (n_to_c (float_of_int (index + 1))); e]) 
+      (function 
+         | Object_access _ | Array_access _ -> e 
+         | _ -> 
+             do_mcalle_el 
+               (i_to_e (s_to_i env.js_namespace)) 
+               (env.box_param)
+               [c_to_e (n_to_c (float_of_int (index + 1))); e]) 
       e
 
   and ub_e e =
