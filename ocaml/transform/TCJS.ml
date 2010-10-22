@@ -252,7 +252,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
                       )
             end
           in
-            i_to_e i, sel1 @ sel2 @ sel3 @ sel_obj
+            i_to_e i, sel1 @ sel2 @ sel_obj @ sel3
 
     and generate_basecontract : a list -> bc -> 
     tc expression * tc source_element list 
