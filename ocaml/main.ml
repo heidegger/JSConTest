@@ -94,6 +94,7 @@ let gen_js_of_c_effects nprog =
       "unOp"
       "box"
       "box_param"
+      "box_this"
       "unbox"
   in
   let nprog = TCJS_effects.transform (create_transform_env effect_env) nprog in

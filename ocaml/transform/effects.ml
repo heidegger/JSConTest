@@ -13,11 +13,12 @@ type t = {
   unop: string;
   box_var: string;
   box_param : string;
+  box_this: string;
   unbox: string;
 }
 
 let create_t ~js_namespace ~variable_prefix 
-    ~propAcc ~propAss ~mCall ~unop ~box_var ~box_param ~unbox
+    ~propAcc ~propAss ~mCall ~unop ~box_var ~box_param ~box_this ~unbox
     =
   { js_namespace = js_namespace;
     variable_prefix = variable_prefix;
@@ -28,6 +29,7 @@ let create_t ~js_namespace ~variable_prefix
     box_var = box_var;
     box_param = box_param;
     unbox = unbox;
+    box_this = box_this
   }
 
 let transform env effects pl sel =
@@ -256,7 +258,7 @@ let transform env effects pl sel =
     | For (a,fb,s) -> For (a,t_fb fb, t_s s)
     | Continue (a,io) -> Continue (a,t_o t_i io)
     | Break (a,io) -> Break (a,t_o t_i io)
-    | Return (a,eo) -> Return (a,t_o t_e eo)
+    | Return (a,eo) -> Return (a,t_o (function e -> ub_e (t_e e)) eo)
     | With (a,e,s) -> failwith "With statement not supported"
     | Labelled_statement (a,i,s) -> Labelled_statement (a,t_i i, t_s s)
     | Switch (a,e,regcases,sloo,regcases2) ->
@@ -335,7 +337,14 @@ let transform env effects pl sel =
               Statement (null_annotation, 
                          Variable_declaration (null_annotation, ieol))
             in
-              vdecl :: t_body
+              vdecl :: 
+                (g_se_s 
+                   (g_s_e 
+                      (do_mcalle_el
+                         (i_to_e (s_to_i env.js_namespace))
+                         env.box_this
+                         [This (null_annotation)])))
+              :: t_body
           end
 
 module TestEffects = struct
@@ -353,7 +362,8 @@ module TestEffects = struct
       box_var = "box";
       box_param = "box_param";
       unbox = "unbox";
-      unop = "doUnop"
+      unop = "doUnop";
+      box_this = "boxthis"
     } 
     in
     let na = null_annotation in
