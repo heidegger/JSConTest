@@ -85,8 +85,8 @@
       return ((access_path.type === PARAMETER) && 
               (eff.number === access_path.number));
     case VARIABLE:
-      alert("Not yet implemented");
-      return false;
+    	return ((access_path.type === VARIABLE) &&
+    					(eff.name === access_path.name));
     case PROP:
       if ((access_path.type === PROP) && 
           (access_path.property === eff.property)) {
@@ -326,7 +326,7 @@
   
   function box_this(value) {
   	var b = with_box(value);
-  	return add_access_path(b, {name: "this", type: VARIABLE } );
+  	return add_access_path(b, { name: "this", type: VARIABLE } );
   }
   
   function box(vname, value) {

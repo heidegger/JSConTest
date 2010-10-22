@@ -7,7 +7,6 @@ let qUESTION = 4
 let sTAR_TYPE = 5
 let aLL = 6
 let nOPROP_TYPE = 7
-let tHIS_TYPE = 8
       
 let js_of_effect fname = 
   let rec js_of_effect = function
@@ -19,13 +18,14 @@ let js_of_effect fname =
           ]
     | This -> 
           ASTUtil.new_object
-            [("type", ASTUtil.int_to_exp tHIS_TYPE);
+            [("type", ASTUtil.int_to_exp vAR_TYPE);
+             ("name", ASTUtil.c_to_e (ASTUtil.s_to_c "this"));
              ("fname", ASTUtil.c_to_e (ASTUtil.s_to_c fname))
             ]
     | Var s ->
         ASTUtil.new_object
           [("type", ASTUtil.int_to_exp vAR_TYPE);
-           ("name", ASTUtil.c_to_e (ASTUtil.s_to_c fname));
+           ("name", ASTUtil.c_to_e (ASTUtil.s_to_c s));
            ("fname", ASTUtil.c_to_e (ASTUtil.s_to_c fname));
           ]
     | Prop (e,s) -> 
