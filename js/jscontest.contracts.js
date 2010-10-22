@@ -415,7 +415,7 @@
 		function checkReturn(v) {
 			var ok = rt.check(v);
 			if (!ok) {
-				fire.call(P, 'assertReturn', c, v);
+				fire.call(P, 'assertReturn', contract, v);
 			}
 		}
 		function get_last_created_values() {
