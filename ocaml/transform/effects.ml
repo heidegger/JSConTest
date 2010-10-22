@@ -190,7 +190,7 @@ let transform env effects pl sel =
     do_box 
       (fun e -> 
          match e with
-           | Object_access _ -> e 
+           | Object_access _ | Array_access _ -> e 
            | _ -> 
                do_mcalle_el 
                  (i_to_e (s_to_i env.js_namespace)) 
@@ -201,7 +201,7 @@ let transform env effects pl sel =
     (* TODO: depending on the structure of e, do the method call *)
     do_box 
       (function 
-         | Object_access _ | Array_access _ -> e 
+         | Object_access _ -> e 
          | _ -> 
              do_mcalle_el 
                (i_to_e (s_to_i env.js_namespace)) 
