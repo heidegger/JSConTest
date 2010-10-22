@@ -337,7 +337,7 @@
 
   function unbox(value) {
     if (value && value.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
-      return unbox(value.value);
+      return unbox(value.reference);
     } else {
       return value;
     }
