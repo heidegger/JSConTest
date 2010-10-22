@@ -317,10 +317,13 @@ let transform env effects pl sel =
   let t_body = 
     (g_se_s 
        (g_s_e 
-          (do_mcalle_el
-             (i_to_e (s_to_i env.js_namespace))
-             env.box_this
-             [This (null_annotation)])))
+          (Assign(null_annotation,
+                 This null_annotation,
+                 Regular_assign null_annotation,
+                 (do_mcalle_el
+                    (i_to_e (s_to_i env.js_namespace))
+                    env.box_this
+                    [This (null_annotation)])))))
     :: t_body
   in
     match pl with
