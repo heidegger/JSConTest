@@ -286,7 +286,7 @@
   	var result = {};
   	for (var uid in p_map) {
   		result[uid] = {
-  		  effect: p_map[uid][p],
+  		  effect: p_map[uid],
   		  type: PROP,
   		  property: property
   		};
