@@ -814,6 +814,7 @@ var JSConTest = (function (P) {
   P.gen.genPObject = genPObject;
   P.gen.genTopOUndef = genTopOUndef; 
   P.gen.genTop = genTop;
+  P.gen.genArray = genArray;
   P.gen.initGen = initGen;
   
   return P;

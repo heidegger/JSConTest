@@ -397,7 +397,7 @@
 		}
 		function gen() {
 			return (function() {
-				if (this.checkParams(arguments))
+				if (contract.checkParams(arguments))
 					return rt.gen();
 			});
 		}
