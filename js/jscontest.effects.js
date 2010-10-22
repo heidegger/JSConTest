@@ -232,7 +232,7 @@
         }
       }
     }
-    doWithUnwrap2(wo, wp, read);    
+    return doWithUnwrap2(wo, wp, read);    
   }
 
   function propAss(wo,wp,wv) {
@@ -258,7 +258,7 @@
       o.__infos__[p] = apv;      
       return undefined;
     }
-    doWithUnwrap3(wo, wp, wv, write);
+    return doWithUnwrap3(wo, wp, wv, write);
   }
   function mCall(o,m,pl) {
     // TODO: what, if m is wrapped, too?
