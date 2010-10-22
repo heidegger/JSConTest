@@ -324,7 +324,7 @@
 		// put all test cases into modules. 
 		for ( var m in tests ) {
 			toDoM.push({
-			  mname : m,
+			  mname : m.substr(1),
 			  m : tests[m]
 			});
 		}
@@ -351,10 +351,10 @@
 	}
 	
 	function add(module, value, contract, count, data) {
-		if (!(tests[module])) {
-			tests[module] = [];
+		if (!(tests[":" + module])) {
+			tests[":" + module] = [];
 		}
-		tests[module].push({
+		tests[":" + module].push({
 		  value : value,
 		  contract : contract,
 		  count : count,
