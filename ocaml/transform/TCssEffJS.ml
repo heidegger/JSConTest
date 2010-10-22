@@ -42,6 +42,11 @@ let js_of_effect fname =
           ["type", ASTUtil.int_to_exp sTAR_TYPE;
            "effect",js_of_effect e
           ]
+    | NoProp e ->
+        ASTUtil.new_object
+          ["type", ASTUtil.int_to_exp nOPROP_TYPE;
+           "effect",js_of_effect e
+          ]
   in
     js_of_effect
 
