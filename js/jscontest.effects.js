@@ -218,6 +218,8 @@
           // information found in the wrapper of o
           // TODO: extend apo with p, create new wrapper
           // return the new wrapper
+        	var napo = extend_path(apo, p);
+          return new Create_wrapper_with_pmap(result,napo);
         } else {
           if (o && (o.__infos__) && (o.__infos__)[p]) {
             // information is found in host object
@@ -280,7 +282,17 @@
   }
   Create_wrapper_with_pmap.prototype = isWrapperObj;
 
-  
+  function extend_path(p_map, property) {
+  	var result = {};
+  	for (var uid in p_map) {
+  		result[uid] = {};
+  		for (var p in p_map[uid]) {
+  			result[uid][p] = {effect: p_map[uid][p], type: PROP, name: property };
+  		}
+  	}
+  	return result;
+  }
+
   function add_access_path(b, prop) {
     var uid   = getUid(),
         fname = getActiveFunName();
@@ -306,10 +318,15 @@
       return new Create_wrapper_with_pmap(value);
     }
   }
+
+  function box_this(value) {
+  	var b = with_box(value);
+  	return add_access_path(b, {name: "this", type: VARIABLE } );
+  }
   
   function box(vname, value) {
     var b = with_box(value);
-    return add_access_path(b, { name: vname, type: VARIABLE});
+    return add_access_path(b, { name: vname, type: VARIABLE} );
   }
 
   function box_param(index, value) {
