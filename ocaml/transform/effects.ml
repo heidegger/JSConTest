@@ -314,6 +314,15 @@ let transform env effects pl sel =
   in
 
   let t_body = List.map t_se sel in 
+  let t_body = 
+    (g_se_s 
+       (g_s_e 
+          (do_mcalle_el
+             (i_to_e (s_to_i env.js_namespace))
+             env.box_this
+             [This (null_annotation)])))
+    :: t_body
+  in
     match pl with
       | [] -> 
           t_body
@@ -337,14 +346,7 @@ let transform env effects pl sel =
               Statement (null_annotation, 
                          Variable_declaration (null_annotation, ieol))
             in
-              vdecl :: 
-                (g_se_s 
-                   (g_s_e 
-                      (do_mcalle_el
-                         (i_to_e (s_to_i env.js_namespace))
-                         env.box_this
-                         [This (null_annotation)])))
-              :: t_body
+              vdecl :: t_body
           end
 
 module TestEffects = struct
