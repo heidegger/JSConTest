@@ -237,9 +237,11 @@ module Make(T: TRANS) : S with type t = T.t = struct
                     new_var tmp_prefix 
                       (do_mcalle_el 
                          contract_prefix "Function" 
-                         [(new_array el); (* Parameter *)
+                         [new_array el;   (* Parameter *)
                           e;              (* return *)
-                          effects_compl]  (* effekte *)
+                          effects_compl;  (* effekte *)
+                          ASTUtil.c_to_e (ASTUtil.s_to_c (ASTUtil.i_to_s fname_org))                (* fname *)
+                         ]
                       )
                 | Some the -> 
                     new_var tmp_prefix 
@@ -248,7 +250,9 @@ module Make(T: TRANS) : S with type t = T.t = struct
                          [the;            (* this object*)  
                           (new_array el); (* Parameter *)
                           e;              (* return *)
-                          effects_compl]  (* effekte *)
+                          effects_compl;   (* effekte *)
+                          ASTUtil.c_to_e (ASTUtil.s_to_c (ASTUtil.i_to_s fname_org))                (* fname *)
+                         ]
                       )
             end
           in

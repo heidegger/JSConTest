@@ -443,7 +443,7 @@
 		return contract;
 	}
 	
-	C.Function = function (pl, rt, eff, thisC) {
+	C.Function = function (pl, rt, eff, thisC, fname) {
 		var contract;		
 		function registerEffects() {
 			if (P.tests.callback.registerEffect) {
@@ -452,7 +452,7 @@
 				// unregisterEffect, that is able to call
 				// the callback function unregisterEffect with
 				// the uid gernerated by registerEffect.
-				var uid = P.tests.callback.registerEffect(eff, pl, fname);
+				var uid = P.tests.callback.registerEffect(eff, pl, thisC, fname);
 				if (P.tests.callback.unregisterEffect) {
 					var o = {
 						unregisterEffect : function() {
@@ -470,8 +470,8 @@
 		contract.registerEffects = registerEffects;
 		return contract;
 	};
-	C.Method = function(this_contract, pl, rt, eff) {
-		var contract = C.Function(pl, rt, eff, this_contract);		
+	C.Method = function(this_contract, pl, rt, eff, mname) {
+		var contract = C.Function(pl, rt, eff, this_contract, mname);		
 		return contract;
 	};
 	

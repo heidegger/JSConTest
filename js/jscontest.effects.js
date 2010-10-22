@@ -17,7 +17,8 @@
       PROP = 3,
       QUESTIONMARK = 4,
       STAR = 5,
-      ALL = 6;
+      ALL = 6,
+      noPROP = 7;
 
   
   var E = {},
@@ -52,7 +53,7 @@
       function getGlobalObject() { 
         return this;
       }
-      function registerEffect(effl, pl, fname) {
+      function registerEffect(effl, pl, thisC, fname) {
         var uid = i;
         i += 1;
         effect_store[uid] = effl;
