@@ -320,6 +320,10 @@
     }
   }
 
+  function isBox(value) {
+  	return (value && value.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685);
+  }
+  
   function box_this(value) {
   	var b = with_box(value);
   	return add_access_path(b, {name: "this", type: VARIABLE } );
@@ -435,6 +439,7 @@
   E.box = box;
   E.box_param = box_param;
   E.box_this = box_this;
+  E.isBox = isBox;
   E.unbox = unbox;
   E.mCall = mCall;
   E.propAss = propAss;

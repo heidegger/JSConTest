@@ -12,7 +12,7 @@ module TCJS_effects = TCJS.Make(Effects)
 module TCJS_noeffects = TCJS.Make(
   struct 
     type t = unit
-    let transform () _ _ e = e
+    let transform () _ _ _ e = e
   end)
 
 let string_of_program p =
@@ -95,6 +95,7 @@ let gen_js_of_c_effects nprog =
       "box"
       "box_param"
       "box_this"
+      "isBox"
       "unbox"
   in
   let nprog = TCJS_effects.transform (create_transform_env effect_env) nprog in

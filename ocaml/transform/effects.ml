@@ -14,11 +14,12 @@ type t = {
   box_var: string;
   box_param : string;
   box_this: string;
+  box_test: string;
   unbox: string;
 }
 
 let create_t ~js_namespace ~variable_prefix 
-    ~propAcc ~propAss ~mCall ~unop ~box_var ~box_param ~box_this ~unbox
+    ~propAcc ~propAss ~mCall ~unop ~box_var ~box_param ~box_this ~box_test ~unbox
     =
   { js_namespace = js_namespace;
     variable_prefix = variable_prefix;
@@ -29,10 +30,11 @@ let create_t ~js_namespace ~variable_prefix
     box_var = box_var;
     box_param = box_param;
     unbox = unbox;
-    box_this = box_this
+    box_this = box_this;
+    box_test = box_test
   }
 
-let transform env effects pl sel =
+let transform env effects fname pl sel =
   let prefix = i_to_e (s_to_i env.js_namespace) in
 
   let t_o f = function
@@ -313,19 +315,8 @@ let transform env effects pl sel =
 
   in
 
-  let t_body = List.map t_se sel in 
+  let t_body = List.map t_se sel in
   let t_body = 
-    (g_se_s 
-       (g_s_e 
-          (Assign(null_annotation,
-                 This null_annotation,
-                 Regular_assign null_annotation,
-                 (do_mcalle_el
-                    (i_to_e (s_to_i env.js_namespace))
-                    env.box_this
-                    [This (null_annotation)])))))
-    :: t_body
-  in
     match pl with
       | [] -> 
           t_body
@@ -351,6 +342,44 @@ let transform env effects pl sel =
             in
               vdecl :: t_body
           end
+  in
+  let t_body_s, t_body_se =
+    List.fold_left
+      (fun (sl,sel) (s_se) ->
+         match s_se with
+           | Statement (_,s) -> (s :: sl, sel)
+           | _ -> (sl, s_se :: sel)
+      )
+      ([],[])
+      t_body
+  in
+  let t_body_s = List.rev t_body_s in
+  let t_body_se = List.rev t_body_se in    
+    t_body_se @ 
+      if (List.length t_body_s == 0) 
+      then [] 
+      else
+        [g_se_s
+           (If (null_annotation,
+                do_mcalle_el
+                  (i_to_e (s_to_i env.js_namespace))
+                  env.box_test
+                  [This null_annotation],
+                (* execute the original function, since this is already masked *)
+                Block (null_annotation, t_body_s),
+                (* call the function with the mask this object *)
+                Some 
+                  (Return (null_annotation, 
+                           Some (do_mcalle_el
+                                   (i_to_e fname)
+                                   "apply"
+                                   [(do_mcalle_el
+                                       (i_to_e (s_to_i env.js_namespace))
+                                       env.box_this
+                                       [This (null_annotation)]);
+                                    (i_to_e (s_to_i "arguments"))])))))
+           ]
+      
 
 module TestEffects = struct
   open ProglangUtils
@@ -368,13 +397,14 @@ module TestEffects = struct
       box_param = "box_param";
       unbox = "unbox";
       unop = "doUnop";
-      box_this = "boxthis"
+      box_this = "boxthis";
+      box_test = "isBox"
     } 
     in
     let na = null_annotation in
     let t1 () =
       let p = [] in
-      let p' = transform env (Some true) [] p in
+      let p' = transform env (Some true) (s_to_i "f") [] p in
         assert_equal 
           ~msg:"Progtam should not have changed"
           ~printer:(fun sel -> 
@@ -385,7 +415,7 @@ module TestEffects = struct
     let t2 () =
       let e_read = read_prop (s_to_i "x") "a" in
       let p = [g_se_s (g_s_e e_read)] in
-      let p' = transform env (Some true) [] p in
+      let p' = transform env (Some true) (s_to_i "f") [] p in
       let first_read = 
         do_mcalle_el 
           (i_to_e (s_to_i "PROGLANG.effects"))
@@ -401,7 +431,7 @@ module TestEffects = struct
         
         let e_read2 = Object_access (na,e_read,s_to_i "b") in
         let p2 = [g_se_s (g_s_e e_read2)] in
-        let p2' = transform env (Some true) [] p2 in
+        let p2' = transform env (Some true) (s_to_i "f") [] p2 in
         let second_read =
           do_mcalle_el
             (i_to_e (s_to_i "PROGLANG.effects"))

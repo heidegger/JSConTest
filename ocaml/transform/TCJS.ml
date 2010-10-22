@@ -29,6 +29,7 @@ module type TRANS = sig
   type t
   val transform : t 
     -> bool option 
+    -> 'c identifier 
     -> 'c identifier list 
     -> 'c source_element list 
     -> 'c source_element list
@@ -393,6 +394,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
       T.transform 
         env.effects_env
         (Contract.get_trans c)
+        fname_own
         pl
         fbody
     in
