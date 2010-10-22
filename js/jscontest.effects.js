@@ -434,6 +434,7 @@
 
   E.box = box;
   E.box_param = box_param;
+  E.box_this = box_this;
   E.unbox = unbox;
   E.mCall = mCall;
   E.propAss = propAss;
