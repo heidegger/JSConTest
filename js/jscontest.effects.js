@@ -285,10 +285,11 @@
   function extend_path(p_map, property) {
   	var result = {};
   	for (var uid in p_map) {
-  		result[uid] = {};
-  		for (var p in p_map[uid]) {
-  			result[uid][p] = {effect: p_map[uid][p], type: PROP, name: property };
-  		}
+  		result[uid] = {
+  		  effect: p_map[uid][p],
+  		  type: PROP,
+  		  property: property
+  		};
   	}
   	return result;
   }
