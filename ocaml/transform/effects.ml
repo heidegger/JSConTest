@@ -15,11 +15,12 @@ type t = {
   box_param : string;
   box_this: string;
   box_test: string;
+  box_return: string;
   unbox: string;
 }
 
 let create_t ~js_namespace ~variable_prefix 
-    ~propAcc ~propAss ~mCall ~unop ~box_var ~box_param ~box_this ~box_test ~unbox
+    ~propAcc ~propAss ~mCall ~unop ~box_var ~box_param ~box_this ~box_test ~box_return ~unbox
     =
   { js_namespace = js_namespace;
     variable_prefix = variable_prefix;
@@ -31,6 +32,7 @@ let create_t ~js_namespace ~variable_prefix
     box_param = box_param;
     unbox = unbox;
     box_this = box_this;
+    box_return = box_return;
     box_test = box_test
   }
 
@@ -214,12 +216,17 @@ let transform env effects fname pl sel =
       e
 
   and ub_e e =
-    (* TODO: depending of the structure of e, do the method call *)
     do_box (fun e -> 
               do_mcalle_el
                 (i_to_e (s_to_i env.js_namespace))
                 env.unbox
                 [e]) e
+  
+  and rb_e e =
+    do_mcalle_el
+      (i_to_e (s_to_i env.js_namespace))
+      env.box_return
+      [e]
 
   and t_xmle = function
     | XMLElement (a,xmlel,xmleo,xmlel2) ->
@@ -260,7 +267,7 @@ let transform env effects fname pl sel =
     | For (a,fb,s) -> For (a,t_fb fb, t_s s)
     | Continue (a,io) -> Continue (a,t_o t_i io)
     | Break (a,io) -> Break (a,t_o t_i io)
-    | Return (a,eo) -> Return (a,t_o (function e -> ub_e (t_e e)) eo)
+    | Return (a,eo) -> Return (a,t_o (function e -> rb_e (t_e e)) eo)
     | With (a,e,s) -> failwith "With statement not supported"
     | Labelled_statement (a,i,s) -> Labelled_statement (a,t_i i, t_s s)
     | Switch (a,e,regcases,sloo,regcases2) ->
@@ -398,7 +405,8 @@ module TestEffects = struct
       unbox = "unbox";
       unop = "doUnop";
       box_this = "boxthis";
-      box_test = "isBox"
+      box_test = "isBox";
+      box_return = "returnBox"
     } 
     in
     let na = null_annotation in

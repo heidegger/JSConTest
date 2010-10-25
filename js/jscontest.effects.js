@@ -260,14 +260,62 @@
     }
     return doWithUnwrap3(wo, wp, wv, write);
   }
-  function mCall(o,m,pl) {
-    // TODO: what, if m is wrapped, too?
-    if (o && o.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
-      return ((o.value)[m]).apply(o.value,pl);
-    } else {
-      return o[m].apply(o,pl);
-    }
-  }
+
+  var mCall, getBoxes, returnBox;
+  (function () {
+		var wrapper_exits = false,
+			boxes = { },
+			return_box = { };
+		
+		getBoxes = (function () {
+			var b = boxes;
+			boxes = { };
+			return b;
+		});
+		
+		returnBox = (function (rv){
+			return_box.box = rv;
+			return_box.box_exists = true;
+			return unbox(rv);
+		});
+		
+		mCall = (function mCall(o,m,pl) {
+	    var i, plub = [], rv;
+			// FIXME: deal with the situation, that m is also a box
+			//       take the value of m, convert it to a string, do
+			//       the method call with this string
+			// unbox everything, and put the boxes into the global box space
+			boxes.this_box = o;
+			boxes.pl_box = [];
+			for (i = 0; i < pl.length; i += 1) {
+				boxes.pl_box.push(pl[i]);
+				plub.push(unbox(pl[i]));
+			}
+			// now every original parameter is stored inside of boxes, 
+			// hence we can do the call with the values (not with the boxes)
+			// transformed functions will ask for the boxes of their own,
+			// and native functions will work correctly with the original 
+			// unboxed value
+			// the return value of the function is always the unboxed return value,
+			// since native functions always return unboxed values.
+			// tranformed functions does also return unboxed values (since they need 
+			// to work in callbacks of native functions), but also stores the box
+			// for the return value into the return_box object by using the function
+			// returnBox.
+			if (o && o.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
+	      rv = ((o.value)[m]).apply(o.value,plub);  
+	    } else {
+	      rv = o[m].apply(o,plub);
+	    }			
+			// if we called a tranformed function with mcall, we should return the
+			// boxed value, not the unboxed one.
+			if (return_box.box_exists) {
+				rv = return_box.box;
+				return_box = { };
+			}
+			return rv;
+		});
+	});
 
   var isWrapperObj = {
     THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685: true
@@ -443,6 +491,8 @@
   E.isBox = isBox;
   E.unbox = unbox;
   E.mCall = mCall;
+  E.returnBox = returnBox;
+  E.getBoxes = getBoxes;
   E.propAss = propAss;
   E.propAcc = propAcc;
   

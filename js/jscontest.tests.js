@@ -421,7 +421,8 @@
 	var leafTest = testmode.lT;
 	var getTestMode = testmode.gT;
 
-	T.assertParams = function(cl, pl, str, fname) {
+
+	function assertParams(cl, pl, str, fname) {
 		var clreal = [];
 		// TODO: Why does this work with for (var in ...)?
 		// If cl is an array, this will not work
@@ -467,7 +468,16 @@
 			return v;
 		};
 		return ret;
-	};
+	}
+	function enableAsserts(f, cl, fname) {
+		return (function () {
+			var rc, result;
+			rc = assertParams.call(this, cl, arguments, f, fname),
+			result = f.apply(this, arguments);
+			return rc.assertReturn(result);			
+		});
+	}
+	T.enableAsserts = enableAsserts;
 	T.overrideToStringOfFunction = function(f, fstr) {
 		f.toString = function() {
 			return "" + fstr;

@@ -51,85 +51,6 @@ let so_i = so_identifier
 module Make(T: TRANS) : S with type t = T.t = struct
   type t = T.t
   
-  let introduce_asserts test_prefix 
-      (cis : (Testlib.varname * GenInfo.t) list)
-      fbody fname_own fname_org = 
-    if (List.length cis < 1) then fbody else begin
-      let rvar = Testlib.gen_lib_var_name () in
-      let cl = 
-        new_array
-          (List.map 
-             Testlib.get_var_name
-             (List.map fst 
-                (List.filter 
-                   (fun (cs,gI) -> GenInfo.getAsserts gI) 
-                   cis)))
-      in
-      let fbodyp = sel_to_p fbody in
-        
-      let wrap_return_flag = ref 0 in
-      let wrap_returns = function
-        | Return (n,Some e) as eorg -> 
-            if (!wrap_return_flag == 0) then
-              Return (n,
-                      Some
-                        (do_mcalle_el
-                           (Testlib.get_var 
-                              test_prefix
-                              rvar)
-                           "assertReturn"
-                           [e]))
-            else eorg
-        | s -> s
-      in
-      let (Program (_,fbody)) = 
-        AST.visit
-          ~b_source_element:
-          (function 
-             | Function_declaration _ as se -> 
-                 wrap_return_flag := !wrap_return_flag + 1;
-                 [se]
-             | se -> [se])
-          ~a_source_element:
-          (function 
-             | Function_declaration _ as se -> 
-                 wrap_return_flag := !wrap_return_flag - 1;
-                 [se]
-             | se -> [se])
-          ~b_expression:
-          (function 
-             | Function_expression _ as e ->
-                 wrap_return_flag := !wrap_return_flag + 1;
-                 e
-             | e -> e
-          )
-          ~a_expression:
-          (function 
-             | Function_expression _ as e ->
-                 wrap_return_flag := !wrap_return_flag - 1;
-                 e
-             | e -> e
-          )
-          ~b_statement:wrap_returns
-          ~ba_c:(fun c -> c)
-          fbodyp
-      in
-        (Testlib.set_var 
-           test_prefix
-           rvar
-           (do_mcalle_el
-              test_prefix 
-              "assertParams"
-              [cl;
-               i_to_e (s_to_i "arguments");
-               i_to_e fname_own; 
-               (* TODO: trans library needs to get informed in a different way *)
-(*               c_to_e (b_to_c css_eff); *)
-               s_to_e (i_to_s fname_org)
-              ]))
-        :: fbody
-    end
-
   (* generate code for contracts *)
   let generate_top_contract
       tests_prefix
@@ -399,19 +320,6 @@ module Make(T: TRANS) : S with type t = T.t = struct
         fbody
     in
       (* introduce aserts *)
-    let fbody = 
-      if env.asserts 
-      then begin
-        (* print_endline "intro asserts"; *)
-        introduce_asserts 
-          (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
-          cis fbody fname_own fname_org
-      end
-      else begin
-        (* print_endline "no intro of asserts";  *)
-        fbody
-      end
-    in
     let toString =
       [gen_run_anonym_fun 
          [fcode;
@@ -424,9 +332,26 @@ module Make(T: TRANS) : S with type t = T.t = struct
                 )))]]
     in
     let funcode = [Function_declaration (a,c,fname_own,pl,None,fbody)] in
+    let return_fun = if (env.asserts && List.length cis > 0) then 
+      let cl = 
+        new_array
+          (List.map 
+             Testlib.get_var_name
+             (List.map fst 
+                (List.filter 
+                   (fun (cs,gI) -> GenInfo.getAsserts gI) 
+                   cis)))
+      in
+        do_mcalle_el
+          (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
+          "enableAsserts"
+          [i_to_e fname_own; cl; i_to_e fname_org ]
+    else
+      i_to_e fname_own
+    in
       [AST.VarDecl 
          (fname_org,
-          (g_e_sel (funcode @ toString @ [g_return (i_to_e fname_own)])))
+          (g_e_sel (funcode @ toString @ [g_return return_fun])))
       ] @ test_code          
 
 
