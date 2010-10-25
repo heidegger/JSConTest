@@ -9,7 +9,8 @@ val transform : t
   -> 'c identifier list 
   -> 'c source_element list 
   -> 'c source_element list
-
+val after_wrapper : t -> 'c identifier list -> 'c expression -> 'c expression
+val before_wrapper : t -> 'c identifier list -> 'c expression -> 'c expression
 
 val create_t :
   js_namespace:string ->
@@ -20,7 +21,4 @@ val create_t :
   unop:string ->
   box_var : string ->
   box_param: string -> 
-  box_this: string ->
-  box_test: string ->
-  box_return: string ->
   unbox: string -> t

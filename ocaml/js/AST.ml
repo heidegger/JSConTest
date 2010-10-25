@@ -905,11 +905,11 @@ let to_string c_to_string =
           (soa ann)
           ^"(function "^name^" ("
           ^(String.concat ", " (List.map so_identifier il))^")"
-          ^(match lvo with
+          (* ^(match lvo with
               | None -> ""
               | Some lv -> "/* with lv:"
                  ^(String.concat ", " (List.map so_identifier lv)) ^ "*/"
-           )
+           )*)
           ^" {"^
             (nl indent)^(so_source_elementl (indent+2) sel)
           ^(nl (indent-2))^"})"
@@ -1150,11 +1150,11 @@ let to_string c_to_string =
         let sc = (c_to_string contract) in
         let sf = "function " ^ (so_identifier name) 
           ^" (" ^ (String.concat ", " (List.map so_identifier il))^") " 
-          ^ (match lvo with
+          (* ^ (match lvo with
                | None -> ""
                | Some lv -> "/* with lv: " 
                    ^ (String.concat "," (List.map so_identifier lv)) ^ "*/"
-            )
+            ) *)
           ^" {" 
           ^(nl (indent+2)) 
           ^(so_source_elementl (indent+2) sel)

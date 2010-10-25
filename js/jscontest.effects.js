@@ -484,17 +484,24 @@
     return obj;
   }
 
+  function enableWrapper(f) {
+  	// first version, just do nothing
+  	return (function () {
+  		return f.apply(this,arguments);
+  	});
+  }
 
   E.box = box;
   E.box_param = box_param;
-  E.box_this = box_this;
+  //E.box_this = box_this;
   E.isBox = isBox;
   E.unbox = unbox;
   E.mCall = mCall;
-  E.returnBox = returnBox;
-  E.getBoxes = getBoxes;
+  //E.returnBox = returnBox;
+  //E.getBoxes = getBoxes;
   E.propAss = propAss;
   E.propAcc = propAcc;
+  E.enableWrapper = enableWrapper;
   
   if (P.tests && P.tests.callback) {
     P.tests.callback.registerEffect = registerEffect;

@@ -469,7 +469,8 @@
 		};
 		return ret;
 	}
-	function enableAsserts(f, cl, fname) {
+	
+	function enableAsserts(f, cl, fname, forg) {
 		return (function () {
 			var rc, result;
 			rc = assertParams.call(this, cl, arguments, f, fname),
@@ -478,10 +479,15 @@
 		});
 	}
 	T.enableAsserts = enableAsserts;
-	T.overrideToStringOfFunction = function(f, fstr) {
+	T.overrideToStringOfFunction = function(f, fstr, asserts) {
 		f.toString = function() {
-			return "" + fstr;
+			if (asserts) {
+				return "" + fstr + "\n// (with assert check enabled)";
+			} else {
+				return "" + fstr;
+			}
 		};
+		return f;
 	};
 
 	/******************************/

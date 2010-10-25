@@ -33,6 +33,8 @@ module type TRANS = sig
     -> 'c identifier list 
     -> 'c source_element list 
     -> 'c source_element list
+  val before_wrapper : t -> 'c identifier list -> 'c expression -> 'c expression
+  val after_wrapper : t -> 'c identifier list -> 'c expression -> 'c expression
 end
 module type S = sig
   type t
@@ -319,8 +321,8 @@ module Make(T: TRANS) : S with type t = T.t = struct
         pl
         fbody
     in
-      (* introduce aserts *)
-    let toString =
+
+    (* let toString =
       [gen_run_anonym_fun 
          [fcode;
           (g_se_s 
@@ -330,8 +332,9 @@ module Make(T: TRANS) : S with type t = T.t = struct
                    "overrideToStringOfFunction" 
                    [i_to_e fname_own;i_to_e fname_org]
                 )))]]
-    in
+    in *)
     let funcode = [Function_declaration (a,c,fname_own,pl,None,fbody)] in
+    let return_fun = T.before_wrapper env.effects_env pl (i_to_e fname_own) in
     let return_fun = if (env.asserts && List.length cis > 0) then 
       let cl = 
         new_array
@@ -345,13 +348,23 @@ module Make(T: TRANS) : S with type t = T.t = struct
         do_mcalle_el
           (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
           "enableAsserts"
-          [i_to_e fname_own; cl; i_to_e fname_org ]
+          [return_fun; cl; s_to_e (i_to_s fname_org) ]
     else
-      i_to_e fname_own
+      return_fun
     in
+    let return_fun = 
+      do_mcalle_el
+        (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
+        "overrideToStringOfFunction" 
+        [return_fun; 
+         g_e_sel [fcode; g_return (i_to_e fname_org)];
+         c_to_e (b_to_c (env.asserts && List.length cis > 0))
+        ]
+    in
+    let return_fun = T.after_wrapper env.effects_env pl return_fun in
       [AST.VarDecl 
          (fname_org,
-          (g_e_sel (funcode @ toString @ [g_return return_fun])))
+          (g_e_sel (funcode @ [g_return return_fun])))
       ] @ test_code          
 
 

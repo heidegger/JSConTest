@@ -23,6 +23,8 @@ module type TRANS = sig
     -> 'c identifier list 
     -> 'c source_element list 
     -> 'c source_element list
+  val before_wrapper : t -> 'c identifier list -> 'c expression -> 'c expression
+  val after_wrapper : t -> 'c identifier list -> 'c expression -> 'c expression
 end
 
 (** Signature of the Make functor. *)  

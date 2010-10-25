@@ -13,6 +13,8 @@ module TCJS_noeffects = TCJS.Make(
   struct 
     type t = unit
     let transform () _ _ _ e = e
+    let after_wrapper _ _ x = x
+    let before_wrapper _ _ x = x
   end)
 
 let string_of_program p =
@@ -94,9 +96,6 @@ let gen_js_of_c_effects nprog =
       "unOp"
       "box"
       "box_param"
-      "box_this"
-      "isBox"
-      "returnBox"
       "unbox"
   in
   let nprog = TCJS_effects.transform (create_transform_env effect_env) nprog in

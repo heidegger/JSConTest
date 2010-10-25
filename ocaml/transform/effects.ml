@@ -13,14 +13,14 @@ type t = {
   unop: string;
   box_var: string;
   box_param : string;
-  box_this: string;
-  box_test: string;
-  box_return: string;
+  (* box_this: string; *)
+  (* box_test: string; *)
+  (* box_return: string; *)
   unbox: string;
 }
 
 let create_t ~js_namespace ~variable_prefix 
-    ~propAcc ~propAss ~mCall ~unop ~box_var ~box_param ~box_this ~box_test ~box_return ~unbox
+    ~propAcc ~propAss ~mCall ~unop ~box_var ~box_param ~unbox
     =
   { js_namespace = js_namespace;
     variable_prefix = variable_prefix;
@@ -31,9 +31,6 @@ let create_t ~js_namespace ~variable_prefix
     box_var = box_var;
     box_param = box_param;
     unbox = unbox;
-    box_this = box_this;
-    box_return = box_return;
-    box_test = box_test
   }
 
 let transform env effects fname pl sel =
@@ -161,16 +158,16 @@ let transform env effects fname pl sel =
                     (env.mCall) 
                     [t_e e1; t_e e2; new_array el]
               | e -> 
-                  Function_call (a,t_e e, List.map t_e el)
+                  Function_call (a,t_e e, el)
           end
-    | Method_call (_,e1,i,el) ->
-        let e1 = t_e e1 in
+    | Method_call (_,e1,i,el) as e -> e
+(*        let e1 = t_e e1 in
         let i = t_i i in
         let el = List.map t_e el in
           do_mcalle_el 
             (s_to_e env.js_namespace) 
             (env.mCall) 
-            [e1; i_to_e i; new_array el] 
+            [e1; i_to_e i; new_array el] *)
     | New_expression (a,e,el) ->
         New_expression (a,t_e e, List.map t_e el) 
     | Property_construction (a,i) -> Property_construction (a,t_i i)
@@ -203,17 +200,6 @@ let transform env effects fname pl sel =
                  (env.box_var) 
                  [s_to_e (i_to_s i); e]) 
       e
-  and wbp_e index e =
-    (* TODO: depending on the structure of e, do the method call *)
-    do_box 
-      (function 
-         | Object_access _ -> e 
-         | _ -> 
-             do_mcalle_el 
-               (i_to_e (s_to_i env.js_namespace)) 
-               (env.box_param)
-               [c_to_e (n_to_c (float_of_int (index + 1))); e]) 
-      e
 
   and ub_e e =
     do_box (fun e -> 
@@ -222,12 +208,6 @@ let transform env effects fname pl sel =
                 env.unbox
                 [e]) e
   
-  and rb_e e =
-    do_mcalle_el
-      (i_to_e (s_to_i env.js_namespace))
-      env.box_return
-      [e]
-
   and t_xmle = function
     | XMLElement (a,xmlel,xmleo,xmlel2) ->
         XMLElement (a,List.map t_xmle xmlel,t_o t_xmle xmleo,
@@ -267,7 +247,7 @@ let transform env effects fname pl sel =
     | For (a,fb,s) -> For (a,t_fb fb, t_s s)
     | Continue (a,io) -> Continue (a,t_o t_i io)
     | Break (a,io) -> Break (a,t_o t_i io)
-    | Return (a,eo) -> Return (a,t_o (function e -> rb_e (t_e e)) eo)
+    | Return (a,eo) -> Return (a,t_o t_e eo)
     | With (a,e,s) -> failwith "With statement not supported"
     | Labelled_statement (a,i,s) -> Labelled_statement (a,t_i i, t_s s)
     | Switch (a,e,regcases,sloo,regcases2) ->
@@ -323,7 +303,7 @@ let transform env effects fname pl sel =
   in
 
   let t_body = List.map t_se sel in
-  let t_body = 
+(*  let t_body = 
     match pl with
       | [] -> 
           t_body
@@ -349,8 +329,10 @@ let transform env effects fname pl sel =
             in
               vdecl :: t_body
           end
-  in
-  let t_body_s, t_body_se =
+  in *)
+    t_body
+      
+(* let t_body_s, t_body_se =
     List.fold_left
       (fun (sl,sel) (s_se) ->
          match s_se with
@@ -362,7 +344,7 @@ let transform env effects fname pl sel =
   in
   let t_body_s = List.rev t_body_s in
   let t_body_se = List.rev t_body_se in    
-    t_body_se @ 
+    t_body_se @
       if (List.length t_body_s == 0) 
       then [] 
       else
@@ -385,8 +367,16 @@ let transform env effects fname pl sel =
                                        env.box_this
                                        [This (null_annotation)]);
                                     (i_to_e (s_to_i "arguments"))])))))
-           ]
+           ] *)
       
+let before_wrapper env pl e = 
+  print_endline "enable Wrapper call";
+  do_mcalle_el 
+    (i_to_e (s_to_i env.js_namespace))
+    "enableWrapper"
+    [e; new_array (List.map (fun i -> s_to_e (i_to_s i)) pl)]
+
+let after_wrapper t pl x = x
 
 module TestEffects = struct
   open ProglangUtils
@@ -404,9 +394,6 @@ module TestEffects = struct
       box_param = "box_param";
       unbox = "unbox";
       unop = "doUnop";
-      box_this = "boxthis";
-      box_test = "isBox";
-      box_return = "returnBox"
     } 
     in
     let na = null_annotation in
