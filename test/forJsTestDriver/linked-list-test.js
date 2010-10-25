@@ -118,29 +118,29 @@ var LinkedList = (function  () {
         return toString_own;
     })();
   (function  () {
-    var gcd3a176cfa0b5f3a5e6e4df18d73ba790 = JSConTest.contracts.Function([], JSConTest.contracts.Top, [], "LinkedList");
-      JSConTest.tests.add("LinkedList", LinkedList, gcd3a176cfa0b5f3a5e6e4df18d73ba790, 1000. );
-      JSConTest.tests.setVar("c_1", gcd3a176cfa0b5f3a5e6e4df18d73ba790);
+    var g3a84f4c183d052f8bb3bd9116623cd8a0 = JSConTest.contracts.Function([], JSConTest.contracts.Top, [], "LinkedList");
+      JSConTest.tests.add("LinkedList", LinkedList, g3a84f4c183d052f8bb3bd9116623cd8a0, 1000. );
+      JSConTest.tests.setVar("c_1", g3a84f4c183d052f8bb3bd9116623cd8a0);
   })();
   (function  () {
-    var gcd3a176cfa0b5f3a5e6e4df18d73ba793 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "_length", contract : JSConTest.contracts.Integer}, {name : "_head", contract : JSConTest.contracts.EObject([])}]), [JSConTest.contracts.Integer], JSConTest.contracts.Undefined, [], "add");
-      JSConTest.tests.add("add", add, gcd3a176cfa0b5f3a5e6e4df18d73ba793, 1000. );
-      JSConTest.tests.setVar("c_4", gcd3a176cfa0b5f3a5e6e4df18d73ba793);
+    var g3a84f4c183d052f8bb3bd9116623cd8a3 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "_length", contract : JSConTest.contracts.Integer}, {name : "_head", contract : JSConTest.contracts.EObject([])}]), [JSConTest.contracts.Integer], JSConTest.contracts.Undefined, [], "add");
+      JSConTest.tests.add("add", add, g3a84f4c183d052f8bb3bd9116623cd8a3, 1000. );
+      JSConTest.tests.setVar("c_4", g3a84f4c183d052f8bb3bd9116623cd8a3);
   })();
   (function  () {
-    var gcd3a176cfa0b5f3a5e6e4df18d73ba796 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "_length", contract : JSConTest.contracts.Integer}]), [], JSConTest.contracts.Integer, [], "size");
-      JSConTest.tests.add("size", size, gcd3a176cfa0b5f3a5e6e4df18d73ba796, 1000. );
-      JSConTest.tests.setVar("c_7", gcd3a176cfa0b5f3a5e6e4df18d73ba796);
+    var g3a84f4c183d052f8bb3bd9116623cd8a6 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "_length", contract : JSConTest.contracts.Integer}]), [], JSConTest.contracts.Integer, [], "size");
+      JSConTest.tests.add("size", size, g3a84f4c183d052f8bb3bd9116623cd8a6, 1000. );
+      JSConTest.tests.setVar("c_7", g3a84f4c183d052f8bb3bd9116623cd8a6);
   })();
   (function  () {
-    var gcd3a176cfa0b5f3a5e6e4df18d73ba799 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "_head", contract : JSConTest.contracts.EObject([])}]), [], JSConTest.contracts.Array(JSConTest.contracts.Top), [{type : 7. , effect : {type : 5. , effect : {type : 2. , name : "this", fname : "toArray"}}}], "toArray");
-      JSConTest.tests.add("toArray", toArray, gcd3a176cfa0b5f3a5e6e4df18d73ba799, 1000. );
-      JSConTest.tests.setVar("c_10", gcd3a176cfa0b5f3a5e6e4df18d73ba799);
+    var g3a84f4c183d052f8bb3bd9116623cd8a9 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "_head", contract : JSConTest.contracts.EObject([])}]), [], JSConTest.contracts.Array(JSConTest.contracts.Top), [{type : 5. , effect : {type : 2. , name : "this", fname : "toArray"}}], "toArray");
+      JSConTest.tests.add("toArray", toArray, g3a84f4c183d052f8bb3bd9116623cd8a9, 1000. );
+      JSConTest.tests.setVar("c_10", g3a84f4c183d052f8bb3bd9116623cd8a9);
   })();
   (function  () {
-    var gcd3a176cfa0b5f3a5e6e4df18d73ba7912 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "_head", contract : JSConTest.contracts.EObject([])}]), [], JSConTest.contracts.Array(JSConTest.contracts.Top), [], "toString");
-      var gcd3a176cfa0b5f3a5e6e4df18d73ba7913 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "toArray", contract : gcd3a176cfa0b5f3a5e6e4df18d73ba7912}]), [], JSConTest.contracts.String, [], "toString");
-      JSConTest.tests.add("toString", toString, gcd3a176cfa0b5f3a5e6e4df18d73ba7913, 1000. );
-      JSConTest.tests.setVar("c_14", gcd3a176cfa0b5f3a5e6e4df18d73ba7913);
+    var g3a84f4c183d052f8bb3bd9116623cd8a12 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "_head", contract : JSConTest.contracts.EObject([])}]), [], JSConTest.contracts.Array(JSConTest.contracts.Top), [], "toString");
+      var g3a84f4c183d052f8bb3bd9116623cd8a13 = JSConTest.contracts.Method(JSConTest.contracts.EObject([{name : "toArray", contract : g3a84f4c183d052f8bb3bd9116623cd8a12}]), [], JSConTest.contracts.String, [], "toString");
+      JSConTest.tests.add("toString", toString, g3a84f4c183d052f8bb3bd9116623cd8a13, 1000. );
+      JSConTest.tests.setVar("c_14", g3a84f4c183d052f8bb3bd9116623cd8a13);
   })();
   LinkedList.prototype = {constructor : LinkedList, add : add, size : size, toArray : toArray, toString : toString};
