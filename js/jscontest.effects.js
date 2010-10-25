@@ -123,27 +123,38 @@
     }
   }
 
-  function isAllowedEffl(uid, access_path, effl, isAlow) {
-    // each entry in the effect store, that is 
-    // not younger then the object itself, is allowed
-    if (access_path && (access_path.alloc >= uid)) {
-      return true;
-    }
-    if ((typeof effl === 'object') && (effl.type === ALL)) {
-      return true;
-    }
-    // if the object is older then the entry in the effect store
-    // check the access. Here, one of them must allow the access
-    for (var i = 0; i < effl.length; i += 1) {
-      var eff = effl[i];
-      if (isAlow(access_path, eff)) {
+  
+  function isAllowedEffl(uid, access_pathl, effl, isAllow) {
+  	function isAllowedEffl(access_path) {
+    	// each entry in the effect store, that is 
+      // not younger then the object itself, is allowed
+      if (access_path && (access_path.alloc >= uid)) {
         return true;
       }
-    }
-    return false;
+      if ((typeof effl === 'object') && (effl.type === ALL)) {
+        return true;
+      }
+      // if the object is older then the entry in the effect store
+      // check the access. Here, one of them must allow the access
+      for (var i = 0; i < effl.length; i += 1) {
+        var eff = effl[i];
+        if (isAllow(access_path, eff)) {
+          return true;
+        }
+      }
+      return false;  		
+  	}
+  	var j;
+  	// if one access path is valid, the access is allowed
+  	for (j = 0; j < access_pathl.length; j += 1) {
+  		if (isAllowedEffl(access_pathl[j])) {
+  			return true;
+  		}
+  	}
+  	return false;
   }
   
-  function checkReadWrite(uid, access_path, isAllow) {
+  function checkReadWrite(uid, access_pathl, isAllow) {
     if (!checkEffect) {
       return true;
     }
@@ -154,19 +165,15 @@
     }
     // there exists an entry for the uid, hence check if access is
     // forbidden.
-    if (!isAllowedEffl(uid, access_path, effl, isAllow)) {
-      return false;
-    } else {
-      return true;
-    }
+    return isAllowedEffl(uid, access_pathl, effl, isAllow);
   }
 
-  function checkRead(uid, access_path) { 
-    return checkReadWrite(uid, access_path, isAllowedEffAllPrefixes);
+  function checkRead(uid, access_pathl) { 
+    return checkReadWrite(uid, access_pathl, isAllowedEffAllPrefixes);
   }
 
-  function checkWrite(uid, access_path) { 
-    return checkReadWrite(uid, access_path, isAllowedEff);
+  function checkWrite(uid, access_pathl) { 
+    return checkReadWrite(uid, access_pathl, isAllowedEff);
   }
 
   /** { obj: object,
@@ -331,13 +338,16 @@
   Create_wrapper_with_pmap.prototype = isWrapperObj;
 
   function extend_path(p_map, property) {
-  	var result = {};
-  	for (var uid in p_map) {
-  		result[uid] = {
-  		  effect: p_map[uid],
-  		  type: PROP,
-  		  property: property
-  		};
+  	var result = {}, uid, j;
+  	for (uid in p_map) {
+  		result[uid] = [];
+  		for (j = 0; j < p_map[uid].length; j += 1) {
+	  		result[uid].push({
+	  		  effect: p_map[uid],
+	  		  type: PROP,
+	  		  property: property
+	  		});
+  		}
   	}
   	return result;
   }
@@ -345,15 +355,17 @@
   function add_access_path(b, prop) {
     var uid   = getUid(),
         fname = getActiveFunName(),
-        p;
+        p,
+        path;
     if (b && b.p_map) {
+      path = { fname : fname };
+      for (p in prop) {
+        path[p] = prop[p];
+      }
       if (!b.p_map[uid]) {
-        b.p_map[uid] = { fname : fname };
-        for (p in prop) {
-          b.p_map[uid][p] = prop[p];
-        }
-        // } else {
-        // "Nothing to do, since the first marker is already there";
+      	b.p_map[uid] = [path];
+      } else {
+      	b.p_map[uid].push(path);
       }
     } else {
       throw "Internal box error";
@@ -484,19 +496,31 @@
     return obj;
   }
 
-  function enableWrapper(f) {
+  function enableWrapper(f, pnames) {
   	// first version, just do nothing
   	return (function () {
-  		return f.apply(this,arguments);
+  		var i, pl = [];
+  		// mark parameters with names and numbers
+  		for (i = 0; i < pnames.length; i += 1) {
+  			pl.push(box_param(i + 1, box(pnames[i], arguments[i])));
+  		}
+  		// mark the rest of the parameters with numbers, only,
+  		// since there does not exists any name for them
+  		for (; i < arguments.length; i += 1) {
+  			pl.push(box_param(i, arguments[i]));
+  		}
+  		// FIXME: store box for return value into box_return,
+  		// and return the unboxed value.
+  		return f.apply(this, pl);
   	});
   }
 
   E.box = box;
   E.box_param = box_param;
-  //E.box_this = box_this;
   E.isBox = isBox;
   E.unbox = unbox;
   E.mCall = mCall;
+  //E.box_this = box_this;
   //E.returnBox = returnBox;
   //E.getBoxes = getBoxes;
   E.propAss = propAss;
