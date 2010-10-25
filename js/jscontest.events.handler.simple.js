@@ -146,22 +146,23 @@
 		var initStat = (function() {
 			var init = false;
 			return function() {
+				var divLog, d, fc, stat, w, code, dl;
 				if (!init) {
-					var divLog = document.getElementById(divId);
-					var d = document.createElement('div');
-					var fc = divLog.firstChild;
+					divLog = document.getElementById(divId);
+					d = document.createElement('div');
+					fc = divLog.firstChild;
 					divLog.insertBefore(d, fc);
 					d.setAttribute('id', 'first');
 
-					var stat = newDivHeading("Statistic", 'clear');
+					stat = newDivHeading("Statistic", 'clear');
 					d.appendChild(stat);
-					var w = newDivHeading("Warnings", 'right');
+					w = newDivHeading("Warnings", 'right');
 					d.appendChild(w);
 					code = document.createElement('code');
 					w.appendChild(code);
 					log_console = code;
 
-					var dl = document.createElement("dl");
+					dl = document.createElement("dl");
 					stat.appendChild(dl);
 					dl.setAttribute('id', divId + '_dl');
 					stat.appendChild(newB('cancel all', cancel.doCancel));

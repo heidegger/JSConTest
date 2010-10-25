@@ -297,9 +297,10 @@
 			  return P.gen.genObject(pl);
 		  },
 		  getcdes : function() {
-			  var s = "{";
-			  var pls = [];
-			  var random = false;
+			  var s = "{", 
+			  	pls = [],
+			  	random = false,
+			  	j;
 			  for (j in pl) {
 				  var p = pl[j];
 				  if (p.name && p.contract) {

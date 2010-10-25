@@ -75,7 +75,7 @@
 
 	function checker(test, stat) {
 		var contract = test.contract,
-			value = test.value;
+			value = test.value,
 			result = P.utils.withTry(!DEBUG, 
 			                         function () { 
 																 return { 
@@ -103,7 +103,7 @@
 			value = test.value, 
 			done = test.done || 0,
 			cont = true,
-			result;
+			result, i;
 
 		for (i = 0; cont && i < count; i += 1) {			
 			result = checker(test);

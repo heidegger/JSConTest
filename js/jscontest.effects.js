@@ -296,7 +296,8 @@
 
   function add_access_path(b, prop) {
     var uid   = getUid(),
-        fname = getActiveFunName();
+        fname = getActiveFunName(),
+        p;
     if (b && b.p_map) {
       if (!b.p_map[uid]) {
         b.p_map[uid] = { fname : fname };
