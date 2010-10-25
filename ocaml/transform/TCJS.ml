@@ -352,6 +352,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
     else
       return_fun
     in
+    let return_fun = T.after_wrapper env.effects_env pl return_fun in
     let return_fun = 
       do_mcalle_el
         (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
@@ -361,7 +362,6 @@ module Make(T: TRANS) : S with type t = T.t = struct
          c_to_e (b_to_c (env.asserts && List.length cis > 0))
         ]
     in
-    let return_fun = T.after_wrapper env.effects_env pl return_fun in
       [AST.VarDecl 
          (fname_org,
           (g_e_sel (funcode @ [g_return return_fun])))
