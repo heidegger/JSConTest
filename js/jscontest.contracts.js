@@ -163,6 +163,9 @@
 	C.SingletonContract = function(v, s) {
 		return new SingletonContract(v, s);
 	};
+	C.Singleton = function(v) {
+		return new SingletonContract(v, v);
+	}
 	C.Null = new SingletonContract(null, "null");
 	C.Undefined = new SingletonContract(undefined, "undefined");
 	C.Boolean = new SContract(P.check.isBoolean, P.gen.genBoolean, "boolean",
@@ -812,7 +815,7 @@
 	C.Contract = Contract;
 
 	/**
-	 * newSContract: (check, generate, cdes, ctype, genNeeded) -> Contract The
+	 * SContract: (check, generate, cdes, ctype, genNeeded) -> Contract The
 	 * function newSContract creates a new Contract. It takes 5 parameters, but
 	 * you can omit the last two of them. check is a predicate for the contract,
 	 * generate is a generator and cdes is a string representation for a contract.
