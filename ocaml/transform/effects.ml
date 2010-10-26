@@ -10,9 +10,10 @@ type t = {
   propAcc: string;
   propAss: string;
   mCall: string;
+  fCall: string;
   unop: string;
-  box_var: string;
-  box_param : string;
+(*  box_var: string;
+  box_param : string; *)
   (* box_this: string; *)
   (* box_test: string; *)
   (* box_return: string; *)
@@ -20,16 +21,17 @@ type t = {
 }
 
 let create_t ~js_namespace ~variable_prefix 
-    ~propAcc ~propAss ~mCall ~unop ~box_var ~box_param ~unbox
+    ~propAcc ~propAss ~mCall ~fCall ~unop ~unbox
     =
   { js_namespace = js_namespace;
     variable_prefix = variable_prefix;
     propAcc = propAcc;
     propAss = propAss;
     mCall = mCall;
+    fCall = fCall;
     unop = unop;
-    box_var = box_var;
-    box_param = box_param;
+(*    box_var = box_var;
+    box_param = box_param; *)
     unbox = unbox;
   }
 
@@ -144,21 +146,24 @@ let transform env effects fname pl sel =
     | Conditional (a,e1,e2,e3) ->
        Conditional (a,t_e e1, t_e e2, t_e e3) 
     | Function_call (a,e,el) ->
-        let el = List.map t_e el in
+        let el = List.map (fun e -> ub_e (t_e e)) el in
           begin
             match e with 
               | Object_access (_,e1,i) -> 
                   do_mcalle_el 
                     prefix 
-                    (env.mCall) 
+                    env.mCall 
                     [t_e e1; s_to_e (i_to_s (t_i i)); new_array el] 
               | Array_access (_,e1,e2) ->                
                   do_mcalle_el 
                     prefix
-                    (env.mCall) 
+                    env.mCall
                     [t_e e1; t_e e2; new_array el]
               | e -> 
-                  Function_call (a,t_e e, el)
+                  do_mcalle_el
+                    prefix
+                    env.fCall
+                    [t_e e; new_array el]
           end
     | Method_call (_,e1,i,el) as e -> e
 (*        let e1 = t_e e1 in
@@ -188,7 +193,7 @@ let transform env effects fname pl sel =
           end
       | _ -> bf e
 
-  and wb_e i e = 
+(*  and wb_e i e = 
     (* TODO: depending on the structure of e, do the method call *)
     do_box 
       (fun e -> 
@@ -199,7 +204,7 @@ let transform env effects fname pl sel =
                  (i_to_e (s_to_i env.js_namespace)) 
                  (env.box_var) 
                  [s_to_e (i_to_s i); e]) 
-      e
+      e *)
 
   and ub_e e =
     do_box (fun e -> 
@@ -229,8 +234,8 @@ let transform env effects fname pl sel =
   and t_s = function
     | Skip a -> Skip a
     | Block (a,sl) -> Block (a,List.map t_s sl) 
-    | Variable_declaration (a,ieol) ->
-        (* TODO *)
+    | Variable_declaration (a,ieol) as e -> e
+(*        (* TODO *)
         Variable_declaration 
           (a,List.map 
              (fun (i,eo) -> 
@@ -239,7 +244,7 @@ let transform env effects fname pl sel =
                    (fun e -> wb_e i (t_e e))
                    eo))
              ieol
-          )
+          ) *)
     | Expression (a,e) -> Expression (a,t_e e)
     | If (a,e,s,so) -> If (a,t_e e, t_s s, t_o t_s so)
     | Do (a,s,e) -> Do (a,t_s s, t_e e)
@@ -388,10 +393,11 @@ module TestEffects = struct
       js_namespace = "PROGLANG.effects";
       propAss = "doPropAss";
       mCall = "mCall";
+      fCall = "fCall";
       propAcc = "doPropRead";
       variable_prefix = "tmp";
-      box_var = "box";
-      box_param = "box_param";
+(*      box_var = "box";
+      box_param = "box_param"; *)
       unbox = "unbox";
       unop = "doUnop";
     } 

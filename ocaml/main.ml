@@ -93,9 +93,8 @@ let gen_js_of_c_effects nprog =
       "propAcc"
       "propAss"
       "mCall"
+      "fCall"
       "unOp"
-      "box"
-      "box_param"
       "unbox"
   in
   let nprog = TCJS_effects.transform (create_transform_env effect_env) nprog in

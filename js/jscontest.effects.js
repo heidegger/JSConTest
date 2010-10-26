@@ -18,7 +18,8 @@
       QUESTIONMARK = 4,
       STAR = 5,
       ALL = 6,
-      noPROP = 7;
+      noPROP = 7,
+      globalObj = (function() { return this; })();
 
   
   var E = {},
@@ -268,61 +269,101 @@
     return doWithUnwrap3(wo, wp, wv, write);
   }
 
-  var mCall, getBoxes, returnBox;
+  var fCall, mCall, getParams, getThis, putReturnBox;
   (function () {
 		var wrapper_exits = false,
-			boxes = { },
-			return_box = { };
+			fmCall,
+			getReturnBox, putParams,
+			global_obj = (function () { return this; }());
+
+		(function () {
+			var that = false, pl = false;
+			getParams = (function () {
+				var tmp = pl;
+				pl = false;
+				return tmp;
+			});
+			getThis = (function () {
+				var tmp = that;
+				that = false;
+				return tmp;
+			});
+			putThisParams = (function(thatp, plp) {
+				that = thatp;
+				pl = plp;
+			});			
+		}());
+
+		(function () {
+			var return_box = false;
+			putReturnBox = (function (rv) {
+				if (rv && rv.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
+					return_box = { box: rv };
+					return unbox(rv);
+				} else {
+					return_box = false;
+					return rv;
+				}
+			});			
+			getReturnBox = (function (rv) {
+				var b = rv;
+				if (return_box) {
+					b = return_box.box;
+					return_box = false;
+				}
+				return b;
+			});
+		}());
 		
-		getBoxes = (function () {
-			var b = boxes;
-			boxes = { };
-			return b;
+		fmCall = (function fCall(f,that,pl) {
+	    var i, plub = [], rv, that_ub;
+
+	    // store original params 
+	    if (P.check.isSArray(pl)) {
+		    putThisParams(that, pl);	    	
+	    } else {
+	    	throw "you have to call fCall and mCall with an array to pass the function parameters."; 
+	    }
+	    for (i = 0; i < pl.length; i += 1) {
+				plub.push(unbox(pl[i]));
+			}
+	    that_ub = unbox(that);
+	    
+			// now every original parameter is stored inside of boxes, 
+			// hence we can do the call with the values (not with the boxes)
+			// transformed functions will ask for the boxes of their own
+			// by unsing enableWrapper, and native functions will work correctly 
+			// with the original unboxed value
+			// the return value of the function is always the unboxed return value.
+			// Native functions will of cause return unboxed values,
+			// and tranformed functions does also return unboxed value and
+			// stores the box of the return value inside the return_box object.
+			// Hence fCall will find the box there, and can the return the box instead
+			// of the unboxed result.
+
+			
+			// if we called a tranformed function with mcall, the transformed function
+			// stores the box of the return value using putReturnBox. If that's the case, 
+			// we should return the boxed value, not the unboxed one.
+			return getReturnBox(f.apply(that_ub, plub));
 		});
-		
-		returnBox = (function (rv){
-			return_box.box = rv;
-			return_box.box_exists = true;
-			return unbox(rv);
+
+		fCall = (function fCall(f, pl) {
+			return fmCall(f, global_obj, pl);
 		});
 		
 		mCall = (function mCall(o,m,pl) {
-	    var i, plub = [], rv;
 			// FIXME: deal with the situation, that m is also a box
 			//       take the value of m, convert it to a string, do
 			//       the method call with this string
 			// unbox everything, and put the boxes into the global box space
-			boxes.this_box = o;
-			boxes.pl_box = [];
-			for (i = 0; i < pl.length; i += 1) {
-				boxes.pl_box.push(pl[i]);
-				plub.push(unbox(pl[i]));
-			}
-			// now every original parameter is stored inside of boxes, 
-			// hence we can do the call with the values (not with the boxes)
-			// transformed functions will ask for the boxes of their own,
-			// and native functions will work correctly with the original 
-			// unboxed value
-			// the return value of the function is always the unboxed return value,
-			// since native functions always return unboxed values.
-			// tranformed functions does also return unboxed values (since they need 
-			// to work in callbacks of native functions), but also stores the box
-			// for the return value into the return_box object by using the function
-			// returnBox.
 			if (o && o.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
-	      rv = ((o.value)[m]).apply(o.value,plub);  
+	      return fmCall((o.value)[m], o.value, pl);
 	    } else {
-	      rv = o[m].apply(o,plub);
+	      return fmCall(o[m], o, pl);
 	    }			
-			// if we called a tranformed function with mcall, we should return the
-			// boxed value, not the unboxed one.
-			if (return_box.box_exists) {
-				rv = return_box.box;
-				return_box = { };
-			}
-			return rv;
 		});
-	});
+	}());
 
   var isWrapperObj = {
     THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685: true
@@ -496,36 +537,68 @@
     return obj;
   }
 
+  // enableWrapper sorounds f with a wrapper, such that
+  // the resulting function can handle wrappers.
+  // There we have to respect the following two things:
+  // 1. We would like to call f with wrappers
+  // 2. Our function is called with native values, and
+  //    the corresponding wrappers might be stored by fmCall for us.
+  // Hence we have to look up for the wrappers, and if they exists, 
+  // we have to extend them. If they do not exists, we do not have
+  // effect to respect from outside, so we will create new wrappers for
+  // ourself.
+  // As next step we call the original f with the wrapped arguments.
+  // The return value of the function might be a wrapper, too.
+  // If that is the case, we have to remove it, since our function
+  // may be called from untransformed code that does not use 
+  // mCall or fCall.
+  // But to allow mCall and fCall to restore the wrapper for us, 
+  // we will save the result wrapper using the function 
+  // return_box for them. 
   function enableWrapper(f, pnames) {
-  	// first version, just do nothing
   	return (function () {
-  		var i, pl = [];
+  		var i, 
+  			pl = [],
+
+  			// we should have a look at the boxes stored for us to pass aditional
+    		// informations about the parameters
+  			// If these boxes does not exits, use the parameters passed to us
+  			plorg = getParams() || arguments,
+  			// Analogious for this
+  			that = box_this(getThis() || this);
+  			
   		// mark parameters with names and numbers
   		for (i = 0; i < pnames.length; i += 1) {
-  			pl.push(box_param(i + 1, box(pnames[i], arguments[i])));
+  			pl.push(box_param(i + 1, box(pnames[i], plorg[i])));
   		}
   		// mark the rest of the parameters with numbers, only,
   		// since there does not exists any name for them
-  		for (; i < arguments.length; i += 1) {
-  			pl.push(box_param(i, arguments[i]));
+  		for (; i < plorg.length; i += 1) {
+  			pl.push(box_param(i, plorg[i]));
   		}
-  		// FIXME: store box for return value into box_return,
-  		// and return the unboxed value.
-  		return f.apply(this, pl);
+  		
+  		// return_box will store a wrapper (if it exists) in
+  		// the return_box store, such that fmCall can pick it up.
+  		// But the function itself will return the nativ unboxed value.
+  		// This is needed, our function may be a callback function,
+  		// that was called from untransfered code.
+  		return putReturnBox(f.apply(that, pl));
   	});
   }
 
-  E.box = box;
-  E.box_param = box_param;
   E.isBox = isBox;
   E.unbox = unbox;
   E.mCall = mCall;
-  //E.box_this = box_this;
-  //E.returnBox = returnBox;
-  //E.getBoxes = getBoxes;
+  E.fCall = fCall;
   E.propAss = propAss;
   E.propAcc = propAcc;
   E.enableWrapper = enableWrapper;
+
+  //E.box = box;
+  //E.box_param = box_param;
+  //E.box_this = box_this;
+  //E.returnBox = returnBox;
+  //E.getBoxes = getBoxes;
   
   if (P.tests && P.tests.callback) {
     P.tests.callback.registerEffect = registerEffect;
