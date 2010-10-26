@@ -256,7 +256,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
             read_prop_e contract_prefix "String",[]
           end
       | BSString s -> 
-          do_mcalle_el contract_prefix "Singlton" 
+          do_mcalle_el contract_prefix "Singleton" 
             [c_to_e (s_to_c s)], []
       | BObject ->
           if (List.mem Labels al) then begin
