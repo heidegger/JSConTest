@@ -10,6 +10,8 @@
 			});
 		}
 		var statistic = {   // Object that stores the statistic information for this run
+		  total_todo: 0,
+		                    
 		  total : 0,      // Number of contract, value pair checked or tested
 
 		  // the checks
@@ -59,7 +61,12 @@
 		obj.incTests = function (acc) {
 			statistic.tests += acc;
 		};
-
+		obj.setTotalTodo = function (i) {
+			statistic.total_todo = i;
+		};
+		obj.getTotalTodo = function () {
+			return statistic.total_todo;
+		};
 		return obj;
 	}
 	

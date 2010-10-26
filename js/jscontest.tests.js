@@ -22,6 +22,8 @@
 	/* private variables */
 	/* collects all the tests that are added by TESTS.add(v,c,t); */
 	var tests = {};
+	/* number of testes added to the library */
+	var added_tests = 0;	
 	/* collects counterexamples */
 	var counterexp = {};
 	var cexpuid = 0;
@@ -331,6 +333,9 @@
 		toDoM.reverse();
 		fire.call(P, 'cancel', cancel);
 		setTimeout(iterSteps, 0);
+		if (statistic) {
+			statistic.setTotalTodo(added_tests);
+		}
 		return cancel;
 	}	
 
@@ -360,6 +365,7 @@
 		  count : count,
 		  data : data
 		});
+		added_tests += 1;
 	}
 
 	function collectCounterExample(ce) {

@@ -178,7 +178,8 @@
 			// wellTested) {
 			initStat();
 			var dl = document.getElementById(divId + '_dl');
-			setDef(dl, 'NoC', "Number of contracts: ", s.getTotal());
+			setDef(dl, 'NoCTodo', "Number of contracts total:", s.getTotalTodo());
+			setDef(dl, 'NoC', "Number of contracts done: ", s.getTotal());
 			setDef(dl, 'NovC', "Number of verified contracts: ", s.getVerified());
 			setDef(dl, 'NofC', "Number of failed contracts: ", s.getFailed());
 			setDef(dl, 'Noce',
