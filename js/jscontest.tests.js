@@ -11,7 +11,7 @@
 
 "use strict";
 (function(P) {
-	var DEBUG = true;
+	var DEBUG = false;
 
 	/*
 	 * create a new object, and register it in the namespace JSConTest
@@ -170,7 +170,7 @@
 			ch = param["checker"] || checker,
 			tester = param["tester"] || 
 				function (t,s,c,rH) {
-					function statrH(r) {
+					function statrH(result) {
 						if (result.normal === true) {
 							stat.incWellTested();
 						} else if (result.normal === false) {
@@ -178,7 +178,7 @@
 						} else if (result.error) {
 							stat.incErrors();
 						}						
-						return rH(r);
+						return rH(result);
 					}
 					return (function () {
 						simpleTester(t,s,c,statrH);
