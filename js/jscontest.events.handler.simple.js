@@ -199,18 +199,24 @@
 			}
 		}
 		function strEffect(obj, prop, effl_str, eff_str, kind) {
+			
 			return "Effect Error, " + kind + " access not allowed! "
 			       + "You try to read the property <b>" + prop + "</b>"
 			       + " of object " + P.utils.valueToString(obj) + ". <br />\n"
 			       + "Permissions you have to respect: " + effl_str + "<br />\n"
 			       + "The following was not respected: " + eff_str + "<br />\n";
 		}
+		var count = 0;
 		function assertEffectsWrite(o, p, effl_str, eff_str) {
+			count += 1;
+			if (count > 10) return;
 			log_console.innerHTML += "<b>" + module + "</b>: "
 			                         + strEffect(o, p, effl_str, eff_str, "write");
 		}
 		;
 		function assertEffectsRead(o, p, effl_str, eff_str) {
+			count += 1;
+			if (count > 10) return;
 			log_console.innerHTML += "<b>" + module + "</b>: "
 			                         + strEffect(o, p, effl_str, eff_str, "read");
 		}
