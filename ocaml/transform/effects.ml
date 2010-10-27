@@ -248,9 +248,9 @@ let transform env effects fname pl sel =
              ieol
           )
     | Expression (a,e) -> Expression (a,t_e e)
-    | If (a,e,s,so) -> If (a,t_e e, t_s s, t_o t_s so)
+    | If (a,e,s,so) -> If (a,ub_e (t_e e), t_s s, t_o t_s so)
     | Do (a,s,e) -> Do (a,t_s s, t_e e)
-    | While (a,e,s) -> While (a,t_e e, t_s s)
+    | While (a,e,s) -> While (a,ub_e (t_e e), t_s s)
     | For (a,fb,s) -> For (a,t_fb fb, t_s s)
     | Continue (a,io) -> Continue (a,t_o t_i io)
     | Break (a,io) -> Break (a,t_o t_i io)
@@ -296,11 +296,11 @@ let transform env effects fname pl sel =
     | StaticName _ as pn -> pn 
   and t_fb = function
     | Regular (a,eo1,eo2,eo3) ->
-        Regular (a,t_o t_e eo1, t_o t_e eo2, t_o t_e eo3)
+        Regular (a,t_o t_e eo1, t_o (fun e -> ub_e (t_e e)) eo2, t_o t_e eo3)
     | Regular_var (a,ieol,eo1,eo2) ->
         Regular_var (a, 
                      List.map (fun (i,eo) -> (t_i i, t_o t_e eo)) ieol,
-                     t_o t_e eo1,
+                     t_o (fun e -> ub_e (t_e e)) eo1,
                      t_o t_e eo2)
     | With_in_and_var (a, (i,eo), e) ->
         With_in_and_var (a, (t_i i, t_o t_e eo), t_e e)
