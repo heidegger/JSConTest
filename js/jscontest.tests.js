@@ -429,7 +429,7 @@
 	var getTestMode = testmode.gT;
 
 	function assertParamsReal(clreal, pl, str, fname) {
-		var ret;
+		var ret, i;
 		if (getTestMode()) {
 			ret = clreal;
 		} else {

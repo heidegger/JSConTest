@@ -280,7 +280,7 @@
   (function () {
 		var wrapper_exits = false,
 			fmCall,
-			getReturnBox, putParams,
+			getReturnBox, putThisParams,
 			global_obj = (function () { return this; }());
 
 		(function () {
@@ -621,7 +621,7 @@
   }
   
   function fixObjectLiteral(o) {
-  	var pw;
+  	var pw, p;
   	for (p in o) {
   		pw = o[p];
   		if (pw && pw.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
