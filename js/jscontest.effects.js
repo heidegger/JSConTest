@@ -280,7 +280,7 @@
   (function () {
 		var wrapper_exits = false,
 			fmCall,
-			getReturnBox, putThisParams,
+			getReturnBox, putThisParams, deleteThisParams,
 			global_obj = (function () { return this; }());
 
 		(function () {
@@ -299,6 +299,10 @@
 				that = thatp;
 				pl = plp;
 			});			
+			deleteThisParams = (function (){
+				that = false;
+				pl = false;
+			});
 		}());
 
 		(function () {
@@ -352,7 +356,9 @@
 			// if we called a tranformed function with mcall, the transformed function
 			// stores the box of the return value using putReturnBox. If that's the case, 
 			// we should return the boxed value, not the unboxed one.
-			return getReturnBox(f.apply(that_ub, plub));
+			var result = f.apply(that_ub, plub);
+			deleteThisParams();
+	    return getReturnBox(result);
 		});
 
 		fCall = (function fCall(f, pl) {
@@ -365,7 +371,7 @@
 			//       the method call with this string
 			// unbox everything, and put the boxes into the global box space
 			if (o && o.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
-	      return fmCall((o.value)[m], o.value, pl);
+	      return fmCall((o.reference)[m], o.reference, pl);
 	    } else {
 	      return fmCall(o[m], o, pl);
 	    }			
