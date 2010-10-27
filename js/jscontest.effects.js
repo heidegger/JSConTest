@@ -19,7 +19,12 @@
       STAR = 5,
       ALL = 6,
       noPROP = 7,
-      globalObj = (function() { return this; })();
+      globalObj = (function() { return this; })(),
+      unOpINCPost = 1,
+      unOpDECPost = 2,
+  		unOpINCPre = 3,
+  		unOpDECPre = 4,
+  		unOpDELETE = 5;
 
   
   var E = {},
@@ -586,6 +591,47 @@
   	});
   }
 
+  function unOp(op, o, p) {
+  	function doOp(o, p, apo, app) {
+      check_obj_access({ obj: o,
+        object_pmap: apo,
+        property: p, 
+        check: checkWrite, 
+        eventHandler: cfire('assertEffectsWrite') // FIXME: we also need to fire Read!
+      });
+	  	if (op === unOpINCPost) {
+	  		return o[p]++;
+	  	}
+	  	if (op === unOpDECPost) {
+	  		return o[p]--;
+	  	}
+	  	if (op === unOpINCPre) {
+	  		return ++o[p];
+	  	}
+	  	if (op === unOpDECPre) {
+	  		return --o[p];
+	  	}
+	  	if (op === unOpDELETE) {
+	  		return delete o[p];
+	  	}
+  	}
+  	return doWithUnwrap2(o, p, doOp);
+  }
+  
+  function fixObjectLiteral(o) {
+  	var pw;
+  	for (p in o) {
+  		pw = o[p];
+  		if (pw && pw.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
+  			if (!(o.__infos__)) {
+  				o.__infos__ = { };  				
+  			}
+				o.__infos__[p] = pw;
+    		o[p] = unbox(o[p]);
+  		}
+  	}
+  }
+  
   E.isBox = isBox;
   E.unbox = unbox;
   E.mCall = mCall;
@@ -593,7 +639,8 @@
   E.propAss = propAss;
   E.propAcc = propAcc;
   E.enableWrapper = enableWrapper;
-
+  E.unOp = unOp;
+  E.fixObjectLiteral = fixObjectLiteral;
   //E.box = box;
   //E.box_param = box_param;
   //E.box_this = box_this;

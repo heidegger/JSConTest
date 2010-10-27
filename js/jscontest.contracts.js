@@ -387,8 +387,9 @@
 			if (t !== 'function') {
 				return false;
 			}
-			lcvs = P.utils.valueToString(pvl);
 			var thisval = genThis();
+			lcvs = P.utils.valueToString(thisval) +
+					"." +	P.utils.valueToString(pvl);			
 			res = v.apply( thisval , pvl);
 			cres = rt.check(res);
 			if (!cres) {

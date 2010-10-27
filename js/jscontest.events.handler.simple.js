@@ -156,7 +156,7 @@
 
 					stat = newDivHeading("Statistic", 'clear');
 					d.appendChild(stat);
-					w = newDivHeading("Warnings", 'right');
+					w = newDivHeading("Warnings (filtered)", 'right');
 					d.appendChild(w);
 					code = document.createElement('code');
 					w.appendChild(code);
@@ -258,11 +258,13 @@
 				  app(c.okToString(v) + " Tests run: <em>" + anz + "</em>");
 			  }
 		  },
-		  error : function(e, c, params) {
+		  error : function(e, c) {
 		  	// this is the test case
 		  	app("While testing contract " + c.getcdes() + ", an error happens: "
 			      + e);
-			  app("The parameters passed to the function were: " + params);
+		  	if (c.get_last_created_values) {
+				  app("object.[parameter1,...]: " + c.get_last_created_values());		  		
+		  	}
 		  },
 		  moduleChange : function(m) {
 			  module = m;

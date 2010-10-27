@@ -46,7 +46,8 @@
 		} else if (result.normal === false) {
 			fire.call(this, 'fail', contract, value, count);
 		} else if (result.error) {
-			fire.call(this, 'error', result.error, contract);
+			// FIXME: pass parameters and value of this
+			fire.call(this, 'error', result.error, contract, result.params, result.that);
 		}
 	}
 

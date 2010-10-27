@@ -115,15 +115,9 @@ var JSConTest = (function (P) {
       sepWithNL += nextLine();
     }
     for (i in a) {
-      s += sepWithNL;
-      numberOfProp = numberOfProp + 1; 
-      if ((i === '__contexts__') && (typeof a[i] === 'object')) {
-        context = {};
-        for (j in a[i]) {
-          context[j] = P.trans.effToString(a[i][j]);
-        }
-        s += "__contexts__: " + valueToString(context);
-      } else {
+    	if (a.hasOwnProperty(i)) {
+	      s += sepWithNL;
+	      numberOfProp = numberOfProp + 1; 
         if (showProp) {
           s += i + ": ";
         }
@@ -132,7 +126,7 @@ var JSConTest = (function (P) {
         } else {
           s += a[i];
         }
-      }
+    	}
     }
     if (numberOfProp > 1) {
       return left + s.substring(sep.length) + right;

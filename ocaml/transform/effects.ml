@@ -4,6 +4,13 @@ open Trans
 open ASTUtil
 open Annotation
 
+let unop_to_expr_for_library = function
+  | Incr_postfix _ -> c_to_e (n_to_c 1.0)
+  | Decr_postfix _ -> c_to_e (n_to_c 2.0)
+  | Incr_prefix _ -> c_to_e (n_to_c 3.0)
+  | Decr_prefix _ -> c_to_e (n_to_c 4.0)
+  | Delete _ -> c_to_e (n_to_c 5.0)
+
 type t = {
   js_namespace: string;
   variable_prefix: string;
@@ -12,16 +19,12 @@ type t = {
   mCall: string;
   fCall: string;
   unop: string;
-(*  box_var: string;
-  box_param : string; *)
-  (* box_this: string; *)
-  (* box_test: string; *)
-  (* box_return: string; *)
   unbox: string;
+  fixObj: string;
 }
 
 let create_t ~js_namespace ~variable_prefix 
-    ~propAcc ~propAss ~mCall ~fCall ~unop ~unbox
+    ~propAcc ~propAss ~mCall ~fCall ~unop ~unbox ~fixObj
     =
   { js_namespace = js_namespace;
     variable_prefix = variable_prefix;
@@ -30,9 +33,8 @@ let create_t ~js_namespace ~variable_prefix
     mCall = mCall;
     fCall = fCall;
     unop = unop;
-(*    box_var = box_var;
-    box_param = box_param; *)
     unbox = unbox;
+    fixObj = fixObj;
   }
 
 let transform env effects fname pl sel =
@@ -52,7 +54,10 @@ let transform env effects fname pl sel =
     | Array_construction (a,eol) -> 
         Array_construction (a,List.map (t_o ub_e) eol)
     | Object_construction (a,pnel) ->
-        Object_construction (a,List.map (fun (p,e) -> t_pn p, ub_e e) pnel)
+        do_mcalle_el 
+          prefix
+          (env.fixObj)
+          [Object_construction (a,List.map (fun (p,e) -> t_pn p, t_e e) pnel)]
     | Array_access (a,e1,e2) ->
         do_mcalle_el prefix (env.propAcc) [t_e e1; t_e e2]
     | Object_access (a,e,i) ->
@@ -87,7 +92,7 @@ let transform env effects fname pl sel =
         begin
           (* TODO: Does not work always, correct the transformation *)
           let do_op op =
-            let vn = (gen_var_name env.variable_prefix ()) in
+            let vn = gen_var_name env.variable_prefix () in
               g_e_sel
                 [init_var vn (t_e e);
                  g_se_s 
@@ -115,7 +120,7 @@ let transform env effects fname pl sel =
                   do_mcalle_el 
                     prefix 
                     (env.unop) 
-                    [ s_to_e (so_unary_op uop); t_e e1; s_to_e (i_to_s (t_i i))] 
+                    [ unop_to_expr_for_library uop; t_e e1; s_to_e (i_to_s (t_i i))] 
               | Function_expression _ ->
                   failwith "Function call as lhs for an Unop is not valid."
               | Binop _ -> failwith "Binop as lhs for an Unop is not valid."
@@ -234,17 +239,14 @@ let transform env effects fname pl sel =
   and t_s = function
     | Skip a -> Skip a
     | Block (a,sl) -> Block (a,List.map t_s sl) 
-    | Variable_declaration (a,ieol) as e -> e
-(*        (* TODO *)
+    | Variable_declaration (a,ieol) as e ->
+        (* TODO *)
         Variable_declaration 
           (a,List.map 
              (fun (i,eo) -> 
-                (t_i i, 
-                 t_o
-                   (fun e -> wb_e i (t_e e))
-                   eo))
+                (t_i i, t_o t_e eo))
              ieol
-          ) *)
+          )
     | Expression (a,e) -> Expression (a,t_e e)
     | If (a,e,s,so) -> If (a,t_e e, t_s s, t_o t_s so)
     | Do (a,s,e) -> Do (a,t_s s, t_e e)
@@ -375,7 +377,6 @@ let transform env effects fname pl sel =
            ] *)
       
 let  before_wrapper env pl e = 
-  print_endline "enable Wrapper call";
   do_mcalle_el 
     (i_to_e (s_to_i env.js_namespace))
     "enableWrapper"
@@ -396,10 +397,9 @@ module TestEffects = struct
       fCall = "fCall";
       propAcc = "doPropRead";
       variable_prefix = "tmp";
-(*      box_var = "box";
-      box_param = "box_param"; *)
       unbox = "unbox";
       unop = "doUnop";
+      fixObj = "fix_object_literal";
     } 
     in
     let na = null_annotation in
