@@ -447,7 +447,7 @@
 		return contract;
 	}
 	
-	C.Function = function (pl, rt, eff, thisC, fname) {
+	C.Function = function (pl, rt, eff, fname, thisC) {
 		var contract;		
 		function registerEffects() {
 			if (P.tests.callback.registerEffect) {
@@ -475,7 +475,7 @@
 		return contract;
 	};
 	C.Method = function(this_contract, pl, rt, eff, mname) {
-		var contract = C.Function(pl, rt, eff, this_contract, mname);		
+		var contract = C.Function(pl, rt, eff, mname, this_contract);		
 		return contract;
 	};
 	
