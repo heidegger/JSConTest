@@ -162,7 +162,10 @@ var JSConTest = (function (P) {
     case 'string': 
       return singleQuote(v);
     case 'object':
-      if (isSArray(v)) {
+    	if (v === P.utils.gObj) {
+    		return "window";
+    	}
+    	if (isSArray(v)) {
         return concat(v, ",", '[', ']', false, true, modnextLine);
       } else {
         if (v.getcdes) {

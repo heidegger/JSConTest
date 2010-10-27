@@ -261,14 +261,16 @@
       // store unboxed value in the object
       o[p] = v;
       
-      // store in o the information about the access
-      // path of the property p (which is apv)
-      // reading will extract the access path and
-      // create a correct box for the value if needed
-      if (!(o.__infos__)) {
-        o.__infos__ = {};
+      if (apv) {
+	      // store in o the information about the access
+	      // path of the property p (which is apv)
+	      // reading will extract the access path and
+	      // create a correct box for the value if needed
+	      if (!(o.__infos__)) {
+	        o.__infos__ = { };
+	      }
+	      o.__infos__[p] = apv;      
       }
-      o.__infos__[p] = apv;      
       return undefined;
     }
     return doWithUnwrap3(wo, wp, wv, write);
@@ -389,7 +391,7 @@
   		result[uid] = [];
   		for (j = 0; j < p_map[uid].length; j += 1) {
 	  		result[uid].push({
-	  		  effect: p_map[uid],
+	  		  effect: p_map[uid][j],
 	  		  type: PROP,
 	  		  property: property
 	  		});
@@ -630,6 +632,7 @@
     		o[p] = unbox(o[p]);
   		}
   	}
+  	return o;
   }
   
   E.isBox = isBox;
