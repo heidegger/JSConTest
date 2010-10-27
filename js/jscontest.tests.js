@@ -427,42 +427,36 @@
 	var leafTest = testmode.lT;
 	var getTestMode = testmode.gT;
 
-
-	function assertParams(cl, pl, str, fname) {
-		var clreal = [];
-		// TODO: Why does this work with for (var in ...)?
-		// If cl is an array, this will not work
-		for ( var i in cl) {
-			clreal.push(T.getVar(cl[i]));
-		}
-		;
-		var ret = [];
+	function assertParamsReal(clreal, pl, str, fname) {
+		var ret;
 		if (getTestMode()) {
 			ret = clreal;
 		} else {
 			ret = [];
-			for ( var i in cl) {
-				var c = T.getVar(cl[i]);
-				if (c.checkParams(pl)) {
-					if (c.registerEffects) {
-						ret.push(c.registerEffects(pl, fname));
+			for ( i = 0; i < clreal.length; i += 1) {
+				if (clreal[i].checkParams(pl)) {
+					if (clreal[i].registerEffects) {
+						ret.push(clreal[i].registerEffects(pl, fname));
 					} else {
-						ret.push(c);
+						ret.push(clreal[i]);
 					}
 				}
 			}
 			if (ret.length < 1) {
 				var pla = [];
-				for ( var i = 0; i < pl.length; i++)
+				for ( i = 0; i < pl.length; i += 1) {
 					pla.push(pl[i]);
+				}
 				fire.call(P, 'assertParam', clreal, pla, str);
 			}
 		}
 		ret.assertReturn = function(v) {
+			var i;
+			
 			if (getTestMode()) {
 				return v;
 			}
-			for ( var i = 0; i < this.length; i++) {
+			for ( i = 0; i < this.length; i += 1) {
 				var c;
 				if (this[i] && this[i].unregisterEffect) {
 					c = this[i].unregisterEffect();
@@ -471,9 +465,20 @@
 				}
 				c.checkReturn(v);
 			}
-			return v;
+			return v;		
 		};
 		return ret;
+	}
+	function assertParams(cl, pl, str, fname) {
+		var clreal = [], i;
+		for (i = 0; i < cl.length; i += 1) {
+			if (P.check.isString(cl[i])) {
+				clreal.push(T.getVar(cl[i]));
+			} else {
+				clreal.push(cl[i]);
+			}
+		}
+		return assertParamsReal(clreal, pl, str, fname);
 	}
 	
 	function enableAsserts(f, cl, fname, forg) {
