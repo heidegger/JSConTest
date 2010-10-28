@@ -87,7 +87,7 @@ and 'c expression =
   | Array_access of annotation * 'c expression * 'c expression
   | Object_construction of annotation * ('c property_name * 'c expression) list
   | Object_access of annotation * 'c expression * 'c identifier
-  | Function_expression of annotation * 
+  | Function_expression of annotation *
       'c identifier option * 'c identifier list * 'c identifier list option * 'c source_element list
   | Assign of annotation * 'c expression * assignment_operator * 'c expression
   | Unop_without_sideeffect of annotation * 'c expression 

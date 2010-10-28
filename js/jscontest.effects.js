@@ -89,19 +89,22 @@
     switch (eff.type) {
     case PARAMETER:
       return ((access_path.type === PARAMETER) && 
-              (eff.number === access_path.number));
+              (eff.number === access_path.number) &&
+              (eff.type = PARAMETER));
     case VARIABLE:
     	return ((access_path.type === VARIABLE) &&
-    					(eff.name === access_path.name));
+    					(eff.name === access_path.name) &&
+    					(eff.type === VARIABLE));
     case PROP:
       if ((access_path.type === PROP) && 
-          (access_path.property === eff.property)) {
+          (access_path.property === eff.property) &&
+          (eff.type === PROP)) {
         return isAllowedEff(access_path.effect, eff.effect);
       } else {
         return false;
       }
     case QUESTIONMARK:
-      if (access_path.type === PROP) {
+      if ((access_path.type === PROP) && (eff.type === PROP)) {
         return isAllowedEff(access_path.effect, eff.effect);
       } else {
         return false;
@@ -113,6 +116,7 @@
         }
         return isAllowedEff(access_path.effect, eff);
       }
+    case noPROP: return false;
     default: return false;
     }
   }
@@ -193,13 +197,16 @@
         p            = param.property,
         check        = param.check,
         eventHandler = param.eventHandler,
-        obj_context, new_context, uid;
+        obj_context, new_context, uid, j;
     for (uid in opm) {
       obj_context = opm[uid];
-      new_context = { type : PROP,
-                      property : p,
-                      effect : obj_context
-      };
+      new_context = [];
+      for ( j = 0; j < obj_context.length; j += 1) {
+      	new_context.push({ type : PROP,
+      		property : p,
+      		effect : obj_context[j]
+      	}); 
+      }
       if (!check(uid, new_context)) {
         eventHandler(o, p,
                      P.utils.valueToString(effStoreToString(effect_store)), 

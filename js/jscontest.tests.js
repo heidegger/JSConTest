@@ -32,6 +32,8 @@
 	/* Number of tests after which events in the browser are handled */
 	var testCountPerStep = 5000;
 
+	var iterStatTime;
+	var maxTime = 5000;
 
 	/** ******** test interface ********* */
 	function fire(msg) {
@@ -101,16 +103,23 @@
 		return result;
 	}
 
-	function simpleTester(test, stat, count, resultHandler) {
+	function simpleTester(test, stat, count, resultHandler, iterStatTime, maxTime) {
 		var contract = test.contract,
 			value = test.value, 
 			done = test.done || 0,
 			cont = true,
 			result, i;
-
-		for (i = 0; cont && i < count; i += 1) {			
-			result = checker(test);
-			cont = cont && (result.normal === true);
+		if (iterStatTime && maxTime) {
+			for (i = 0; cont && i < count; i += 1) {			
+				result = checker(test);
+				var aTime = new Date();
+				cont = cont && (result.normal === true) && (aTime - iterStatTime <= maxTime);
+			}			
+		} else {
+			for (i = 0; cont && i < count; i += 1) {			
+				result = checker(test);
+				cont = cont && (result.normal === true);
+			}						
 		}
 		if (stat && P.check.isFunction(stat.incTests)) {
 			stat.incTests(i);
@@ -151,7 +160,7 @@
 					}
 					resultHandler(result);
 				} else {
-					simpleTester(test, stat, doInThisCall, rH);
+					simpleTester(test, stat, doInThisCall, rH, iterStatTime, maxTime);
 				}			
 			});
 		});
@@ -316,6 +325,7 @@
 				return afterRunHandler();
 			} else {
 				setTimeout(iterSteps, 0);
+				iterStatTime = new Date();
 				if (reset(cancel)) {
 					return;
 				} else {

@@ -330,6 +330,8 @@
 		var o = new Contract(p);
 		return o;
 	};
+	C.EmptyObject = new SContract(P.check.isEmptyObject, { }, "{ }", ctObject);		
+	
 	/* An Array. t is the type of the elements. */
 	C.Array = function(t) {
 		var p = {
@@ -357,7 +359,7 @@
 	 * parameter, then call the function and checking, if the result value
 	 * fulfills rt.
 	 */
-	function FunctionBaseConstructor(pl, rt, thisC) {
+	function FunctionBaseConstructor(pl, rt, thisC, arrowp) {
 		var lcvs, contract,
 			pldes = "",
 			p = {	contractType : ctFunction,
@@ -367,10 +369,11 @@
 			     	setcdes : setcdes,
 			     	genNeeded : P.check.isFunction
 			},
-			genThis;
+			genThis,
+			arrow = arrowp || "->";
 
 		function getcdes() {
-			return pldes + "->" + rt.getcdes();
+			return pldes + arrowp + rt.getcdes();
 		}
 		function setcdes() {
 			throw "Setting description for function contract not supported";
@@ -387,7 +390,7 @@
 			if (t !== 'function') {
 				return false;
 			}
-			var thisval = genThis();
+			var thisval = genThis(v);
 			lcvs = P.utils.valueToString(thisval) +
 					"." +	P.utils.valueToString(pvl);			
 			res = v.apply( thisval , pvl);
@@ -448,7 +451,7 @@
 		return contract;
 	}
 	
-	C.Function = function (pl, rt, eff, fname, thisC) {
+	C.Function = function (pl, rt, eff, fname, thisC, arrow) {
 		var contract;		
 		function registerEffects() {
 			if (P.tests.callback.registerEffect) {
@@ -471,15 +474,45 @@
 			return contract;			
 		}
 
-		contract = FunctionBaseConstructor(pl, rt, thisC);
+		contract = FunctionBaseConstructor(pl, rt, thisC, arrow);
 		contract.registerEffects = registerEffects;
 		return contract;
 	};
-	C.Method = function(this_contract, pl, rt, eff, mname) {
-		var contract = C.Function(pl, rt, eff, mname, this_contract);		
+	C.Method = function(thisC, pl, rt, eff, mname) {
+		function NTC(org) {
+			var wrap = this;
+			this.check = (function(v) {
+				if (P.check.isGObject(v)) {
+					return false;
+				} else {
+					if (this !== wrap) {
+						return org.check.apply(this, arguments);						
+					} else {
+						return org.check.apply(that, arguments);						
+					}
+				}				
+			});
+		}
+		NTC.prototype = thisC;
+		var contract = C.Function(pl, rt, eff, mname, new NTC(thisC));		
 		return contract;
 	};
-	
+	C.Constructor = function(pl, rt, eff, mname) {
+		function NTC() {
+			this.gen = (function(v) {
+				function dummy() {}
+				dummy.prototype = v.prototype;
+				var x = new dummy();
+				//x.constructor = v;
+				return x;
+			});
+		}
+		var thisC = new NTC();
+		thisC.getcdes = function() {
+			return "new Method object";
+		}
+		return C.Function(pl, rt, eff, mname, thisC, "=>");
+	};
 	C.Depend = function(order, dl) {
 		var dparam = {};
 		function getDepend(i) {

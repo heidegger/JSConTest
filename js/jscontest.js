@@ -270,6 +270,9 @@ var JSConTest = (function (P) {
   	}
   	return true;
   }
+  function isGObject(v) {
+  	return v === P.utils.gObj;
+  }
   function isSArray(obj) {
     if (!obj) {
       return false;
@@ -313,7 +316,7 @@ var JSConTest = (function (P) {
   P.check.isSArray = isSArray;
   P.check.isObject = isObject;
   P.check.isEmptyObject = isEmptyObject;
-  
+  P.check.isGObject = isGObject;
   
   /********** generator **********/
   /* You can call every generate without any parameters.
