@@ -31,7 +31,7 @@ let g_se_s : 'c statement -> 'c source_element =
 let g_s_e : 'c expression -> 'c statement = 
   fun e -> Expression (null_annotation, e)
 let g_fun_xs_sel : 'c identifier list -> 'c source_element list -> 'c expression =
-    fun params sel ->  Function_expression (null_annotation,None,params,None,sel)
+    fun params sel ->  Function_expression (null_annotation,None,None,params,None,sel)
 
 let g_e_sel : 'c source_element list -> 'c expression =
   fun sel ->
