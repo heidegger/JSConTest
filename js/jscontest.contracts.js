@@ -165,7 +165,7 @@
 	};
 	C.Singleton = function(v) {
 		return new SingletonContract(v, v);
-	}
+	};
 	C.Null = new SingletonContract(null, "null");
 	C.Undefined = new SingletonContract(undefined, "undefined");
 	C.Boolean = new SContract(P.check.isBoolean, P.gen.genBoolean, "boolean",
@@ -349,290 +349,371 @@
 		return new Contract(p);
 	};
 
-	/** ********* FUNCTION ********* */
-	/*
-	 * A function contract. pl is a list of contracts for the parameters of the
-	 * function, while rt describes the result value of the function. eff is an
-	 * array representing the effects of a function. The effect can be omited.
-	 * C.Function([C.Boolean,C.String], C.String) states: (boolean, string) ->
-	 * string The check for a function is done by generating a value for each
-	 * parameter, then call the function and checking, if the result value
-	 * fulfills rt.
-	 */
-	function FunctionBaseConstructor(pl, rt, thisC, arrowp) {
-		var lcvs, contract,
-			pldes = "",
-			p = {	contractType : ctFunction,
-			     	check : check,
-			     	generate : gen,
-			     	getcdes : getcdes,
-			     	setcdes : setcdes,
-			     	genNeeded : P.check.isFunction
-			},
-			genThis,
-			arrow = arrowp || "->";
-
-		function getcdes() {
-			return pldes + arrowp + rt.getcdes();
-		}
-		function setcdes() {
-			throw "Setting description for function contract not supported";
-		}
-		function check(v) {
-			var pvl = [];
-			for ( var i in pl) {
-				pvl[i] = pl[i].gen();
-			}
-			return checkWithParams.call(this, v, pvl);
-		}
-		function checkWithParams(v, pvl) {
-			var t = typeof (v), res, cres, lcvc;
-			if (t !== 'function') {
-				return false;
-			}
-			var thisval = genThis(v);
-			lcvs = P.utils.valueToString(thisval) +
-					"." +	P.utils.valueToString(pvl);			
-			res = v.apply( thisval , pvl);
-			cres = rt.check(res);
-			if (!cres) {
-				/* collect counterexample */
-				this.registerCExp(new P.cexp.CExp(v, this, pvl, res, thisval));
-				return false;
-			} else {
-				return true;
-			}
-		}
-		function gen() {
-			return (function() {
-				if (contract.checkParams(arguments))
-					return rt.gen();
-			});
-		}
-		function checkParams(plv) {
-			var v, c;
-			for ( var i in pl) {
-				v = plv[i];
-				c = pl[i];
-				if (!(c.check(v))) {
-					return false;
-				}
-			}
-			return true;
-		}
-		function checkReturn(v) {
-			var ok = rt.check(v);
-			if (!ok) {
-				fire.call(P, 'assertReturn', contract, v);
-			}
-		}
-		function get_last_created_values() {
-			return lcvs;
-		}
-
+	(function function_stuff() {
+		/** ********* FUNCTION ********* */
+		var FUNCTION = 1, METHOD = 2, CONSTRUCTOR = 3;
 		
-		for ( var i in pl ) {
-			if (i > 0) {
-				pldes += ", ";
-			}
-			pldes += pl[i].getcdes();
-		}
-		contract = new Contract(p);
-		if (thisC && P.check.isFunction(thisC.gen) ) {
-			genThis = thisC.gen;
-			pldes = thisC.getcdes() + ".(" + pldes + ")"; 
-		} else {
-			genThis = function () { return P.utils.gObj; };
-		}
-		contract.checkParams = checkParams;
-		contract.checkReturn = checkReturn;
-		contract.checkWithParams = checkWithParams;
-		contract.get_last_created_values = get_last_created_values;
-		return contract;
-	}
+		/*
+		 * A function contract. pl is a list of contracts for the parameters of the
+		 * function, while rt describes the result value of the function. eff is an
+		 * array representing the effects of a function. The effect can be omited.
+		 * C.Function([C.Boolean,C.String], C.String) states: (boolean, string) ->
+		 * string The check for a function is done by generating a value for each
+		 * parameter, then call the function and checking, if the result value
+		 * fulfills rt.
+		 */
 	
-	C.Function = function (pl, rt, eff, fname, thisC, arrow) {
-		var contract;		
-		function registerEffects() {
-			if (P.tests.callback.registerEffect) {
-				// call registerEffect, which will return a uid
-				// create new object, that has a method called
-				// unregisterEffect, that is able to call
-				// the callback function unregisterEffect with
-				// the uid gernerated by registerEffect.
-				var uid = P.tests.callback.registerEffect(eff, pl, thisC, fname);
-				if (P.tests.callback.unregisterEffect) {
-					var o = {
-						unregisterEffect : function() {
-							P.tests.callback.unregisterEffect(uid);
-							return contract;
-						}
-					};
-					return o;
-				}
+		function runFailSafeRh(f, thisv, pl, rh, eh) {
+			var res;
+			
+			try {
+				res = f.apply(thisv, pl);
+			} catch (e) {
+				return eh(e);
 			}
+			return rh(res);
+		}
+		function runFailSafe(f, thisv, pl, rh, eh) {
+			try {
+				return f.apply(thisv, pl);
+			} catch (e) {
+				return eh(e);
+			}
+		}
+		function runRh(f, thisv, pl, rh) {
+			return rh(f.apply(thisv, pl));
+		}
+		function run(f, thisv, pl) {
+			return f.apply(thisv, pl);
+		}
+		
+		function FunctionBaseConstructor(t, thisC, paramC, returnC, rh, failSafe) {
+			var contract,
+				pldes = "", p, i, 
+				arrow = (t === FUNCTION ? "->" : (t === METHOD ? "~>" : "=>")),
+				setcdes, getcdes, 
+				gen,
+				check, checkWithGenValues,  
+				checkParams, checkThis, checkReturn,
+				runcheck;
+
+			setcdes = function () {
+				throw "Setting description for function contract not supported";
+			};
+			getcdes = function () {
+				return pldes + arrow + returnC.getcdes();
+			};
+			gen = function () {
+				return (function() {
+					if (contract.checkThis(this) && contract.checkParams(arguments)) {
+						return returnC.gen();
+					}
+				});
+			};
+
+			check = function (v) {
+				var t = typeof (v), 
+					pvl, 
+					thisv, 
+					i, l;
+
+				if (t !== 'function') {
+					return false;
+				}			
+				thisv = thisC.gen();
+				pvl = [];
+				l = paramC.length;
+				for ( i = 0; i < l; i += 1 ) {
+					pvl[i] = paramC[i].gen();
+				}
+				return checkWithGenValues.call(this, v, thisv, pvl);
+			};
+			
+			checkWithGenValues = function(v, thisv, pvl) {
+				var res;
+				// execute rh and perform the execution inside of a try/catch
+				// depending on rh and failSafe
+				res = runcheck(v, thisv, pvl, rh, failSafe);
+				if (returnC.check(res)) {
+					return true;
+				}
+				/* create and store counterexample */
+				this.registerCExp(new P.cexp.CExp({
+					value: v,
+					contract: this,
+					t: t,
+					thisv: thisv,
+					parameter: pvl,
+					returnv: res
+				}));
+				return false;				
+			};
+			checkThis = function(thisv) {
+				return thisC.check(thisv);
+			};
+			checkParams = function (plv) {
+				var v, c;
+				for ( var i in paramC) {
+					v = plv[i];
+					c = paramC[i];
+					if (!(c.check(v))) {
+						return false;
+					}
+				}
+				return true;
+			};
+			checkReturn = function (v) {
+				var ok = returnC.check(v);
+				if (!ok) {
+					fire.call(P, 'assertReturn', contract, v);
+				}
+			};
+			getLastCreatedValues = function () {
+				return lcvs;
+			};
+
+			
+			if (P.check.isFunction(rh)) {
+				runcheck = (P.check.isFunction(failSafe)) ? runFailSafeRh : runRh;
+			} else {
+				runcheck = (P.check.isFunction(failSafe)) ? runFailSafe : run;
+			}
+			for (i = 0; i < paramC.length; i += 1 ) {
+				if (i > 0) {
+					pldes += ", ";
+				}
+				pldes += paramC[i].getcdes();
+			}
+			switch (t) {
+			case FUNCTION:
+				pldes = "(" + pldes + ")";
+				break;
+			case METHOD:
+				pldes = thisC.getcdes() + ".(" + pldes + ")";
+				break;
+			case CONSTRUCTOR:
+				break;
+			}
+			contract = new Contract({	
+				contractType : ctFunction,
+				check : check,
+				generate : gen,
+			  getcdes : getcdes,
+			  setcdes : setcdes,
+			  genNeeded : P.check.isFunction
+			});
+			
+			contract.checkParams = checkParams;
+			contract.checkReturn = checkReturn;
+			contract.checkThis = checkThis;
+			//contract.checkWithParams = checkWithParams;
+			//contract.getLastCreatedValues = getLastCreatedValues;
+			return contract;
+		}
+		
+		function mixInEffect(contract, eff, pl, thisC, fname) {
+			function registerEffects() {
+				if (P.tests.callback.registerEffect) {
+					// call registerEffect, which will return a uid
+					// create new object, that has a method called
+					// unregisterEffect, that is able to call
+					// the callback function unregisterEffect with
+					// the uid gernerated by registerEffect.
+					var uid = P.tests.callback.registerEffect(eff, pl, thisC, fname);
+					if (P.tests.callback.unregisterEffect) {
+						var o = {
+							unregisterEffect : function() {
+								P.tests.callback.unregisterEffect(uid);
+								return contract;
+							}
+						};
+						return o;
+					}
+				}
+				return contract;			
+			}
+			contract.registerEffects = registerEffects;
 			return contract;			
 		}
-
-		contract = FunctionBaseConstructor(pl, rt, thisC, arrow);
-		contract.registerEffects = registerEffects;
-		return contract;
-	};
-	C.Method = function(thisC, pl, rt, eff, mname) {
-		function NTC(org) {
-			var wrap = this;
-			this.check = (function(v) {
-				if (P.check.isGObject(v)) {
-					return false;
-				} else {
-					if (this !== wrap) {
-						return org.check.apply(this, arguments);						
-					} else {
-						return org.check.apply(that, arguments);						
-					}
-				}				
-			});
-		}
-		NTC.prototype = thisC;
-		var contract = C.Function(pl, rt, eff, mname, new NTC(thisC));		
-		return contract;
-	};
-	C.Constructor = function(pl, rt, eff, mname) {
-		function NTC() {
-			this.gen = (function(v) {
-				function dummy() {}
-				dummy.prototype = v.prototype;
-				var x = new dummy();
-				//x.constructor = v;
-				return x;
-			});
-		}
-		var thisC = new NTC();
-		thisC.getcdes = function() {
-			return "new Method object";
-		}
-		return C.Function(pl, rt, eff, mname, thisC, "=>");
-	};
-	C.Depend = function(order, dl) {
-		var dparam = {};
-		function getDepend(i) {
-			if (i < dl.length - 1)
-				return dl[i];
-		}
-		function getDependResult() {
-			return dl[dl.length - 1];
-		}
-		function getOrder() {
-			return order;
-		}
-		dparam.getDepend = getDepend;
-		dparam.getDependResult = getDependResult;
-		dparam.getOrder = getOrder;
-		return dparam;
-	};
-	C.DFunction = function(pl, rt, dparam) {
-		function DValues() {
-			var scope = [ [] ];
-			var as = 0;
-			this.getValue = function(s, p) {
-				return scope[s - 1][p - 1];
-			};
-			this.setValue = function(param, value) {
-				scope[as][param] = value;
-			};
-		}
-		var lsvs = "";
-		var pldes = "";
-		for ( var i in pl) {
-			if (i > 0) {
-				pldes += ", ";
-			}
-			pldes += pl[i].getcdes();
-		}
-		function getValues(dvalues, dpl) {
-			var dvl = [];
-			for ( var i in dpl) {
-				dvl.push(dvalues.getValue.apply(dvalues, dpl[i]));
-			}
-			return dvl;
-		}
-		function check(v, dvalues) {
-			var t = typeof (v);
-			if (t !== 'function') {
-				return false;
-			}
-			if (dvalues === undefined) {
-				dvalues = new DValues();
-			}
-			var pvl = [];
-
-			var order = dparam.getOrder();
-			for ( var i in order) {
-				/* index of parameter, that should be generated */
-				var p = order[i];
-
-				/* list of ($,anz) tuppels, from which the parameter depends */
-				var dpl = dparam.getDepend(p);
-
-				/* collected values, corresponding to the ($,anz) list */
-				var dvl = getValues(dvalues, dpl);
-
-				/* call the generator, this = pl[p], other parameters dvl */
-				var value = pl[p].gen.apply(pl[p], dvl);
-				pvl[p] = value;
-
-				dvalues.setValue(p, value);
-			}
-			lcvs = P.utils.valueToString(pvl);
-			var res = v.apply(null, pvl);
-			var cres = rt.check(res);
-			if (!cres) {
-				/* collect counterexample */
-				this.registerCExp(new P.cexp.CExp(v, this, pvl, res));
-				return false;
-			} else {
-				return true;
-			}
-		}
-		function getcdes() {
-			return pldes + "-D>" + rt.getcdes();
-		}
-		function setcdes() {
-			throw "Setting description for function contract not supported";
-		}
-		var p = {
-		  contractType : ctFunction,
-		  check : check,
-		  generate : {},
-		  getcdes : getcdes,
-		  setcdes : setcdes,
-		  genNeeded : P.check.isFunction
+		
+		C.Function = function (pl, rt, eff, fname) {
+			var thisC = new SContract(P.check.isGObject,
+			                          P.utils.gObj, 
+			                          "window", 
+			                          ctFunction);
+			return mixInEffect(FunctionBaseConstructor(FUNCTION, thisC, pl, rt, false, false),
+			                   pl, thisC, fname);
 		};
-		// var c = new Contract(ctFunction,check,{},getcdes,setcdes,
-		// P.check.isFunction);
-		var c = new Contract(p);
-		c.checkParams = function(plv) {
+		C.FunctionFailSafe = function (pl, rt, eff, fname, handler) {
+			var thisC = new SContract(P.check.isGObject,
+			                          P.utils.gObj, 
+			                          "window", 
+			                          ctFunction);
+			return mixInEffect(FunctionBaseConstructor(FUNCTION, thisC, pl, rt, false, handler),
+			                   pl, thisC, fname);
+		};
+		C.Method = function(thisC, pl, rt, eff, mname) {
+			// warp this contract to ensure, that the global object (ES3) and
+			// undefined (ES5/Strict) is not allowed for this.
+			function NTC(org) {
+				var p,
+					check = P.utils.condBind(org['check'], org, this);
+				for ( p in org ) {
+					this[p] = P.utils.condBind(org[p], org, this);
+				}
+				this.check = (function(v) {
+					if (P.check.isGObject(this)) {
+						return false;
+					} else {
+						return check.apply(this, arguments);
+					}				
+				});
+			}
+			NTC.prototype = thisC;
+			return mixInEffect(FunctionBaseConstructor(METHOD, 
+			                                           new NTC(thisC), 
+			                                           pl,
+			                                           rt),
+			                   eff, thisC, mname);
+		};
+		C.Constructor = function(pl, rt, eff, mname) {
+			// TODO
+			function NTC() {
+				this.gen = (function(v) {
+					function dummy() {}
+					dummy.prototype = v.prototype;
+					var x = new dummy();
+					//x.constructor = v;
+					return x;
+				});
+			}
+			var thisC = new NTC();
+			thisC.getcdes = function() {
+				return "new Method object";
+			};
+			return C.Function(pl, rt, eff, mname, thisC, "=>");
+		};
+		C.Depend = function(order, dl) {
+			var dparam = {};
+			function getDepend(i) {
+				if (i < dl.length - 1)
+					return dl[i];
+			}
+			function getDependResult() {
+				return dl[dl.length - 1];
+			}
+			function getOrder() {
+				return order;
+			}
+			dparam.getDepend = getDepend;
+			dparam.getDependResult = getDependResult;
+			dparam.getOrder = getOrder;
+			return dparam;
+		};
+		C.DFunction = function(pl, rt, dparam) {
+			function DValues() {
+				var scope = [ [] ];
+				var as = 0;
+				this.getValue = function(s, p) {
+					return scope[s - 1][p - 1];
+				};
+				this.setValue = function(param, value) {
+					scope[as][param] = value;
+				};
+			}
+			var lsvs = "";
+			var pldes = "";
 			for ( var i in pl) {
-				v = plv[i];
-				c = pl[i];
-				if (!(c.check(v))) {
+				if (i > 0) {
+					pldes += ", ";
+				}
+				pldes += pl[i].getcdes();
+			}
+			function getValues(dvalues, dpl) {
+				var dvl = [];
+				for ( var i in dpl) {
+					dvl.push(dvalues.getValue.apply(dvalues, dpl[i]));
+				}
+				return dvl;
+			}
+			function check(v, dvalues) {
+				var t = typeof (v);
+				if (t !== 'function') {
 					return false;
 				}
-			}
-			return true;
-		};
-		c.checkReturn = function(v) {
-			var ok = rt.check(v);
-			if (!ok) {
-				fire.call(P, 'assertReturn', c, v);
-			}
-		};
-		c.get_last_created_values = function() {
-			return lcvs;
-		};
-		return c;
-	};
+				if (dvalues === undefined) {
+					dvalues = new DValues();
+				}
+				var pvl = [];
 
+				var order = dparam.getOrder();
+				for ( var i in order) {
+					/* index of parameter, that should be generated */
+					var p = order[i];
+
+					/* list of ($,anz) tuppels, from which the parameter depends */
+					var dpl = dparam.getDepend(p);
+
+					/* collected values, corresponding to the ($,anz) list */
+					var dvl = getValues(dvalues, dpl);
+
+					/* call the generator, this = pl[p], other parameters dvl */
+					var value = pl[p].gen.apply(pl[p], dvl);
+					pvl[p] = value;
+
+					dvalues.setValue(p, value);
+				}
+				lcvs = P.utils.valueToString(pvl);
+				var res = v.apply(null, pvl);
+				var cres = rt.check(res);
+				if (!cres) {
+					/* collect counterexample */
+					this.registerCExp(new P.cexp.CExp(v, this, pvl, res));
+					return false;
+				} else {
+					return true;
+				}
+			}
+			function getcdes() {
+				return pldes + "-D>" + rt.getcdes();
+			}
+			function setcdes() {
+				throw "Setting description for function contract not supported";
+			}
+			var p = {
+			  contractType : ctFunction,
+			  check : check,
+			  generate : {},
+			  getcdes : getcdes,
+			  setcdes : setcdes,
+			  genNeeded : P.check.isFunction
+			};
+			// var c = new Contract(ctFunction,check,{},getcdes,setcdes,
+			// P.check.isFunction);
+			var c = new Contract(p);
+			c.checkParams = function(plv) {
+				for ( var i in pl) {
+					v = plv[i];
+					c = pl[i];
+					if (!(c.check(v))) {
+						return false;
+					}
+				}
+				return true;
+			};
+			c.checkReturn = function(v) {
+				var ok = rt.check(v);
+				if (!ok) {
+					fire.call(P, 'assertReturn', c, v);
+				}
+			};
+			c.get_last_created_values = function() {
+				return lcvs;
+			};
+			return c;
+		};		
+	}());
+	
 	/** ********* UNION ********* */
 	var Union, UnionAddSimplRule;
 	(function() {

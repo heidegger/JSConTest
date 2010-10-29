@@ -199,6 +199,21 @@ var JSConTest = (function (P) {
 			return f.apply(that, Array.prototype.slice.call(arguments));
 		});
 	}
+	
+	// condBind(f, ...) calls f never with wrap as this.
+	// If condBind(f, that, ...) is called with the object wrap, then 
+	// that is passed instead. 
+	// If condBind(f, that, wrap, check) was called with an other this 
+	// object (unequal to that), then f is called with the this object 
+	function condBind(f, that, wrap) {
+		return (function () {
+			if (this === wrap) {
+				return f.apply(that, Array.prototype.slice.call(arguments));
+			} else {
+				return f.apply(that, Array.prototype.slice.call(arguments));
+			}
+		});
+	}
 
   /** utils exports */
 	P.utils.smem = smem;
@@ -208,6 +223,7 @@ var JSConTest = (function (P) {
   P.utils.compareArray = compareArray;
   P.utils.withTry = withTry;
   P.utils.bind = bind;
+  P.utils.condBind = condBind;
   P.utils.gObj = (function () { return this; }());
   P.utils.concat = concat;
   

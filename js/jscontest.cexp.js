@@ -21,7 +21,10 @@
 	 * 		moduleToString: void -> string; 
 	 * }
 	 */
-	function CExp(value, contract, params, result, module, thisValue) {
+	function CExp(cexp) {
+		return CExpOld(cexp.value, cexp.contrat, cexp.parameter, cexp.returnv, cexp.module, cexp.thisv);
+	}
+	function CExpOld(value, contract, params, result, module, thisValue) {
 		var tparams = params.slice(0);
 		this.getParams = function() {
 			return tparams;
