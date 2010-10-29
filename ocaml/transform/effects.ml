@@ -64,9 +64,10 @@ let transform env effects fname pl sel =
         do_mcalle_el prefix (env.propAcc) 
           [t_e e; s_to_e (i_to_s i)]
 
-    | Function_expression (a,fno,pl,ilo,body) ->
+    | Function_expression (a,co,fno,pl,ilo,body) ->
         (* TODO: have to transform body of function ?? *)
-        Function_expression (a,t_o t_i fno,List.map t_i pl,
+        (* TODO: handle the contract here!!! *)
+        Function_expression (a,co,t_o t_i fno,List.map t_i pl,
                              t_o (List.map t_i) ilo,
                              List.map t_se body)
     | Assign (a,lhs,aop,rhs) ->

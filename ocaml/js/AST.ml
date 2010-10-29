@@ -128,7 +128,7 @@ and 'c expression =
   | Array_access of annotation * 'c expression * 'c expression
   | Object_construction of annotation * ('c property_name * 'c expression) list
   | Object_access of annotation * 'c expression * 'c identifier
-  | Function_expression of annotation * 
+  | Function_expression of annotation * 'c option * 
       'c identifier option * 'c identifier list * 'c identifier list option * 'c source_element list
   | Assign of annotation * 'c expression * assignment_operator * 'c expression
   | Unop_without_sideeffect of annotation * 'c expression 
@@ -454,15 +454,19 @@ let visit_with_fun :
             let e = visit_e e in
             let i = visit_identifier i in
               Object_access (an,e,i)
-        | Function_expression (an,io,pl,lvo,sel),fl ->
+        | Function_expression (an,co,io,pl,lvo,sel),fl ->
             let io = visit_identifiero io in
+            let co = match co with
+              | None -> None
+              | Some c -> Some (ba_c c)
+            in  
             let pl = List.map visit_identifier pl in
             let lvo = match lvo with
               | None -> None
               | Some lv -> Some (List.map visit_identifier lv) 
             in
             let sel = visit_sel sel in
-              Function_expression (an,io,pl,lvo,sel)
+              Function_expression (an,co,io,pl,lvo,sel)
         | Assign (an,e1,aop,e2),fl ->
             let e1 = visit_e e1 in
             let aop = ba_assign_operator aop in
@@ -896,13 +900,18 @@ let to_string c_to_string =
         (soa ann)^(so_expression indent e)^
           "."^
           (so_identifier i)
-    | Function_expression (ann,io, il, lvo, sel) ->
+    | Function_expression (ann,co, io, il, lvo, sel) ->
         let name =
 	      match io with 
               None    -> ""
             | Some id -> so_identifier id
         in
+        let sc = match co with
+            | None -> ""
+            | Some c -> (c_to_string c)
+        in
           (soa ann)
+          ^ sc
           ^"(function "^name^" ("
           ^(String.concat ", " (List.map so_identifier il))^")"
           (* ^(match lvo with
@@ -1241,9 +1250,9 @@ let with_lv p =
       )
       ~a_expression:
       (function
-         | Function_expression (an,fn,pl,_,sel) -> 
+         | Function_expression (an,co,fn,pl,_,sel) -> 
              let lv = pop () in
-               Function_expression (an,fn,pl,Some lv,sel)
+               Function_expression (an,co,fn,pl,Some lv,sel)
          | e -> e
       )
       ~a_statement:
