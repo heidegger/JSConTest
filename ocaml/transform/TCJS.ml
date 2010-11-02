@@ -49,6 +49,11 @@ let so_i = so_identifier
      Analyse.string_of 
      Depend.string_of)
 
+let so_e = so_expression 
+  (Contract.string_of 
+     BaseContract.string_of 
+     Analyse.string_of 
+     Depend.string_of) 
 
 module Make(T: TRANS) : S with type t = T.t = struct
   type t = T.t
@@ -285,9 +290,9 @@ module Make(T: TRANS) : S with type t = T.t = struct
       (* tests asserts effects css_effects *)
       labels strings numbers 
       (* trans_prefix test_prefix tmp_prefix *)
-      a c fname_org pl fbody fcode =
+      a c fnametest fnameloc pl fbody fcode =
     let fname_own = 
-      match extend_i fname_org "_own" with
+      match extend_i fnameloc "_own" with
         | Some s -> s
         | None -> failwith "This should never happen"
     in
@@ -307,7 +312,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
       (read_prop (s_to_i env.js_namespace) env.js_contract_namespace) 
       env.variable_prefix
       labels_exp strings_exp numbers_exp
-      fname_org env.tests c 
+      fnametest env.tests c 
     in
     let cis = List.map (fun ((i,gi),_) -> (i,gi)) contracts in
     let test_code = (List.map snd contracts) in
@@ -348,7 +353,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
         do_mcalle_el
           (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
           "enableAsserts"
-          [return_fun; cl; s_to_e (i_to_s fname_org) ]
+          [return_fun; cl; s_to_e (i_to_s fnameloc) ]
     else
       return_fun
     in
@@ -358,12 +363,12 @@ module Make(T: TRANS) : S with type t = T.t = struct
         (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
         "overrideToStringOfFunction" 
         [return_fun; 
-         g_e_sel [fcode; g_return (i_to_e fname_org)];
+         g_e_sel [fcode; g_return (i_to_e fnameloc)];
          c_to_e (b_to_c (env.asserts && List.length cis > 0))
         ]
     in
       [AST.VarDecl 
-         (fname_org,
+         (fnametest,
           (g_e_sel (funcode @ [g_return return_fun])))
       ] @ test_code          
 
@@ -436,6 +441,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
               a
               c
               n
+              n
               pl
               sel
               forg
@@ -452,6 +458,47 @@ module Make(T: TRANS) : S with type t = T.t = struct
               | _ -> ()
           end;
           e
+      | Assign (an,e1,aop,Function_expression (a,Some c,no,pl,lvo,sel)) as e-> 
+          let rec pathname exp = match exp with
+               | Variable (an,i) -> Some (so_i i)
+               | Object_access (an,e,i) -> 
+                   begin
+                     match pathname e with
+                      | Some s -> Some (s ^ "_" ^ so_i i)
+                      | None -> None
+                   end
+               | Array_access (an,e1,e2) ->
+                   begin  
+                    match pathname e1 with
+                      | Some s -> Some (s ^ "_" ^ so_e 0 exp)
+                      | None -> None
+                   end
+               | e -> None
+          in begin 
+           match pathname e1 with     
+              | Some ntest -> begin
+                           let nloc = match no with
+                              | Some n -> n
+                              | None -> (s_to_i ntest)
+                           in 
+                           let mod_fd =
+                               gen_and_introduce 
+                                   env            
+                                   (get_labels ())
+                                   (get_strings ())
+                                   (get_numbers ())
+                                   a
+                                   c
+                                   (s_to_i ntest)
+                                   nloc
+                                   pl
+                                   sel
+                                   (Function_declaration (a,c,nloc,pl,lvo,sel))
+                           in
+                              g_e_sel mod_fd
+                         end
+              | None -> e          
+          end
       | e -> e
     in            
       AST.visit
