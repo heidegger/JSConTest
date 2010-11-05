@@ -495,7 +495,9 @@ module Make(T: TRANS) : S with type t = T.t = struct
                                    sel
                                    (Function_declaration (a,c,nloc,pl,lvo,sel))
                            in
-                              g_e_sel mod_fd
+                           let newfun = g_e_sel (mod_fd @ [g_return (i_to_e (s_to_i ntest))])
+                           in 
+                              Assign (an,e1,aop, newfun)   
                          end
               | None -> e          
           end
