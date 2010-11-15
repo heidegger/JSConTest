@@ -1119,11 +1119,12 @@ let to_string c_to_string =
 		              "default : "^
 		                (String.concat "; " (List. map (so_statement indent) sl))
         in
-          (soa ann)^"switch ("^(so_expression indent e)^")"^
+          (soa ann)^"switch ("^(so_expression indent e)^") {"^
             (String.concat (nl indent) (List.map oneCase e1sl))^
             default^
             (nl indent)^
-            (String.concat (nl indent) (List.map oneCase e2sl))
+            (String.concat (nl indent) (List.map oneCase e2sl))^
+            " }"
     | Throw (ann,e)                    ->
         (soa ann)^"throw "^
           (so_expression indent e)
