@@ -552,15 +552,9 @@ var JSConTest = (function (P) {
 		}
 		return pl;
 	}
-	function genSEPL() {
-		return genEPL(genPropString);
-	}
 	function genRPL() {
 		// TODO
 		return [];
-	}
-	function genPropString() {
-		return genString('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321');
 	}
 	function genString(chars, length) {
 		var i = 0, 
@@ -583,6 +577,12 @@ var JSConTest = (function (P) {
 			}
 			return r;
 		}
+	}
+	function genPropString() {
+		return genString('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321');
+	}
+	function genSEPL() {
+		return genEPL(genPropString);
 	}
 	function genStringL(minlength, maxlength) {
 		var isIntmin = isInt(minlength),

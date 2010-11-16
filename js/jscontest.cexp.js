@@ -2,7 +2,7 @@
 /* author: Phillip Heidegger */
 
 "use strict";
-(function(P) {
+(function (P) {
 	var C = {};
 	P.cexp = C;
 
@@ -21,63 +21,63 @@
 	 * 		moduleToString: void -> string; 
 	 * }
 	 */
-	function CExp(cexp) {
-		return CExpOld(cexp.value, cexp.contrat, cexp.parameter, cexp.returnv, cexp.module, cexp.thisv);
-	}
-	function CExpOld(value, contract, params, result, module, thisValue) {
+	function cExpOld(value, contract, params, result, module, thisValue) {
 		var tparams = params.slice(0);
-		this.getParams = function() {
+		this.getParams = function () {
 			return tparams;
 		};
 		this.getValue = function () {
 			return value;
 		};
-		this.getContract = function() {
+		this.getContract = function () {
 			return contract;
 		};
-		this.getResult = function() {
+		this.getResult = function () {
 			return result;
 		};
-		this.getModule = function() {
+		this.getModule = function () {
 			return module;
 		};
-		this.getThisValue = function() {
+		this.getThisValue = function () {
 			return thisValue;
 		};
-		this.compare = function(that) {
-			return ((value === that.getValue()) && (contract === that.getContract())
-			        && P.utils.compareArray(tparams, that.getParams()) 
-			        && (result === that.getResult())
-			        && (thisValue === that.getThisValue()));
+		this.compare = function (that) {
+			return ((value === that.getValue()) && (contract === that.getContract()) &&
+			        P.utils.compareArray(tparams, that.getParams()) && 
+			        (result === that.getResult()) &&
+			        (thisValue === that.getThisValue()));
 		};
-		this.isCExp = function() {
+		this.isCExp = function () {
 			return true;
 		};
 	}	
 	function CExpUnion(c, ce1, ce2, module) {
-		this.isCExp = function() {
+		this.isCExp = function () {
 			return true;
 		};
 		this.value = ce1.value;
 		this.contract = c;
-		this.valueToString = function() {
+		this.valueToString = function () {
 			return P.utils.valueToString(ce1.value);
 		};
-		this.contrToString = function() {
+		this.contrToString = function () {
 			return (c.getcdes());
 		};
-		this.paramToString = function() {
+		this.paramToString = function () {
 			return ("first: " + ce1.paramToString() + "second: " + ce2
 			    .paramToString());
 		};
-		this.resultToString = function() {
+		this.resultToString = function () {
 			return ("first: " + ce1.resultToString() + "second: " + ce2
 			    .resultToString());
 		};
 		this.module = module;
-		this.moduleToString = function() {
+		this.moduleToString = function () {
 			return module;
 		};
+	}
+	function CExp(cexp) {
+		return cExpOld(cexp.value, cexp.contrat, cexp.parameter, cexp.returnv, cexp.module, cexp.thisv);
 	}
 	C.CExp = CExp;
 	C.CExpUnion = CExpUnion;

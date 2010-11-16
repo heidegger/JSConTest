@@ -33,10 +33,10 @@
 				// remove msg from the parameters, since the special handler is called
 				h[msg].apply(this, slice.call(params, 1));
 			} else {
-				if ((h['__default__']) && (typeof h['__default__'] === 'function')) {
+				if ((h.__default__) && (typeof h.__default__ === 'function')) {
 					// keep msg inside of params. This allows the default handler
 					// to make a case distinction over the massage.
-					h['__default__'].apply(this, params);
+					h.__default__.apply(this, params);
 				}
 			}
 		}		

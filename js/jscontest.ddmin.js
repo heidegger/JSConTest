@@ -71,7 +71,7 @@
 		
 		function split(o) {
 			var k = 0,
-				result = new Array(gran),
+				result = [],
 				key, i, prop_val;
 			for (key = 0; key < result.length; key += 1) { 
 				result[key] = {}; 
@@ -88,7 +88,7 @@
 		}
 		function osplit(o) {
 			var k = 0, 
-				result = new Array(gran),
+				result = [],
 				key, i, j, prop_val;
 			for (key = 0; key < result.length; key += 1) { 
 				result[key] = {}; 
@@ -174,7 +174,7 @@
 		var as, na, key;
 		
 		function split(a) {
-			var result = new Array(gran), 
+			var result = [], 
 				key, pos, i, prop_val;
 			for (key = 0; key < result.length; key += 1) {
 				result[key] = [];
@@ -189,7 +189,7 @@
 			return result;
 		}
 		function osplit(a) {
-			var result = new Array(gran), 
+			var result = [], 
 				key, pos, i, j, prop_val;
 			for (key = 0; key < result.length; key += 1) { 
 				result[key] = [];
