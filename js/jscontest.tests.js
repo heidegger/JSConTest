@@ -5,41 +5,49 @@
  But it assumes that the global variable JSConTest exists and 
  register all its methods in JSConTest.tests.
 
- In order to change this behaviour, please go to the end of the
+ In order to change this behavior, please go to the end of the
  file and pass another object to the function. 
  */
+/*jslint white: true, browser: true, onevar: true, undef: true, nomen: true, 
+  eqeqeq: true, plusplus: true, bitwise: true, regexp: true, newcap: true, 
+  immed: true, maxerr: 150 */
 
 "use strict";
-(function(P) {
-	var DEBUG = false;
+(function (P) {
+	var DEBUG = false,
+		/*
+		 * create a new object, and register it in the namespace JSConTest
+		 */
+		T = {},
+		/* private variables */
+		/* collects all the tests that are added by TESTS.add(v,c,t); */
+		tests = {},
+		/* number of testes added to the library */
+		 added_tests = 0,	
+		 /* collects counterexamples */
+		 counterexp = {},
+		 cexpuid = 0,
+		 /* the actual module */
+		 module = "",
+		 /* Number of tests after which events in the browser are handled */
+		 testCountPerStep = 5000,
+		 iterStatTime,
+		 maxTime = 5000,
+		 testmode,
+		 intoTest,
+		 leafTest,
+		 getTestMode;
 
-	/*
-	 * create a new object, and register it in the namespace JSConTest
-	 */
-	var T = {};
 	P.tests = T;
-
-	/* private variables */
-	/* collects all the tests that are added by TESTS.add(v,c,t); */
-	var tests = {};
-	/* number of testes added to the library */
-	var added_tests = 0;	
-	/* collects counterexamples */
-	var counterexp = {};
-	var cexpuid = 0;
-	/* the actual module */
-	var module = "";
-	/* Number of tests after which events in the browser are handled */
-	var testCountPerStep = 5000;
-
-	var iterStatTime;
-	var maxTime = 5000;
 
 	/** ******** test interface ********* */
 	function fire(msg) {
-		var slice = Array.prototype.slice, args = slice.apply(arguments);
+		var slice = Array.prototype.slice, 
+			args = slice.apply(arguments),
+			f;
 		if (P.events && P.events.fire && (typeof P.events.fire === 'function')) {
-			P.events.fire.apply(this, args);
+			f = P.events.fire;
+			f.apply(this, args);
 		}
 	}
 	function logTest(contract, value, result, count) {
@@ -58,20 +66,20 @@
 	 *  counter example size. */
 	function failedCheck(test) {
 		function check_ddresult(p) {
-      // return boolean value
-      var r = !(test.contract.checkWithParams(test.value, p));
-      if (r) {
-        collectCounterExample(test.contract.getCExp());
-      }
-      return r;
-    }
+			// return boolean value
+			var r = !(test.contract.checkWithParams(test.value, p));
+			if (r) {
+				collectCounterExample(test.contract.getCExp());
+			}
+			return r;
+		}
 		
 		var ce = test.contract.getCExp();
 		if (ce && ce.isCExp && (ce.isCExp())) {
 			cexpuid += 1;
 			if (P.ddmin) {
 				collectCounterExample(ce);
-				P.ddmin.ddmin(check_ddresult, ce.getParams() );
+				P.ddmin.ddmin(check_ddresult, ce.getParams());
 				ce = test.contract.getCExp();
 			}
 			collectCounterExample(ce);
@@ -81,15 +89,17 @@
 	function checker(test, stat) {
 		var contract = test.contract,
 			value = test.value,
-			result = P.utils.withTry(!DEBUG, 
-			                         function () { 
-																 return { 
-																	 normal: contract.check(value) 
-																 }; 
-															 }, 
-			                         function (e) { 
-																 return { error: e }; 
-															 });
+			result;
+		function run() {
+			return { 
+				normal: contract.check(value) 
+			};
+		}
+		function handleError(e) {
+			return { error: e };
+		}
+		
+		result = P.utils.withTry(!DEBUG, run, handleError);
 		P.gen.initGen();
 		if (stat) {
 			if (result.normal === true) {
@@ -108,11 +118,11 @@
 			value = test.value, 
 			done = test.done || 0,
 			cont = true,
-			result, i;
+			result, i, aTime;
 		if (iterStatTime && maxTime) {
 			for (i = 0; cont && i < count; i += 1) {			
 				result = checker(test);
-				var aTime = new Date();
+				aTime = new Date();
 				cont = cont && (result.normal === true) && (aTime - iterStatTime <= maxTime);
 			}			
 		} else {
@@ -147,10 +157,10 @@
 		function rH(r) {
 			result = r;
 		}
-		return (function (test, stat, count, resultHandler) {
-			return (function () {
+		return function (test, stat, count, resultHandler) {
+			return function () {
 				var doInThisCall  = Math.min(count - test.done, perCall);
-				if ( doInThisCall < 1  || result.error || result.normal === false ) {
+				if (doInThisCall < 1  || result.error || result.normal === false) {
 					if (result.normal === true) {
 						stat.incWellTested();
 					} else if (result.normal === false) {
@@ -162,24 +172,27 @@
 				} else {
 					simpleTester(test, stat, doInThisCall, rH, iterStatTime, maxTime);
 				}			
-			});
-		});
+			};
+		};
 	}
 
-	// (test, 
+	//	(test, 
 	//	statistic, 
 	//	(result) -> result, 
 	//	(test, statistic) -> result, 
-	//  (test, statistic, int, (result) -> result) -> (() -> ()) )  
-	// 	->  
+	//	(test, statistic, int, (result) -> result) -> (() -> ()) )  
+	//	->
 	//  (() -> () || { normal: boolean } || { error : error } 
 	function testOrCheck(param) {
-		var test = param["test"],
-			stat = param["stat"],
-			resultHandler = param["resultHandler"] || function (r) { return r; },
-			ch = param["checker"] || checker,
-			tester = param["tester"] || 
-				function (t,s,c,rH) {
+		function id(r) {
+			return r;
+		}
+		var test = param.test,
+			stat = param.stat,
+			resultHandler = param.resultHandler || id,
+			ch = param.checker || checker,
+			tester = param.tester || 
+				function (t, s, c, rH) {
 					function statrH(result) {
 						if (result.normal === true) {
 							stat.incWellTested();
@@ -190,9 +203,9 @@
 						}						
 						return rH(result);
 					}
-					return (function () {
-						simpleTester(t,s,c,statrH);
-					});
+					return function () {
+						simpleTester(t, s, c, statrH);
+					};
 				},
 			contract = test.contract,
 			value = test.value;
@@ -207,22 +220,28 @@
 			// returns a function
 			return tester(test, stat, test.count, testrH);
 		} else {
-			return (function () {
+			return function () {
 				var result = ch(test, stat);
 				logTest.call(test, test.contract, test.value, result);
 				// passes the result of the checker  and returns the 
 				// result of the result handler
 				return resultHandler(result);
-			});
+			};
 		}
 	}
 
 	function logCExp(stat) {
+		var cm, m, i;
+		
 		fire.call(P, 'CExpStart');
-		for ( var m in counterexp ) {
-			var cm = counterexp[m];
-			for ( var i in cm) {
-				fire.call(P, 'CExp', cm[i]);
+		for (m in counterexp) {
+			if (counterexp.hasOwnProperty(m)) {
+				cm = counterexp[m];
+				for (i in cm) {
+					if (cm.hasOwnProprety(i)) {
+						fire.call(P, 'CExp', cm[i]);						
+					}
+				}				
 			}
 		}
 	}
@@ -240,10 +259,10 @@
 				return flag;
 			};
 		}
-		var obj = {};
-		mixbFlag(obj,"Cancel");
-		mixbFlag(obj,"CancelAC");
-		mixbFlag(obj,"CancelAM");
+		var obj = { };
+		mixbFlag(obj, "Cancel");
+		mixbFlag(obj, "CancelAC");
+		mixbFlag(obj, "CancelAM");
 		return obj;
 	}
 
@@ -251,10 +270,11 @@
 		var statistic = param && param.statistic || P.statistic.Statistic(),
 			afterRun = param && param.afterRun || function () {},
 			toDoM = [],				// List of all modules
-			toDoT = [], 			// stores all tests of the actual module.
+			toDoT = [],				// stores all tests of the actual module.
 			testIter = false,
 			test,
-			cancel = initCancel();
+			cancel = initCancel(),
+			m;
 			
 		function reset(cancel) {
 			function resetAM() {
@@ -282,10 +302,11 @@
 			return false;
 		}
 		function runModule() {
-			var module = toDoM.pop();
+			var module = toDoM.pop(),
+				tm, i;
 			fire.call(P, 'moduleChange', module.mname);
-			var tm = module.m;
-			for ( var i in tm ) {
+			tm = module.m;
+			for (i = 0; i < tm.length; i += 1) {
 				toDoT.push(tm[i]);
 			}
 		}
@@ -319,7 +340,7 @@
 		}
 		function iterSteps() {
 			if (statistic) {
-				fire.call(P, 'statistic', statistic );
+				fire.call(P, 'statistic', statistic);
 			}
 			if (cancel.getCancel() || (!testIter && toDoT.length < 1 && toDoM.length < 1)) {
 				return afterRunHandler();
@@ -335,11 +356,13 @@
 		}
 
 		// put all test cases into modules. 
-		for ( var m in tests ) {
-			toDoM.push({
-			  mname : m.substr(1),
-			  m : tests[m]
-			});
+		for (m in tests) {
+			if (tests.hasOwnProperty(m)) {
+				toDoM.push({
+					mname : m.substr(1),
+					m : tests[m]
+				});				
+			}
 		}
 		toDoM.reverse();
 		fire.call(P, 'cancel', cancel);
@@ -351,18 +374,22 @@
 	}	
 
 	function runLazy(f, stat) {	
-		var statistic = stat || P.statistic.Statistic();
-		for (var m in tests ) {
-			//jstestdriver.console.log("outer loop");
-			for (var i = 0; i < tests[m].length; i += 1) {
-				//jstestdriver.console.log("inner loop" + i);
-				(function (m, i, test) {
-					function run() {
-						return testOrCheck({ test: test, stat: statistic })();
-					}	
-					f(m, i, test, run);				
-				})(m, i, tests[m][i]);
+		var statistic = stat || P.statistic.Statistic(),
+			m, i;
+		function runFactory(m, i, test) {
+			function run() {
+				return testOrCheck({ test: test, stat: statistic })();
 			}	
+			f(m, i, test, run);			
+		}
+		for (m in tests ) {
+			if (tests.hasOwnProperty(m)) {
+				//jstestdriver.console.log("outer loop");
+				for (i = 0; i < tests[m].length; i += 1) {
+					//jstestdriver.console.log("inner loop" + i);
+					runFactory(m, i, tests[m][i]);
+				}					
+			}
 		}
 	}
 	
@@ -371,20 +398,22 @@
 			tests[":" + module] = [];
 		}
 		tests[":" + module].push({
-		  value : value,
-		  contract : contract,
-		  count : count,
-		  data : data
+			value : value,
+			contract : contract,
+			count : count,
+			data : data
 		});
 		added_tests += 1;
 	}
 
 	function collectCounterExample(ce) {
+		var cem, i;
+		
 		if (!(counterexp[module])) {
 			counterexp[module] = [];
 		}
-		var cem = counterexp[module];
-		for ( var i in cem) {
+		cem = counterexp[module];
+		for (i in cem) {
 			if (cem[i].compare(ce)) {
 				return;
 			}
@@ -394,30 +423,30 @@
 	}
 
 
-	(function() {
+	(function () {
 		var vars = {};
-		T.setVar = function(vname, value) {
+		T.setVar = function (vname, value) {
 			vars[vname] = value;
 		};
-		T.getVar = function(vname) {
+		T.getVar = function (vname) {
 			return vars[vname];
 		};
-		T.pushVar = function(vname, value) {
+		T.pushVar = function (vname, value) {
 			if (!P.check.isSArray(vars[vname])) {
 				vars[vname] = [];
 			}
 			vars[vname].push(value);
 		};
-		T.popVar = function(vname) {
-			if (!P.check.isSArray(vars[vname])) {
-				// something strange happens...
-			} else {
+		T.popVar = function (vname) {
+			if (P.check.isSArray(vars[vname])) {
 				return vars[vname].pop();
 			}
+			//else {
+			// something strange happens...
 		};
-	})();
+	}());
 
-	var testmode = (function() {
+	testmode = (function () {
 		var inTestMode = false;
 		function intoTest() {
 			inTestMode = true;
@@ -429,22 +458,22 @@
 			return inTestMode;
 		}
 		return {
-		  iT : intoTest,
-		  lT : leafTest,
-		  gT : getTestMode
+			iT : intoTest,
+			lT : leafTest,
+			gT : getTestMode
 		};
-	})();
-	var intoTest = testmode.iT;
-	var leafTest = testmode.lT;
-	var getTestMode = testmode.gT;
+	}());
+	intoTest = testmode.iT;
+	leafTest = testmode.lT;
+	getTestMode = testmode.gT;
 
 	function assertParamsReal(clreal, pl, str, fname) {
-		var ret, i;
+		var ret, i, pla;
 		if (getTestMode()) {
 			ret = clreal;
 		} else {
 			ret = [];
-			for ( i = 0; i < clreal.length; i += 1) {
+			for (i = 0; i < clreal.length; i += 1) {
 				if (clreal[i].checkParams(pl)) {
 					if (clreal[i].registerEffects) {
 						ret.push(clreal[i].registerEffects(pl, fname));
@@ -454,21 +483,20 @@
 				}
 			}
 			if (ret.length < 1) {
-				var pla = [];
-				for ( i = 0; i < pl.length; i += 1) {
+				pla = [];
+				for (i = 0; i < pl.length; i += 1) {
 					pla.push(pl[i]);
 				}
 				fire.call(P, 'assertParam', clreal, pla, str);
 			}
 		}
-		ret.assertReturn = function(v) {
-			var i;
+		ret.assertReturn = function (v) {
+			var i, c;
 			
 			if (getTestMode()) {
 				return v;
 			}
-			for ( i = 0; i < this.length; i += 1) {
-				var c;
+			for (i = 0; i < this.length; i += 1) {
 				if (this[i] && this[i].unregisterEffect) {
 					c = this[i].unregisterEffect();
 				} else {
@@ -493,16 +521,16 @@
 	}
 	
 	function enableAsserts(f, cl, fname, forg) {
-		return (function () {
+		return function () {
 			var rc, result;
-			rc = assertParams.call(this, cl, arguments, f, fname),
+			rc = assertParams.call(this, cl, arguments, f, fname);
 			result = f.apply(this, arguments);
 			return rc.assertReturn(result);			
-		});
+		};
 	}
 	T.enableAsserts = enableAsserts;
-	T.overrideToStringOfFunction = function(f, fstr, asserts) {
-		f.toString = function() {
+	T.overrideToStringOfFunction = function (f, fstr, asserts) {
+		f.toString = function () {
 			if (asserts) {
 				return "" + fstr + "\n// (with assert check enabled)";
 			} else {
@@ -518,7 +546,7 @@
 	T.run = run;
 	T.runLazy = runLazy;
 	T.add = add;
-	T.setStepCount = function(ns) {
+	T.setStepCount = function (ns) {
 		testCountPerStep = ns;
 	};
 	T.callback = {};
