@@ -12,6 +12,7 @@
 	 * 		value: value;
 	 * 		contract: contract; 
 	 * 		? (params: value array; ) 
+	 *    ? (thisv: value; )
 	 * 		? (result: value; ) 
 	 * 		module: string; 
 	 * 		valueToString: void -> string; 
@@ -21,7 +22,7 @@
 	 * 		moduleToString: void -> string; 
 	 * }
 	 */
-	function cExpOld(value, contract, params, result, module, thisValue) {
+	function CExpOld(value, contract, params, result, module, thisValue) {
 		var tparams = params.slice(0);
 		this.getParams = function () {
 			return tparams;
@@ -77,7 +78,7 @@
 		};
 	}
 	function CExp(cexp) {
-		return cExpOld(cexp.value, cexp.contrat, cexp.parameter, cexp.returnv, cexp.module, cexp.thisv);
+		return new CExpOld(cexp.value, cexp.contract, cexp.parameter, cexp.returnv, cexp.module, cexp.thisv);
 	}
 	C.CExp = CExp;
 	C.CExpUnion = CExpUnion;

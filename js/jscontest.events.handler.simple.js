@@ -85,19 +85,25 @@
 		}
 		var id = 0;
 		function aCE(ce) {
-			id++;
-			var enLog = document.getElementById(enCId);
-			var item = document.createElement("li");
+			var enLog, item, uid, dl, treeDiv;
+			
+			id += 1;
+			enLog = document.getElementById(enCId);
+			item = document.createElement("li");
 			enLog.appendChild(item);
-			var uid = "ce_dl_item" + ce.uid + "_" + id;
+			uid = "ce_dl_item" + ce.uid + "_" + id;
 			item.appendChild(newB("Hide/Show", doHide(uid)));
-			var dl = document.createElement("dl");
+			dl = document.createElement("dl");
 			dl.setAttribute('id', uid);
 			item.appendChild(dl);
 			newDef(dl, "value", P.utils.valueToString(ce.getValue()));
 			newDef(dl, "contract", ce.getContract().getcdes());
 
-			var treeDiv = document.createElement("div");
+			treeDiv = document.createElement("div");
+			newTree(dl, "this value", treeDiv);
+			P.treeView.init(ce.getThisValue(), treeDiv);
+			
+			treeDiv = document.createElement("div");
 			newTree(dl, "parameters", treeDiv);
 			P.treeView.init(ce.getParams(), treeDiv);
 

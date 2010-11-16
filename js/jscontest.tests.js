@@ -237,10 +237,8 @@
 		for (m in counterexp) {
 			if (counterexp.hasOwnProperty(m)) {
 				cm = counterexp[m];
-				for (i in cm) {
-					if (cm.hasOwnProprety(i)) {
-						fire.call(P, 'CExp', cm[i]);						
-					}
+				for (i = 0; i < cm.length; i += 1) {
+					fire.call(P, 'CExp', cm[i]);						
 				}				
 			}
 		}
@@ -413,7 +411,7 @@
 			counterexp[module] = [];
 		}
 		cem = counterexp[module];
-		for (i in cem) {
+		for (i = 0; i < cem.length; i += 1) {
 			if (cem[i].compare(ce)) {
 				return;
 			}
