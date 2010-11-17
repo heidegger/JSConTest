@@ -22,7 +22,8 @@ var JSConTest = (function (P) {
 		math, name, push, random, restrictTo, round, substring, tests, toString, 
 		trans, utils, valueToString, f, gObj, prototype, slice, call, smem, sadd,
 		withTry, bind, condBind, hasOwnProperty, concat, isEmptyObject, isGObject, E,
-		LN2, LN10, LOG2E, LOG10E, PI, SQRT2, SQRT1_2, pow, contracts, genTop, genArray
+		LN2, LN10, LOG2E, LOG10E, PI, SQRT2, SQRT1_2, pow, contracts, genTop, 
+		genArray, isPInt, genPInt
 	*/
 		
 	P.math = {};
@@ -264,6 +265,9 @@ var JSConTest = (function (P) {
 	function isInt(v) {
 		return (typeof(v) === 'number' && (!isNaN(v)) && (Math.floor(v) === v));
 	}
+	function isPInt(v) {
+		return (typeof(v) === 'number' && (!isNaN(v)) && (v >= 0) && (Math.floor(v) === v));
+	}
 	function isIInt(low, high, v) {
 		return ((low <= v) && (v <= high) && isInt(v));
 	}
@@ -343,6 +347,7 @@ var JSConTest = (function (P) {
 	P.check.isUndefined = isUndefined;
 	P.check.isNumber = isNumber;
 	P.check.isInt = isInt;
+	P.check.isPInt = isPInt;
 	P.check.isIInt = isIInt;
 	P.check.isNInt = isNInt;
 	P.check.isString = isString;
@@ -379,6 +384,14 @@ var JSConTest = (function (P) {
 			ri = ri - 1;
 		}
 		return ri;
+	}
+	function genPInt() {
+		var i = genInt();
+		if (i < 0) {
+			return -i;
+		} else {
+			return i;
+		}
 	}
 	function genIInt(low, high) {
 		if (isInt(low) && isInt(high)) {
@@ -782,6 +795,7 @@ var JSConTest = (function (P) {
 	P.gen.genString = genString;
 	P.gen.genStringL = genStringL;
 	P.gen.genInt = genInt;
+	P.gen.genPInt = genPInt;
 	/* genIInt: (int,int) -> int
 		 genIInt(low,high) is a uniform random genrator 
 		 over the integer intervall [low,high]. 

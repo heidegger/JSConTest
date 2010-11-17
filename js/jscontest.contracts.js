@@ -181,6 +181,8 @@
 	C.False = new SingletonContract(false, 'false');
 	C.String = new SContract(P.check.isString, P.gen.genString, 'string', ctBasic);
 	C.Number = new SContract(P.check.isNumber, P.gen.genNumber, "number", ctBasic);
+	C.Natural = new SContract(P.check.isPInt, P.gen.genPInt, "natural", ctBasic);
+	C.Length = new SContract(P.check.isPInt, P.gen.genLength, "length", ctBasic);
 	C.Integer = new SContract(P.check.isInt, P.gen.genInt, "integer", ctBasic);
 	C.PInteger = function (iA, p) {
 		return new PContract(ctBasic, P.check.isInt, iA, p, P.gen.genInt,
