@@ -109,12 +109,15 @@ var JSConTest = (function (P) {
 	function singleQuote(param) {
 		return "'" + param + "'";
 	}
-	function concat(a, sep, left, right, showProp, showValues, nextLine) {
+	function concat(a, sep, left, right, showProp, showValues, nextLine, depth) {
 		var numberOfProp = 0,
 			s = "",
 			sepWithNL = sep,
 			context = {},
 			i, j;
+		if (depth === undefined) {
+			depth = 5;
+		}
 		if (nextLine && showProp) {
 			sepWithNL += nextLine();
 		}
@@ -126,7 +129,7 @@ var JSConTest = (function (P) {
 					s += i + ": ";
 				}
 				if (showValues) {
-					s += valueToString(a[i], nextLine);
+					s += valueToString(a[i], nextLine, depth - 1);
 				} else {
 					s += a[i];
 				}
@@ -149,7 +152,13 @@ var JSConTest = (function (P) {
 		// v : function -> TODO
 //	}
 	
-	function valueToString(v, nextLine) {
+	function valueToString(v, nextLine, depth) {
+		if (depth === undefined) {
+			depth = 5;
+		}
+		if (depth < 1) {
+			return "-omitted value-";
+		}
 		var modnextLine;
 		if (nextLine) {
 			modnextLine = function () {
@@ -170,12 +179,12 @@ var JSConTest = (function (P) {
 				return "window";
 			}
 			if (isSArray(v)) {
-				return concat(v, ",", '[', ']', false, true, modnextLine);
+				return concat(v, ",", '[', ']', false, true, modnextLine, depth);
 			} else {
 				if (v.getcdes) {
 					return v.getcdes();
 				} else {
-					return concat(v, ",", '{', '}', true, true, modnextLine);
+					return concat(v, ",", '{', '}', true, true, modnextLine, depth);
 				}
 			}
 			break;
