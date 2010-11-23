@@ -11,6 +11,7 @@ type ('b,'a,'dup,'ddown) contract =
       * Csseff.t                         (* effects *)
   | BObjectPL of ('b,'a,'dup,'ddown) property_list * bool * 'a list * 'dup list
   | BArray of ('b,'a,'dup,'ddown) contract
+  | CUnion of ('b,'a,'dup,'ddown) contract list
 and ('b,'a,'dup,'ddown) property_list = (string * ('b,'a,'dup,'ddown) contract) list
 
 type ('b,'a,'dup,'ddown) t = 
@@ -79,7 +80,10 @@ and so_contract so_b so_a so_d = function
       ^ " -> " ^ so_contract so_b so_a so_d c 
       ^ (if (String.length effs > 0) then " with " ^ effs else "")
       ^ "}"
-        
+  | CUnion (cl) ->
+     let cl = List.map (so_contract so_b so_a so_d) cl in
+     let cls = String.concat " or " cl in
+       "(" ^ cls  ^ ")"
 
 let so_contract_gI so_b so_a so_d (c,gI) =
   so_contract so_b so_a so_d c ^ GenInfo.string_of gI
@@ -152,6 +156,9 @@ let transform :
             let c = visit_c c in
             let ddown = ba_depend_down ddown in
               CFunction (th,cl,c,ddown,eff)
+        | CUnion (cl) ->
+          let cl = List.map visit_c cl in
+            CUnion cl
         | BObjectPL (pl,r,al,dl) ->
             let pl = visit_pl pl in
             let al = List.map ba_analyse al in

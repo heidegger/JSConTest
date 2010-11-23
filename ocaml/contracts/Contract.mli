@@ -13,6 +13,7 @@ type ('b,'a,'dup,'ddown) contract =
       * Csseff.t                         (* effects *)
   | BObjectPL of ('b,'a,'dup,'ddown) property_list * bool * 'a list * 'dup list
   | BArray of ('b,'a,'dup,'ddown) contract
+  | CUnion of ('b,'a,'dup,'ddown) contract list
 
 (** type of properties of objects *)
 and ('b,'a,'dup,'ddown) property_list = (string * ('b,'a,'dup,'ddown) contract) list

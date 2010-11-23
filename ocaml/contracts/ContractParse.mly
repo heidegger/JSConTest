@@ -37,7 +37,6 @@
 
 %token LString
 %token <string> LSingleString
-
 %token LInteger
 %token <int> LSingleInteger
 
@@ -56,6 +55,7 @@
 
 %token LCOLON
 %token LOR
+%token LUnion
 %token LSTAR
 %token <string> LIdentifier
 %token LObject
@@ -111,6 +111,12 @@ contract:
   | LLBRACE propl L3D LRBRACE analysel
       LPARAN dependl RPARAN                       { BObjectPL ($2,true,$5,$7) }
   | LBRAKET contract RBRAKET                      { BArray ($2) }
+  | LPARAN union_contract RPARAN                  { CUnion ($2) }
+;
+
+union_contract:
+  | contract LUnion contract                      { [$1;$3] }
+  | contract LUnion union_contract                { $1 :: $3 }
 ;
 
 fun_contract:

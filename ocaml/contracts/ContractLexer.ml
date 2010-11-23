@@ -14,6 +14,7 @@ let regexp rnull = "null"
 let regexp rtop = "top" | "T" | "Top"
 let regexp rid = "id" | "ID" | "Id"
 let regexp robject = "Object" | "object"
+let regexp ror = "or"
 
 let regexp rlparan = "("
 let regexp rrparan = ")"
@@ -119,6 +120,7 @@ let rec token = lexer
   | rthis           -> LThis
   | rwith           -> LWith
   | rquestionmark   -> LQUESTION
+  | ror             -> LUnion  
   | identifier      -> 
       let s = Ulexing.utf8_lexeme lexbuf in
         LIdentifier s

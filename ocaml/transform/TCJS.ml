@@ -101,6 +101,12 @@ module Make(T: TRANS) : S with type t = T.t = struct
             
     and generate_contract : c -> tc expression * tc source_element list 
     = function
+      | CUnion cl ->
+	let el,sel1 = List.split (generate_contractl cl) in
+	  (do_mcalle_el
+		contract_prefix "Union" 
+		el),
+	List.flatten sel1	
       | BObjectPL (pl,r,al,_) ->
           let el,sel1 = List.split (generate_contractl (List.map snd pl)) in
           let ple =
