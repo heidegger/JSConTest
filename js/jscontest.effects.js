@@ -119,6 +119,11 @@
 		case STAR: 
 			if (access_path.type === PROP) {
 				if (isAllowedEff(access_path.effect, eff.effect)) {
+					// * == ? works, so just return true
+					return true;
+				}
+				// if * is nothing, just return true 
+				if (isAllowedEff(access_path,eff.effect)) {
 					return true;
 				}
 				return isAllowedEff(access_path.effect, eff);
