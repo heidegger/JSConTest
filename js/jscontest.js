@@ -792,7 +792,9 @@ var JSConTest = (function (P) {
 	P.gen.genUndefined = genUndefined;
 	P.gen.genBoolean = genBoolean;
 	P.gen.genObject = genObject;
-	P.gen.genString = genString;
+     P.gen.genString = genString;
+     P.gen.genPropString = genPropString;
+
 	P.gen.genStringL = genStringL;
 	P.gen.genInt = genInt;
 	P.gen.genPInt = genPInt;
