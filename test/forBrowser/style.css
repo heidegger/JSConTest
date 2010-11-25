@@ -41,14 +41,14 @@ div#logger ul#loggercex li {
 }
 
 .hideContent{
-  padding-left:17px; background: url(./assets/menu/expand.gif) no-repeat 0 2px;
+  padding-left:17px; background: url(./img/expand.gif) no-repeat 0 2px;
   border:none;
   cursor:pointer;
 
   }
   
 .showContent{
-  padding-left:17px; background: url(./assets/menu/collapse.gif) no-repeat 0 2px;
+  padding-left:17px; background: url(./img/collapse.gif) no-repeat 0 2px;
   border:none;
   cursor:pointer;
 
@@ -56,7 +56,7 @@ div#logger ul#loggercex li {
   
 .separater{
   width:10px;
-  background-image: url(./assets/check/vline.gif);
+  background-image: url(./img/vline.gif);
   }
   
 .cexButton{
