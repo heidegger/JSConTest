@@ -1,6 +1,6 @@
 (function () {
 	function genAInt(x, y) {
-		if ( x == 2 * y + 10 ) {
+		if (x === 2 * y + 10) {
 			return 0;
 		}
 		return;
@@ -77,8 +77,8 @@
 		return 0;
 	}
 	function genBoolean(p1, p2) {
-		if (JSConTest.check.isBoolean(p1) 
-				&& JSConTest.check.isBoolean(p2)) {
+		if (JSConTest.check.isBoolean(p1) &&
+				JSConTest.check.isBoolean(p2)) {
 			return true;
 		}
 		return "Error"; 
@@ -132,12 +132,11 @@
   								  JSConTest.contracts.Boolean),
   		anz,
   		{ checker: makeChecker("fail") }
-
   );
   JSConTest.tests.add("genNumberFail",
   		genNumberFail, 
   		JSConTest.contracts.Function([JSConTest.contracts.Number],
-  								 JSConTest.contracts.Boolean),
+  		                             JSConTest.contracts.Boolean),
   		anz,
   		{ checker: makeChecker("fail") }
   );

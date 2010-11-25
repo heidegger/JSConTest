@@ -13,13 +13,13 @@ div#logger div#first div.left {
 div#logger h2 { 
   margin: 1em 0 0 0;
   padding: 2px;
-  background: #DDA;
+  
 }
 
 div#logger ul { 
   margin: 0 0 1em 0;
   padding: 2px;
-  background: #EEB;
+  /*background: #EEB;*/
 }
 
 div#logger ul li { 
@@ -32,13 +32,45 @@ div#logger ul li em {
 
 div#logger ul#loggercex { 
   padding: 0em 1.5em;
-  background: #EEE;
 }
 
 div#logger ul#loggercex li {
-  margin: 0em;
-  padding: 1em;
-  list-style-type: square;
+  margin: 1em;
+  
+  list-style-type: none;
 }
 
+.hideContent{
+  padding-left:17px; background: url(./assets/menu/expand.gif) no-repeat 0 2px;
+  border:none;
+  cursor:pointer;
 
+  }
+  
+.showContent{
+  padding-left:17px; background: url(./assets/menu/collapse.gif) no-repeat 0 2px;
+  border:none;
+  cursor:pointer;
+
+  }
+  
+.separater{
+  width:10px;
+  background-image: url(./assets/check/vline.gif);
+  }
+  
+.cexButton{
+  
+  border:none;
+  cursor:pointer;
+  background:none;
+  text-decoration:underline;
+  
+}
+  
+div#mainContent{ 
+  width:95%;
+  height:100%;
+  margin: 10px auto 3px auto;
+  padding: 0 .7em;
+  }
