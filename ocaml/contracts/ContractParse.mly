@@ -22,6 +22,8 @@
 %token LVoid
 %token LNull
 %token LTop
+%token LNatural
+%token LLength
 %token LId
 %token LNoTests
 %token LNoAsserts
@@ -206,6 +208,8 @@ base_anl:
 ;
 
 base:
+  | LNatural         { BNatural }
+  | LLength          { BLength  }
   | LUndf            { BUndf }
   | LVoid            { BVoid }
   | LNull            { BNull }

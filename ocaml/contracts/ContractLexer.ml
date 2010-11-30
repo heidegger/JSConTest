@@ -122,6 +122,8 @@ let rec token = lexer
   | rthis           -> LThis
   | rwith           -> LWith
   | rquestionmark   -> LQUESTION
+  | rnatural        -> LNatural
+  | rlength         -> LLength
   | ror             -> LUnion  
   | identifier      -> 
       let s = Ulexing.utf8_lexeme lexbuf in
