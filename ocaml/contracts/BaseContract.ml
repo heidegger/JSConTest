@@ -16,6 +16,8 @@ type t =
   | BJavaScriptVar of string
   | BObject
   | BId
+  | BLength
+  | BNatural  
 
 let string_of = function
   | BUndf -> "undf"
@@ -37,3 +39,5 @@ let string_of = function
       "[" ^ (string_of_float left) ^ ";" ^ (string_of_float right) ^ "]"
   | BObject -> "object"
   | BId -> "id"
+  | BLength -> "length"
+  | BNatural -> "natural"

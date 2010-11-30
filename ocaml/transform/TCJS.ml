@@ -196,6 +196,10 @@ module Make(T: TRANS) : S with type t = T.t = struct
     and generate_basecontract : a list -> bc -> 
     tc expression * tc source_element list 
     = fun al bc -> match bc with 
+      | BLength ->
+          read_prop_e contract_prefix "Length",[]
+      | BNatural ->
+          read_prop_e contract_prefix "Natural",[]
       | BId ->
           read_prop_e contract_prefix "Id",[]
       | BTop -> 

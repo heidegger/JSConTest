@@ -24,6 +24,8 @@ type t =
   | BJavaScriptVar of string
   | BObject
   | BId
+  | BLength
+  | BNatural  
 
 (** Creates a string representation for a base contract *)
 val string_of : t -> string
