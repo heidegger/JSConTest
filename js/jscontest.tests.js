@@ -527,6 +527,7 @@
 		};
 	}
 	T.enableAsserts = enableAsserts;
+	
 	T.overrideToStringOfFunction = function (f, fstr, asserts) {
 		f.toString = function () {
 			if (asserts) {

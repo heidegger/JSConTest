@@ -35,7 +35,7 @@
 		checkEffect = true,	// should effects be checked?
 		getUid,
 		getActiveFunName,
-		registerEffect,
+		registerEffect, incrementUid,
 		fCall, mCall, getParams, getThis, putReturnBox, newCall,
 		isWrapperObj;
 	
@@ -59,20 +59,21 @@
 	getActiveFunName = function () {
 		return undefined;
 	};
-	registerEffect = (function () {
-		var i = 0;
-		function getGlobalObject() { 
-			return this;
-		}
-		function registerEffect(effl, pl, thisC, fname) {
-			var uid = i;
-			i += 1;
-			effect_store[uid] = effl;
-			getUid = (function (uid) {
+
+	(function () {
+		var uid = 0;
+		
+		function incrementUidPrivate() {
+			var i = uid;
+			uid += 1;
+			getUid = (function (i) {
 				return (function () { 
-					return uid; 
+					return i; 
 				});
-			}(uid));
+			}(i));			
+		}
+		function registerEffectPrivate(effl, pl, thisC, fname) {
+			effect_store[getUid()] = effl;
 			getActiveFunName = (function (fname) {
 				return (function () {
 					return fname;
@@ -80,7 +81,9 @@
 			}(fname));
 			return uid;
 		}
-		return registerEffect;
+
+		registerEffect = registerEffectPrivate;
+		incrementUid = incrementUidPrivate;
 	}());
 	function unregisterEffect(uid) {
 		delete effect_store[uid];
@@ -382,6 +385,12 @@
 			// if we called a tranformed function with mcall, the transformed function
 			// stores the box of the return value using putReturnBox. If that's the case, 
 			// we should return the boxed value, not the unboxed one.
+			
+			// but before we can call the function, we have to incremnt the
+			// uid, to be able to distinguish effects registers by the method 
+			// and new objects created
+
+			incrementUid();
 			var result = f.apply(that_ub, plub);
 			deleteThisParams();
 			return getReturnBox(result);
@@ -402,20 +411,24 @@
 				return fmCall(o[m], o, pl);
 			}			
 		});
+
+		newCall = function (f, pl) {
+			function Dummy() { }
+			Dummy.prototype = f.prototype;
+			var newObj = new Dummy(),
+				result = fmCall(f, newObj, pl);
+			// a constructor returns the value return by a
+			// return statement, if that was != undefined
+			// If the return value is === undefined, the new
+			// created object is returned.
+			if (!result) {
+				return newObj;
+			} else {
+				return result;
+			}
+		};
 	}());
 
-	newCall = function(f, pl) {
-		function Dummy() {}
-		Dummy.prototype = f.prototype;
-		var newObj = new Dummy();
-		// add new empty effect map to the object
-		// since the map is the empty map, no effects
-		// are restricting the access to the object
-		if (!(newObj.__infos__)) {
-			newObj.__infos__ = { };					
-		}
-		return f.apply(newObj, pl);
-	};
 	
 	isWrapperObj = {
 		THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685: true

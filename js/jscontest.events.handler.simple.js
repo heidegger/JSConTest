@@ -207,7 +207,7 @@
 		function strEffect(obj, prop, effl_str, eff_str, kind) {
 			
 			return "Effect Error, " + kind + " access not allowed! "
-			       + "You try to read the property <b>" + prop + "</b>"
+			       + "You try to " + kind + " the property <b>" + prop + "</b>"
 			       + " of object " + P.utils.valueToString(obj) + ". <br />\n"
 			       + "Permissions you have to respect: " + effl_str + "<br />\n"
 			       + "The following was not respected: " + eff_str + "<br />\n";
