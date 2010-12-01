@@ -21,10 +21,11 @@ type t = {
   unop: string;
   unbox: string;
   fixObj: string;
+  newCall: string;
 }
 
 let create_t ~js_namespace ~variable_prefix 
-    ~propAcc ~propAss ~mCall ~fCall ~unop ~unbox ~fixObj
+    ~propAcc ~propAss ~mCall ~fCall ~unop ~unbox ~fixObj ~newCall
     =
   { js_namespace = js_namespace;
     variable_prefix = variable_prefix;
@@ -35,6 +36,7 @@ let create_t ~js_namespace ~variable_prefix
     unop = unop;
     unbox = unbox;
     fixObj = fixObj;
+    newCall = newCall;
   }
 
 let transform env effects fname pl sel =
@@ -180,7 +182,11 @@ let transform env effects fname pl sel =
             (env.mCall) 
             [e1; i_to_e i; new_array el] *)
     | New_expression (a,e,el) ->
-        New_expression (a,t_e e, List.map t_e el) 
+        do_mcalle_el
+          prefix
+          env.newCall
+          [t_e e; new_array (List.map t_e el)]
+          (* New_expression (a,t_e e, List.map t_e el)  *)
     | Property_construction (a,i) -> Property_construction (a,t_i i)
     | Property_access (a,e,i) -> Property_access (a,t_e e, t_i i)
     | Descendant_access (a,e,i) -> Property_access (a,t_e e, t_i i)
@@ -401,6 +407,7 @@ module TestEffects = struct
       unbox = "unbox";
       unop = "doUnop";
       fixObj = "fix_object_literal";
+      newCall = "newCall"
     } 
     in
     let na = null_annotation in

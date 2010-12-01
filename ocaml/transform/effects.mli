@@ -21,4 +21,5 @@ val create_t :
   fCall:string -> 
   unop:string ->
   unbox: string -> 
-  fixObj: string -> t
+  fixObj: string -> 
+  newCall: string -> t
