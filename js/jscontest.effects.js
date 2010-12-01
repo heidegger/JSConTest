@@ -36,7 +36,7 @@
 		getUid,
 		getActiveFunName,
 		registerEffect,
-		fCall, mCall, getParams, getThis, putReturnBox,
+		fCall, mCall, getParams, getThis, putReturnBox, newCall,
 		isWrapperObj;
 	
 	/* use the new object E and register it in the
@@ -404,6 +404,13 @@
 		});
 	}());
 
+	newCall = function(f, pl) {
+		function Dummy() {}
+		Dummy.prototype = f.prototype;
+		var newObj = new Dummy();
+		return f.apply(newObj, pl);
+	};
+	
 	isWrapperObj = {
 		THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685: true
 	};
@@ -684,6 +691,7 @@
 	E.enableWrapper = enableWrapper;
 	E.unOp = unOp;
 	E.fixObjectLiteral = fixObjectLiteral;
+	E.newCall = newCall;
 	//E.box = box;
 	//E.box_param = box_param;
 	//E.box_this = box_this;
