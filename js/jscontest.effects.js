@@ -185,7 +185,7 @@
 			return true;
 		}
 		var effl = effect_store[uid];
-		// if there exists not entry for this uid, access is allowed
+		// if there exists no entry for this uid, access is allowed
 		if (!effl) {
 			return true;
 		}
@@ -408,6 +408,12 @@
 		function Dummy() {}
 		Dummy.prototype = f.prototype;
 		var newObj = new Dummy();
+		// add new empty effect map to the object
+		// since the map is the empty map, no effects
+		// are restricting the access to the object
+		if (!(newObj.__infos__)) {
+			newObj.__infos__ = { };					
+		}
 		return f.apply(newObj, pl);
 	};
 	
