@@ -421,6 +421,18 @@
 			// return statement, if that was != undefined
 			// If the return value is === undefined, the new
 			// created object is returned.
+
+			// the result might be a wrapper
+			if (result && o.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
+				if (!result.reference) {
+					result.reference = newObj;
+					return result;
+				} else {
+					return result;
+				}
+			}
+
+			// the result was not a wrapper
 			if (!result) {
 				return newObj;
 			} else {
