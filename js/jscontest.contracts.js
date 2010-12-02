@@ -516,6 +516,7 @@
 			contract.checkParams = checkParams;
 			contract.checkReturn = checkReturn;
 			contract.checkThis = checkThis;
+			contract.checkWithGenValues = checkWithGenValues;
 			//contract.checkWithParams = checkWithParams;
 			//contract.getLastCreatedValues = getLastCreatedValues;
 			return contract;

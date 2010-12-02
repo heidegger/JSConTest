@@ -65,9 +65,12 @@
 	 *  Also tries to perform delta debugging to reduce 
 	 *  counter example size. */
 	function failedCheck(test) {
-		function check_ddresult(p) {
-			// return boolean value
-			var r = !(test.contract.checkWithParams(test.value, p));
+		function check_ddresult(values) {
+			var slice = Array.prototype.slice,
+				thisv = values[0],
+				params = slice.call(values,1);
+			
+			var r = !(test.contract.checkWithGenValues(test.value, thisv, params));
 			if (r) {
 				collectCounterExample(test.contract.getCExp());
 			}
@@ -79,7 +82,13 @@
 			cexpuid += 1;
 			if (P.ddmin) {
 				collectCounterExample(ce);
-				P.ddmin.ddmin(check_ddresult, ce.getParams());
+				var values = [];
+				values.push(ce.getThisValue());
+				var params = ce.getParams();
+				for (var i = 0; i < params.length; i += 1) {
+					values.push(params[i]);
+				}
+				P.ddmin.ddmin(check_ddresult, values);
 				ce = test.contract.getCExp();
 			}
 			collectCounterExample(ce);

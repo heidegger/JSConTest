@@ -73,7 +73,7 @@
 			var k = 0,
 				result = [],
 				key, i, prop_val;
-			for (key = 0; key < result.length; key += 1) { 
+			for (key = 0; key < gran; key += 1) { 
 				result[key] = {}; 
 			}
 			for (key in o) {
