@@ -18,7 +18,8 @@
 		aR = 0,
 		o,
 		cancel,
-		log_console;
+		log_console,
+		lastUid;
 	
 	if (!P.events) {
 		P.events = {};
@@ -211,25 +212,42 @@
 		}
 	
 		function aCE(ce) {
-			var enLog, item, uid, dl, treeDiv;
-			
-			id += 1;
-			enLog = document.getElementById(enCId);
-			item = document.createElement("li");
-			item.setAttribute('id', id);
-			item.setAttribute('class', 'ui-state-highlight ui-corner-all');
-			item.setAttribute('style', 'padding:0.3em');
-			enLog.appendChild(item);
-			uid = "ce_dl_item" + ce.uid + "_" + id;
-			cexIDs.push(uid);
-			createButton("Example " + id, id, uid, "cex");
-			dl = document.createElement("dl");
-			dl.setAttribute('id', uid);
-			dl.setAttribute('style', 'display:none;padding:0.7em');
-			item.appendChild(dl);
-			newDef(dl, "value", P.utils.valueToString(ce.getValue()));
-			newDef(dl, "contract", ce.getContract().getcdes());
+			var enLog, item, uid, dl, treeDiv, exp_header, exp_content;
 
+			uid = "ce_dl_item" + ce.uid;
+			if (lastUid !== ce.uid) {
+				lastUid = ce.uid;
+
+				id = 1;
+				item = document.createElement("li");
+				item.setAttribute('id', uid);
+				item.setAttribute('class', 'ui-state-highlight ui-corner-all');
+				item.setAttribute('style', 'padding:0.3em');
+				enLog = document.getElementById(enCId); 
+				enLog.appendChild(item);
+
+				dl = document.createElement("dl");
+				dl.setAttribute('style', 'padding:0.7em');
+				item.appendChild(dl);
+				newDef(dl, "value", P.utils.valueToString(ce.getValue()));
+				newDef(dl, "contract", ce.getContract().getcdes());				
+				
+			} else {
+				id += 1;
+				item = document.getElementById(uid);
+				
+			}
+			exp_header = document.createElement("div");
+			item.appendChild(exp_header);
+			exp_header.setAttribute('id', uid + "_div_" + id);
+			createButton("Example " + id, uid + "_div_" + id, uid + "_" + id, "cex");
+			cexIDs.push(uid + "_" + id);
+			
+			dl = document.createElement("dl");
+			dl.setAttribute('id', uid + "_" + id);
+			dl.setAttribute('style', 'display:none;padding:0.7em');
+			exp_header.appendChild(dl);
+			
 			treeDiv = document.createElement("div");
 			newTree(dl, "this", treeDiv);
 			P.treeView.init(ce.getThisValue(), treeDiv);
@@ -241,7 +259,7 @@
 			treeDiv = document.createElement("div");
 			newTree(dl, "result", treeDiv);
 			P.treeView.init(ce.getResult(), treeDiv);
-
+			
 		}
 		
 		
