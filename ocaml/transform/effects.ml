@@ -80,6 +80,11 @@ let transform env effects fname pl sel =
                   prefix 
                   (env.propAss)
                   [t_e le; s_to_e (i_to_s li); t_e rhs]
+            | Array_access (a1,le,li) ->
+                do_mcalle_el 
+                  prefix 
+                  (env.propAss)
+                  [t_e le; li; t_e rhs]
             | _ -> Assign (a,t_e lhs,aop,t_e rhs)
         end
     | Unop_without_sideeffect (a,e,uop) ->
