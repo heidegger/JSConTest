@@ -11,8 +11,8 @@
 		numOfSuccess = 0,
 		cexIDs = [],
 		mIDs = [],
-		$ = jquerry,
-		id,
+		$ = jQuery,
+		id = 0,
 		init,
 		aP = 0,
 		aR = 0,
@@ -229,6 +229,10 @@
 			item.appendChild(dl);
 			newDef(dl, "value", P.utils.valueToString(ce.getValue()));
 			newDef(dl, "contract", ce.getContract().getcdes());
+
+			treeDiv = document.createElement("div");
+			newTree(dl, "this", treeDiv);
+			P.treeView.init(ce.getThisValue(), treeDiv);
 
 			treeDiv = document.createElement("div");
 			newTree(dl, "parameters", treeDiv);
@@ -484,7 +488,7 @@
 			app("The parameters passed to the function were: " + params);
 		}
 		function moduleChange(m) {
-			moduleId = MD5(m);
+			moduleId = P.utils.md5(m);
 			module = m;
 			numOfFails = 0;
 			numOfSuccess = 0;
@@ -493,7 +497,7 @@
 			createButton("Module: " + m, moduleId + 'Button', moduleId + 'Content', 'module');
 		}
 		function CExpStart() {
-			moduleId = MD5("cex");
+			moduleId = P.utils.md5("cex");
 			mIDs.push(moduleId + 'Content');
 			newHeadding("Collected Counterexamples", "cex");
 			createButton("Collected Counterexamples", moduleId + 'Button', moduleId + 'Content', 'module');
