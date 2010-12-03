@@ -121,16 +121,15 @@
 			}
 			break;
 		case STAR: 
+			// if * is nothing, just return true 
+			if (isAllowedEff(access_path,eff.effect)) {
+				return true;
+			}
 			if (access_path.type === PROP) {
 				if (isAllowedEff(access_path.effect, eff.effect)) {
 					// * == ? works, so just return true
 					return true;
 				}
-				// if * is nothing, just return true 
-				if (isAllowedEff(access_path,eff.effect)) {
-					return true;
-				}
-
 				// remove the property, but keep the *
 				return isAllowedEff(access_path.effect, eff);
 			}
