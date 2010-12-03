@@ -10,7 +10,7 @@
 */
 
 "use strict";
-(function (P) {
+(function (JSConTest) {
 	// Effect Paths
 	var PARAMETER = 1,
 		VARIABLE = 2,
@@ -41,15 +41,15 @@
 	
 	/* use the new object E and register it in the
 		 namespace JSConTest */
-	P.effects = E;
+	JSConTest.effects = E;
 
 	function cfire() {
 		var slice = Array.prototype.slice,
 			args = slice.apply(arguments);
 		
-		if (P.events && P.events.create_fire_function &&
-				(typeof P.events.create_fire_function === 'function')) {
-			return P.events.create_fire_function.apply(this, args);
+		if (JSConTest.events && JSConTest.events.create_fire_function &&
+				(typeof JSConTest.events.create_fire_function === 'function')) {
+			return JSConTest.events.create_fire_function.apply(this, args);
 		}
 	}
 
@@ -73,13 +73,14 @@
 			}(i));			
 		}
 		function registerEffectPrivate(effl, pl, thisC, fname) {
-			effect_store[getUid()] = effl;
+			var i = getUid();
+			effect_store[i] = effl;
 			getActiveFunName = (function (fname) {
 				return (function () {
 					return fname;
 				});
 			}(fname));
-			return uid;
+			return i;
 		}
 
 		registerEffect = registerEffectPrivate;
@@ -129,6 +130,8 @@
 				if (isAllowedEff(access_path,eff.effect)) {
 					return true;
 				}
+
+				// remove the property, but keep the *
 				return isAllowedEff(access_path.effect, eff);
 			}
 			break;
@@ -229,8 +232,8 @@
 				}
 				if (!check(uid, new_context)) {
 					eventHandler(o, p,
-											 P.utils.valueToString(effStoreToString(effect_store)), 
-											 P.utils.valueToString(efflToString(effect_store[uid])));
+					             JSConTest.utils.valueToString(effStoreToString(effect_store)), 
+					             JSConTest.utils.valueToString(efflToString(effect_store[uid])));
 				}				
 			}
 		}
@@ -356,10 +359,10 @@
 		}());
 		
 		fmCall = (function fCall(f, that, pl) {
-			var i, plub = [], rv, that_ub;
+			var i, plub = [], rv, that_ub, result;
 
 			// store original params 
-			if (P.check.isSArray(pl)) {
+			if (JSConTest.check.isSArray(pl)) {
 				putThisParams(that, pl);				
 			} else {
 				throw "you have to call fCall and mCall with an array to pass the function parameters."; 
@@ -391,7 +394,7 @@
 			// and new objects created
 
 			incrementUid();
-			var result = f.apply(that_ub, plub);
+			result = f.apply(that_ub, plub);
 			deleteThisParams();
 			return getReturnBox(result);
 		});
@@ -594,8 +597,10 @@
 			return effToString(eff.effect) + ".?";
 		case STAR: 
 			return effToString(eff.effect) + ".*";
+		case noPROP:
+			return effToString(eff.effect) + ".@";
 		default: 
-			return "NO KNOWN EFFECT TYPE";
+			return "NO KNOWN EFFECT TYPE: " + JSConTest.utils.valueToString(eff);
 		}
 	}
 
@@ -729,9 +734,9 @@
 	//E.returnBox = returnBox;
 	//E.getBoxes = getBoxes;
 	
-	if (P.tests && P.tests.callback) {
-		P.tests.callback.registerEffect = registerEffect;
-		P.tests.callback.unregisterEffect = unregisterEffect;
+	if (JSConTest.tests && JSConTest.tests.callback) {
+		JSConTest.tests.callback.registerEffect = registerEffect;
+		JSConTest.tests.callback.unregisterEffect = unregisterEffect;
 	}
 
  })(JSConTest);
