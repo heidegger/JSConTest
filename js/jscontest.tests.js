@@ -22,7 +22,7 @@
 		/* private variables */
 		/* collects all the tests that are added by TESTS.add(v,c,t); */
 		tests = {},
-		/* number of testes added to the library */
+		/* number of tests added to the library */
 		 added_tests = 0,	
 		 /* collects counterexamples */
 		 counterexp = {},

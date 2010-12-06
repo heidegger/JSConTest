@@ -423,9 +423,10 @@
 			// FIXME: deal with the situation, that m is also a box
 			//			 take the value of m, convert it to a string, do
 			//			 the method call with this string
-			// unbox everything, and put the boxes into the global box space
+			// unbox the mothod itself, but not the this value, and the paremter,
+			// since this is done in fmcall.
 			if (o && o.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
-				return fmCall((o.reference)[m], o.reference, pl);
+				return fmCall((o.reference)[m], o, pl);
 			} else {
 				return fmCall(o[m], o, pl);
 			}			

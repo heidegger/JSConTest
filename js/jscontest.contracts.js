@@ -26,7 +26,7 @@
 		ctName = 6,
 		Union, 
 		UnionAddSimplRule,
-		cc;
+		cc = {};
 	
 	P.contracts = C;
 
