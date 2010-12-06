@@ -22,6 +22,7 @@ type t =
   | BSFloat of float
   | BFInterval of float * float
   | BJavaScriptVar of string
+  | BJSCContract of string
   | BObject
   | BId
   | BLength

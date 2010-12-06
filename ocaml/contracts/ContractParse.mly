@@ -42,10 +42,13 @@
 %token LInteger
 %token <int> LSingleInteger
 
+%token <string> LRegEx
+
 %token LFloat
 %token <float> LSingleFloat
 
 %token <string> LJSIdent
+%token <string> LCustomContract
 
 
 %token LAT
@@ -163,10 +166,17 @@ css_path:
   | LThis                           { Csseff.This }
   | LIdentifier                     { Csseff.Var $1 }
   | LSingleString                   { Csseff.Var $1 } 
-  | css_path LDOT LIdentifier       { Csseff.Prop ($1,$3) }
-  | css_path LDOT LSTAR             { Csseff.Star $1 }
-  | css_path LDOT LQUESTION         { Csseff.Question $1 }
-  | css_path LDOT LAT               { Csseff.NoProp $1 }
+
+  | css_path css_property           { $2 ($1) }
+;
+
+css_property:
+  | LDOT LIdentifier                { fun cs -> Csseff.Prop (cs,$2) }
+  | LDOT LSTAR                      { fun cs -> Csseff.Star cs }
+  | LDOT LQUESTION                  { fun cs -> Csseff.Question cs }
+  | LDOT LAT                        { fun cs -> Csseff.NoProp cs }
+  | LDOT LSingleString              { fun cs -> Csseff.Prop (cs,$2) }
+  | LDOT LRegEx                     { fun cs -> Csseff.RegExProp (cs,$2) }
 ;
 
 paraml:
@@ -228,6 +238,7 @@ base:
   | LBRAKET LSingleInteger LSEMICOLON LSingleFloat RBRAKET  { BFInterval (float_of_int $2,$4) } 
   | LBRAKET LSingleFloat LSEMICOLON LSingleInteger RBRAKET  { BFInterval ($2,float_of_int $4) } 
   | LJSIdent              { BJavaScriptVar $1 }
+  | LCustomContract       { BJSCContract $1 }
   | LId                   { BId }
   | LObject               { BObject }
 ;

@@ -51,6 +51,7 @@ let regexp lower = ['a' - 'z']
 let regexp char = lower | upper | digit | '_'| escape_sequence
 let regexp string = '"' char* '"'
 let regexp jsident = "js:" ['a'-'z' 'A'-'Z' '0'-'9' '_']* 
+let regexp customcontract = "cc:" ['a'-'z' 'A'-'Z' '0'-'9' '_']* 
 let regexp identifier = ['a'-'z' 'A'-'Z' '0'-'9' '_']* 
 let regexp dependend = ("$")+ ['1'-'9'] digit*
 let regexp rlet = "let"
@@ -66,71 +67,118 @@ let regexp rthis = "this"
 let regexp rwith = "with" | "With"
 let regexp rquestionmark = "?"
 
-let rec token = lexer
-  | left            -> token lexbuf
-  | [' ' '\t' '\n'] -> token lexbuf
-  | dependend       -> 
-      let s = Ulexing.utf8_lexeme lexbuf in
-      let scope = (String.rindex s '$') + 1 in
-      let l = String.length s in
-        LDepend (scope,int_of_string (String.sub s scope (l - scope)))
-  | rdotdotdot      -> L3D
-  | rundf           -> LUndf
-  | rvoid           -> LVoid
-  | rnull           -> LNull
-  | rtop            -> LTop
-  | floating        -> LSingleFloat (float_of_string (Ulexing.utf8_lexeme lexbuf))
-  | digit+          -> LSingleInteger (int_of_string (Ulexing.utf8_lexeme lexbuf))
-  | string          -> 
-      let s = Ulexing.utf8_lexeme lexbuf in
-      let s = String.sub s 1 (String.length s - 2) in
-      let s = String.escaped s in
-        LSingleString s
-  | rtrue           -> Ltrue
-  | rfalse          -> Lfalse
-  | rbool           -> LBool
-  | rint            -> LInteger
-  | rlparan         -> LPARAN
-  | rrparan         -> RPARAN
-  | rlbraket        -> LBRAKET
-  | rrbraket        -> RBRAKET
-  | rstar           -> LSTAR
-  | rarrow          -> LARROW
-  | rcolon          -> LCOLON
-  | rcomma          -> LCOMMA
-  | rsemicolon      -> LSEMICOLON
-  | rstring         -> LString
-  | rfloat          -> LFloat
-  | rat             -> LAT
-  | rnconstants     -> LNConstants
-  | rsconstants     -> LSConstants
-  | rlabels         -> LLabels
-  | rlbrace         -> LLBRACE
-  | rrbrace         -> LRBRACE
-  | robject         -> LObject
-  | jsident         -> 
-      let s = Ulexing.utf8_lexeme lexbuf in
-      let l = String.length s in
-        LJSIdent (String.sub s 3 (l - 3)) 
-  | rbar            -> LBAR
-  | rdot            -> LDOT
-  | rid             -> LId
-  | rnotest         -> LNoTests
-  | rnoasserts      -> LNoAsserts
-  | rnoeffects      -> LNoEffects
-  | reffects        -> LEffects
-  | rthis           -> LThis
-  | rwith           -> LWith
-  | rquestionmark   -> LQUESTION
-  | rnatural        -> LNatural
-  | rlength         -> LLength
-  | ror             -> LUnion  
-  | identifier      -> 
-      let s = Ulexing.utf8_lexeme lexbuf in
-        LIdentifier s
-  | rnbtest         -> 
-      let s = Ulexing.utf8_lexeme lexbuf in
-      let l = String.length s in
-        LNumberTests  (int_of_string (String.sub s 7 (l - 7)))
-  | "*"+ "/"        -> LEOF
-  | "*"+ "/" eof    -> LEOF
+
+
+let regexp re_escape_sequence =
+  "\\" "/" | escape_sequence
+
+let regexp re_character     =
+  (* Anything but slash and backslash (but with escape_sequences) *)
+  [0-0x002e] | [0x0030-0x005b] | [0x005d-0xffff] | re_escape_sequence
+
+let regexp re_flags =
+  "" (* no flag *)
+  | "g" | "i" | "m" (* one flag *)
+  | "gi" | "gm" | "ig" | "im" | "mg" | "mi" (* two flags*) 
+  | "gim" | "gmi" | "igm" | "img" | "mgi" | "mig" (* three flags *)
+  
+
+let regexp re_literal = 
+  '/' re_character* '/' re_flags
+
+
+let token =
+  let left_read = ref false in
+  let rec token lexbuf =
+    let left_lexer = lexer
+      | left -> 
+          left_read := true;
+          token lexbuf
+      | _ -> failwith "This should never happen"
+    in
+
+    let other_lexer = lexer
+      | [' ' '\t' '\n'] -> token lexbuf
+      | dependend       -> 
+          let s = Ulexing.utf8_lexeme lexbuf in
+          let scope = (String.rindex s '$') + 1 in
+          let l = String.length s in
+          LDepend (scope,int_of_string (String.sub s scope (l - scope)))
+      | rdotdotdot      -> L3D
+      | rundf           -> LUndf
+      | rvoid           -> LVoid
+      | rnull           -> LNull
+      | rtop            -> LTop
+      | floating        -> LSingleFloat (float_of_string (Ulexing.utf8_lexeme lexbuf))
+      | digit+          -> LSingleInteger (int_of_string (Ulexing.utf8_lexeme lexbuf))
+      | string          -> 
+          let s = Ulexing.utf8_lexeme lexbuf in
+          let s = String.sub s 1 (String.length s - 2) in
+          let s = String.escaped s in
+          LSingleString s
+      | rtrue           -> Ltrue
+      | rfalse          -> Lfalse
+      | rbool           -> LBool
+      | rint            -> LInteger
+      | rlparan         -> LPARAN
+      | rrparan         -> RPARAN
+      | rlbraket        -> LBRAKET
+      | rrbraket        -> RBRAKET
+      | rstar           -> LSTAR
+      | rarrow          -> LARROW
+      | rcolon          -> LCOLON
+      | rcomma          -> LCOMMA
+      | rsemicolon      -> LSEMICOLON
+      | rstring         -> LString
+      | rfloat          -> LFloat
+      | rat             -> LAT
+      | rnconstants     -> LNConstants
+      | rsconstants     -> LSConstants
+      | rlabels         -> LLabels
+      | rlbrace         -> LLBRACE
+      | rrbrace         -> LRBRACE
+      | robject         -> LObject
+      | jsident         -> 
+          let s = Ulexing.utf8_lexeme lexbuf in
+          let l = String.length s in
+          LJSIdent (String.sub s 3 (l - 3)) 
+      | customcontract ->
+          let s = Ulexing.utf8_lexeme lexbuf in
+          let l = String.length s in
+          LCustomContract (String.sub s 3 (l - 3)) 
+      | rbar            -> LBAR
+      | rdot            -> LDOT
+      | rid             -> LId
+      | rnotest         -> LNoTests
+      | rnoasserts      -> LNoAsserts
+      | rnoeffects      -> LNoEffects
+      | reffects        -> LEffects
+      | rthis           -> LThis
+      | rwith           -> LWith
+      | rquestionmark   -> LQUESTION
+      | rnatural        -> LNatural
+      | rlength         -> LLength
+      | ror             -> LUnion  
+      | re_literal      -> 
+          LRegEx (Ulexing.utf8_lexeme lexbuf)            
+      | identifier      -> 
+          let s = Ulexing.utf8_lexeme lexbuf in
+          LIdentifier s
+      | rnbtest         -> 
+          let s = Ulexing.utf8_lexeme lexbuf in
+          let l = String.length s in
+          LNumberTests  (int_of_string (String.sub s 7 (l - 7)))
+      | "*"+ "/"        -> 
+          left_read := false;
+          LEOF
+      | "*"+ "/" eof    -> 
+          left_read := false;
+          LEOF
+            
+    in
+      if (!left_read) 
+      then other_lexer lexbuf
+      else left_lexer lexbuf
+  in
+    token
+

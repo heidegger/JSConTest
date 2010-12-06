@@ -14,6 +14,7 @@ type t =
   | BSFloat of float
   | BFInterval of float * float
   | BJavaScriptVar of string
+  | BJSCContract of string
   | BObject
   | BId
   | BLength
@@ -25,6 +26,7 @@ let string_of = function
   | BNull -> "null"
   | BTop -> "T"
   | BJavaScriptVar v -> "js:"^v
+  | BJSCContract v -> "cc:"^v
   | BSBool b -> if b then "true" else "false"
   | BBool -> "bool"
   | BString -> "string"

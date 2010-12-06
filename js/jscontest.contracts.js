@@ -25,7 +25,8 @@
 	/* Names */
 		ctName = 6,
 		Union, 
-		UnionAddSimplRule;
+		UnionAddSimplRule,
+		cc;
 	
 	P.contracts = C;
 
@@ -965,7 +966,12 @@
 	 */
 	C.SContract = SContract;
 
-
-
+	
+	C.load = function (s) {
+		return cc[s];
+	};
+	C.store = function (s, c) {
+		cc[s] = c;
+	};
 
 }(JSConTest));

@@ -58,6 +58,7 @@
 	function assertParam(cl, pl, str) {
 		console.warn(str + ": " + "Parameters passed to function not valid: " +
 		             cl + ", " + P.utils.valueToString(pl));
+		throw "Effect Error";
 	}
 	
 	function strEffect(obj, prop, effl_str, eff_str, kind) {		
@@ -70,10 +71,12 @@
 
 	function assertEffectsRead(o, p, effl_str, eff_str) {
 		console.warn(module + ": " + strEffect(o, p, effl_str, eff_str, "read"));
+		throw "Effect Error";
 	}
 
 	function assertEffectsWrite(o, p, effl_str, eff_str) {
 		console.warn(module + ": " + strEffect(o, p, effl_str, eff_str, "write"));
+		throw "Effect Error";
 	}
 
 	function create(divId, enType) {

@@ -2,10 +2,13 @@ type effect =
   | Parameter of int
   | Var of string
   | This 
+  | RegExVar of string
+
   | Prop of effect * string
   | Star of effect
   | Question of effect
   | NoProp of effect
+  | RegExProp of effect * string
 
 type t = El of effect list | All
 type ('a,'b) either =
@@ -42,12 +45,15 @@ let rec string_of_effect = function
   | Parameter i -> "$" ^ string_of_int i
   | Var s -> s
   | This -> "this"
+  | RegExVar s -> s
   | Prop (e,s) -> 
       let se = string_of_effect e in
         se ^ "." ^ s
   | Star e -> (string_of_effect e) ^ ".*"
   | Question e -> (string_of_effect e) ^ ".?"
   | NoProp e -> (string_of_effect e) ^ ".@"
+  | RegExProp (e,s) ->
+      (string_of_effect e) ^ "." ^ s
 
 let is_empty = function
   | El t -> List.length t < 1

@@ -229,6 +229,8 @@ module Make(T: TRANS) : S with type t = T.t = struct
           end else begin
             i_to_e (s_to_i jsv),[]
           end
+      | BJSCContract cc ->
+          do_mcalle_el contract_prefix "load" [s_to_e cc],[]
       | BSBool b -> 
           read_prop_e contract_prefix (if b then "True" else "False"),[]
       | BBool -> read_prop_e contract_prefix "Boolean",[]

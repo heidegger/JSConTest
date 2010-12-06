@@ -19,6 +19,9 @@
 		STAR = 5,
 		ALL = 6,
 		noPROP = 7,
+		regExProp = 8,
+		regExVar = 9,
+		
 		globalObj = (function () { 
 			return this; 
 		}()),
@@ -134,6 +137,20 @@
 				return isAllowedEff(access_path.effect, eff);
 			}
 			break;
+		case regExProp:
+			if ((access_path.type === PROP) && eff.regEx) {
+				if (eff.regEx.test(access_path.property)) {
+					return true;
+				}
+			}
+			return false;
+			// TODO: this is a regular expression, that describes a set
+			// of properties. Hence it will match, if access_path is
+			// a property, and the name of the property is part of the language
+			// of this regular expression
+		case regExVar:
+			// TODO:
+			return false;
 		case noPROP: 
 			return false;
 		default: 

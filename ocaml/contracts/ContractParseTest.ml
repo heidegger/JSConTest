@@ -401,6 +401,22 @@ module Test = struct
           | _ -> assert_failure "get_clgI does not work correct"
     in
 
+    let t26 () =
+      let s = "/*c () -> string with [$1./bla/i] */" in
+      let tc = parse s in
+        assert_equal
+          ~printer:so_t
+          (tc_cl 
+             [CFunction 
+                (None,
+                 [],
+                 cs,
+                 (),
+                 Csseff.create_effect_list 
+                   [Csseff.RegExProp (Csseff.Parameter 1,"/bla/i")])])
+          tc
+    in      
+
       ["Parse int -> int", t1;
        "Parse () -> undefined", t1a;
        "Parse (true,false) -> bool", t2;
@@ -426,6 +442,7 @@ module Test = struct
        "Parse () -> top", t23;
        "Parse () -> [int]", t24;
        "Parse () -> [[string]]", t25; 
+       "Parse () -> () with [$1./bla/i]", t26; 
       ]
         
   let _ = 

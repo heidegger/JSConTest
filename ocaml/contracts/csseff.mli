@@ -2,10 +2,13 @@ type effect =
   | Parameter of int
   | Var of string
   | This
+  | RegExVar of string
+
   | Prop of effect * string
   | Star of effect
   | Question of effect
   | NoProp of effect
+  | RegExProp of effect * string  
 
 type t 
 type ('a,'b) either =
