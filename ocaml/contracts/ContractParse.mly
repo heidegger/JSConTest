@@ -126,15 +126,15 @@ union_contract:
 
 fun_contract:
   | fun_contract_without_effect effects           { let (th,cl,al) = $1 in                                                  
-                                                      CFunction (th,cl,al,(),Csseff.create_effect_list $2)
+                                                      CFunction (th,cl,al,(), $2)
                                                   }
 
 ;
 
 /** Effects are optional. This parser leads to a shift/reduce conflict which is benign as shifting is taken as the default. */
 effects:  
-  |                                               { [] }
-  | LWith  LBRAKET css_list RBRAKET               { $3 }
+  |                                               { Csseff.create_all () }
+  | LWith  LBRAKET css_list RBRAKET               { Csseff.create_effect_list $3 }
 ;
 
 fun_contract_without_effect:
@@ -150,6 +150,7 @@ fun_contract_without_effect:
 ;
 
 css_list:
+  |                             { [] }   
   | css_path css_tail           { $1 :: $2 }
 ;
 
