@@ -31,6 +31,15 @@ type ('b,'a,'dup,'ddown) t
 *)
 val create_tgI : (('b,'a,'d,'dd) contract * GenInfo.t) list -> bool option -> ('b,'a,'d,'dd) t
 
+(** creates a contract list from a list of contracts to attach 
+    it to a function, and set the list of analyses to [[]].
+    It also registers the function under the name given as the second
+    parameter. Therefore the library has an extra scope to store 
+    function values for later access, even if the closure itself is
+    hidden and not public accessable. 
+*)
+val create_tgI_fn : (('b,'a,'d,'dd) contract * GenInfo.t) list -> bool option -> string -> ('b,'a,'d,'dd) t
+
 val is_empty : ('b,'a,'d,'dd) t -> bool
 
 (** similar to [create_t], but also sets the list of analyses *)

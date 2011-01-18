@@ -18,6 +18,7 @@ type ('b,'a,'dup,'ddown) t =
     { clist: (('b,'a,'dup,'ddown) contract * GenInfo.t) list;
       alist: 'a list;
       transformation: bool option;
+      function_name: string option;
     }
 
 (* let set_effects_if_ness gi = function
@@ -29,11 +30,16 @@ type ('b,'a,'dup,'ddown) t =
   
 (* let creategI cl = List.map (fun c -> c,GenInfo.create ()) cl *)
 
-let create_tgI_al_trans clgI al trans = 
-  { clist= clgI; alist= al; transformation= trans }
+let create_tgI_fno clgI al trans fno = 
+  { clist= clgI; alist= al; transformation= trans; function_name= fno; }
+
+let create_tgI_fn clgI trans fn = create_tgI_fno clgI [] trans (Some fn)
+
+let create_tgI_al_trans clgI al trans = create_tgI_fno clgI al trans None
 
 let create_tgI clgI trans = create_tgI_al_trans clgI [] trans
 (* let create_t cl = create_tgI_al_trans (creategI cl) [] None *)
+
 
 let get_clgI { clist=clgI } = clgI
 let get_cl { clist=clgI } = List.map fst clgI
@@ -129,7 +135,7 @@ let transform :
             let cl,gI = List.split cl_gI in
             let cl = List.map visit_tc cl in
             let al = List.map ba_analyse al in
-              { clist = List.combine cl gI; alist = al; transformation = trans }
+              { clist = List.combine cl gI; alist = al; transformation = trans; function_name= None; }
     in
       a_t t
 
@@ -227,7 +233,7 @@ let transform_c :
           ~ba_analyse:ba_an
           ~ba_depend_up:ba_du
           ~ba_depend_down:ba_dd
-          { clist = [c,GenInfo.create ()]; alist = []; transformation = None }
+          { clist = [c,GenInfo.create ()]; alist = []; transformation = None; function_name= None; }
       in
         match t with
           | { clist = [c,_]; alist = []; transformation = None } -> c
