@@ -91,8 +91,10 @@
 %%
 
 contractl_top:
-  | contractl globalAnn               { Contract.create_tgI $1 $2 }
-  | contractl globalAnn LEOF          { Contract.create_tgI $1 $2 }
+  | contractl globalAnn                           { Contract.create_tgI $1 $2 }
+  | contractl globalAnn LEOF                      { Contract.create_tgI $1 $2 }
+  | LIdentifier LCOLON contractl globalAnn        { Contract.create_tgI_fn $3 $4 $1 }
+  | LIdentifier LCOLON contractl globalAnn LEOF   { Contract.create_tgI_fn $3 $4 $1 }
 ;
 
 contractl: 
