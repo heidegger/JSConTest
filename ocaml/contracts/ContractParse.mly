@@ -131,10 +131,13 @@ fun_contract:
 
 ;
 
-/** Effects are optional. This parser leads to a shift/reduce conflict which is benign as shifting is taken as the default. */
+/** Effects are optional. This parser leads to a shift/reduce conflict which is 
+  * benign as shifting is taken as the default. 
+  */
 effects:  
-  |                                               { Csseff.create_all () }
-  | LWith  LBRAKET css_list RBRAKET               { Csseff.create_effect_list $3 }
+  |                                               { Csseff.create_none () }
+  | LWith LSTAR                                   { Csseff.create_all () }
+  | LWith LBRAKET css_list RBRAKET                { Csseff.create_effect_list $3 }
 ;
 
 fun_contract_without_effect:

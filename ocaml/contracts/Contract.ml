@@ -82,10 +82,10 @@ and so_contract so_b so_a so_d = function
         | None -> ""
         | Some o -> so_contract so_b so_a so_d o
       in
-      this ^ "{" ^ so_contractl so_b so_a so_d cl 
-      ^ " -> " ^ so_contract so_b so_a so_d c 
-      ^ (if (String.length effs > 0) then " with " ^ effs else "")
-      ^ "}"
+	this ^ "{" ^ so_contractl so_b so_a so_d cl 
+	^ " -> " ^ so_contract so_b so_a so_d c 
+      	^ (if (String.length effs > 0) then " with " ^ effs else "")
+      	^ "}"
   | CUnion (cl) ->
      let cl = List.map (so_contract so_b so_a so_d) cl in
      let cls = String.concat " or " cl in

@@ -159,7 +159,7 @@ module Test = struct
       
 
     let t1 () =
-(*      let s = "/** (int,int($1)) -> bool($2) | true -> false($1) */" in *)
+(*      let s = "/*c (int,int($1)) -> bool($2) | true -> false($1) */" in *)
       let c1 = CBase (BSBool true,[],[]) in
       let c2 = CBase (BSBool false,[],[Depend.create 1 1]) in
       let c3 = CFunction (None,[c1],c2,(),Csseff.create ()) in

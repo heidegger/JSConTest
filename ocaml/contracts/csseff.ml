@@ -18,6 +18,7 @@ type ('a,'b) either =
 let create () = El []
 let create_all () = All
 let create_effect_list el = El el
+let create_none () = El []
 
 (* let rec rem_var = function
     | Parameter i as e -> e

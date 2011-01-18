@@ -17,6 +17,7 @@ type ('a,'b) either =
 
 val create : unit -> t
 val create_all : unit -> t
+val create_none : unit -> t
 val create_effect_list : effect list -> t
 val get_effects : t -> effect list
 val map : (effect -> 'a) -> (unit -> 'b) -> t -> ('a list,'b) either
