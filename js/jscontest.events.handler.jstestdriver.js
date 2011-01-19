@@ -33,13 +33,31 @@
 	}
 	
 	function error(e, c) {
-  	// this is the test case
+		var cs, lcv;
+		
+		// this is the test case
 		if (c.get_last_created_values) {
-			console.warn("While testing contract " + c.getcdes() + ", an error happens: " + e +
+			try {
+				cs = c.getcdes();
+			} catch (err) {
+				cs = "Error in contract itself.";
+			}
+			try {
+				lcv = c.get_last_created_values();
+			} catch (err2) {
+				lcv = "Last created value not avialible due to internal contract error.";
+			}			
+			console.warn("While testing contract " + cs + ", an error happens: " + e +
 			     "object.[parameter1,...]: " + c.get_last_created_values());		  		
 		}	else {
-			console.warn("While testing contract " + c.getcdes() + ", an error happens: " + e);
+			try {
+				cs = c.getcdes();
+			} catch (err3) {
+				cs = "Error in contract itself.";
+			}
+			console.warn("While testing contract " + cs + ", an error happens: " + e);
 		}
+		
 	}
 	
 	function moduleChange(m) {
