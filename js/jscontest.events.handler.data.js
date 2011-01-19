@@ -2,9 +2,9 @@
 /* author: Phillip Heidegger */
 
 "use strict";
-(function(JSC) {
-	var H = {};
-	var module;
+(function (JSC) {
+	var H = {},
+		module;
 
 	if (!JSC.events) {
 		JSC.events = {};
