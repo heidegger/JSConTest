@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>JSConTest - Test Framework - Basic</title>
+    <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../../js/jscontest.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.tests.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.statistic.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.contracts.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.events.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.events.handler.simple.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.events.handler.data.js"></script>
+    <script type="text/javascript" src="../forJsTestDriver/makeChecker.js"></script>
+    <script type="text/javascript" src="../forJsTestDriver/asserts.js"></script>
+  </head>
+
+  <body onload="JSConTest.tests.run()">
+    <h1>JSConTest - Test Framework - Asserts</h1>
+    
+    <p>This test suite runs some simple test cases and should raise some assert warnings.     
+ 	</p>
+ 		
+	<div style="background-color: #999;">
+		<h2>Error log:</h2>
+		<p id="checker" style="color: #A00;"></p>
+	</div>
+    <div id="logger"></div>
+    
+
+    <script type="text/javascript">
+    	function fail(s) {
+    		document.getElementById("checker").innerHTML += s + "<br />";
+    	}
+		var dl = JSConTest.events.handler.simple.create('logger',"ul");
+		JSConTest.events.register(dl);
+		JSConTest.events.register(JSConTest.events.handler.data.create("checker"));  
+    </script>
+    
+  </body>
+</html>

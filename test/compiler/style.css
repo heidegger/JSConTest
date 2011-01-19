@@ -1,0 +1,44 @@
+div#logger div#first div { 
+  float:clear;
+}
+
+div#logger div#first div.left { 
+  float: left;
+}
+
+div#logger div#first div.left { 
+  float: right;
+}
+
+div#logger h2 { 
+  margin: 1em 0 0 0;
+  padding: 2px;
+  background: #DDA;
+}
+
+div#logger ul { 
+  margin: 0 0 1em 0;
+  padding: 2px;
+  background: #EEB;
+}
+
+div#logger ul li { 
+  list-style-type: none;
+}
+
+div#logger ul li em { 
+  color: red;
+}
+
+div#logger ul#loggercex { 
+  padding: 0em 1.5em;
+  background: #EEE;
+}
+
+div#logger ul#loggercex li {
+  margin: 0em;
+  padding: 1em;
+  list-style-type: square;
+}
+
+

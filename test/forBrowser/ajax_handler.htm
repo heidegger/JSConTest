@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>JSConTest - Test Framework - Basic</title>
+    <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../../js/jscontest.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.tests.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.statistic.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.contracts.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.events.js"></script>
+
+    <script type="text/javascript" src="../../js/jscontest.events.handler.simple.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.events.handler.ajax.js"></script>
+
+    <!--jquery-->
+    <link rel="text/css" href="../../jquery/development-bundle/themes/base/jquery.ui.all.css" type="text/css" />
+    <link rel="text/css" href="../../jquery/css/pepper-grinder/jquery-ui-1.8.6.custom.css" type="text/css" />
+    <script src="../../jquery/development-bundle/jquery-1.4.2.js"></script>
+    <script src="../../jquery/development-bundle/ui/jquery.ui.core.js"></script>
+    <script src="../../jquery/development-bundle/ui/jquery.ui.widget.js"></script>
+    <script src="../../jquery/development-bundle/ui/jquery.ui.button.js"></script>
+    <link rel="text/css" href="../../jquery/development-bundle/demos/demos.css" />
+
+    <script type="text/javascript" src="../../js/jscontest.events.handler.jquery.js"></script>
+
+
+	<!-- Required CSS -->
+	<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.8.1/build/treeview/assets/skins/sam/treeview.css" />
+	<!-- Optional CSS for for date editing with Calendar-->
+	<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.8.1/build/calendar/assets/skins/sam/calendar.css" />
+	 
+	<!-- Dependency source file --> 
+	<script src="http://yui.yahooapis.com/2.8.1/build/yahoo-dom-event/yahoo-dom-event.js" ></script>
+	<script src="http://yui.yahooapis.com/2.8.1/build/animation/animation-min.js" type="text/javascript"></script>
+	<script src="http://yui.yahooapis.com/2.8.1/build/calendar/calendar-min.js" ></script>
+	<script src="http://yui.yahooapis.com/2.8.1/build/json/json-min.js" ></script>
+	 
+	<!-- TreeView source file --> 
+	<script src="http://yui.yahooapis.com/2.8.1/build/treeview/treeview-min.js" ></script>
+
+    <script type="text/javascript" src="../../js/jscontest.events.handler.data.js"></script>
+    <script type="text/javascript" src="../forJsTestDriver/makeChecker.js"></script>
+    <script type="text/javascript" src="../forJsTestDriver/basic.js"></script>
+  </head>
+
+  <body onload="JSConTest.tests.run()">
+    <h1>JSConTest - Test Framework - Basic</h1>
+    
+    <p>This test suite runs a lot of basic contracts against a set
+    	of values. It is expected to test 187 contracts. 29 should
+    	be verified, 147 should fail, and 11 should exit with an
+    	error. This is checked automatically, since 
+        two event handlers are registered. One checks if the contract
+ 		behaves as expected. The other prints the usual contract 
+ 		output to the page.     
+ 	</p>
+ 		
+ 	<p>	If something unexpected happens, the first event handler will 
+ 		add an log message into the error box below. This may indicate, 
+ 		that JSConTest does not work correctly in your browser, either
+ 		due to the fact that your browser does not support a feature JSConTest
+ 		rely on, or because JSConTest has an error. 
+    </p>
+    <div id="logger"></div>
+    
+
+    <script type="text/javascript">
+
+    	
+    
+		var dl = JSConTest.events.handler.simple.create('logger',"ul");
+		JSConTest.events.register(dl);
+
+		JSConTest.events.register(JSConTest.events.handler.ajax.create());
+      
+    </script>
+    
+  </body>
+</html>

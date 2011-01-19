@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>JSConTest - Test Framework - Basic</title>
+    <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../../js/jscontest.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.tests.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.statistic.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.contracts.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.events.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.events.handler.simple.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.events.handler.jquery.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.effects.js"></script>
+    <script type="text/javascript" src="test.test.js"></script>
+
+  </head>
+
+  <body onload="JSConTest.tests.run()">
+    <div id="logger"></div>
+    
+
+    <script type="text/javascript">
+		var dl = JSConTest.events.handler.simple.create('logger',"ul");
+		JSConTest.events.register(dl);
+    </script>
+    
+  </body>
+</html>
