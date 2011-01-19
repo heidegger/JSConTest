@@ -213,18 +213,22 @@
 			       + "The following was not respected: " + eff_str + "<br />\n";
 		}
 		var count = 0;
-		function assertEffectsWrite(o, p, effl_str, eff_str) {
+		function assertEffectsWrite(o, p, effl_str, eff_str, new_context) {
 			count += 1;
 			if (count > 10) return;
 			log_console.innerHTML += "<b>" + module + "</b>: "
-			                         + strEffect(o, p, effl_str, eff_str, "write");
+			                         + strEffect(o, p, effl_str, eff_str, "write")
+			                         + JSON.stringify(new_context)
+			                         + "<br />";
 		}
 		;
-		function assertEffectsRead(o, p, effl_str, eff_str) {
+		function assertEffectsRead(o, p, effl_str, eff_str, new_context) {
 			count += 1;
 			if (count > 10) return;
 			log_console.innerHTML += "<b>" + module + "</b>: "
-			                         + strEffect(o, p, effl_str, eff_str, "read");
+			                         + strEffect(o, p, effl_str, eff_str, "read")
+			                         + JSON.stringify(new_context)
+			                         + "<br />";
 		}
 
 		var aR = 0;
