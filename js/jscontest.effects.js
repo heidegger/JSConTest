@@ -101,8 +101,7 @@
 		switch (eff.type) {
 		case PARAMETER:
 			return ((access_path.type === PARAMETER) && 
-							(eff.number === access_path.number) &&
-							(eff.type = PARAMETER));
+							(eff.number === access_path.number));
 		case VARIABLE:
 			return ((access_path.type === VARIABLE) &&
 							(eff.name === access_path.name) &&
@@ -247,9 +246,11 @@
 					}); 
 				}
 				if (!check(uid, new_context)) {
-					eventHandler(o, p,
+					setFunNameEffl(new_context,getFunNameEffl(effect_store[uid]))
+          eventHandler(o, p,
 					             JSConTest.utils.valueToString(effStoreToString(effect_store)), 
-					             JSConTest.utils.valueToString(efflToString(effect_store[uid])));
+					             JSConTest.utils.valueToString(efflToString(effect_store[uid])),
+					             new_context);
 				}				
 			}
 		}
@@ -607,9 +608,13 @@
 		case PARAMETER:
 			return (eff.fname + ": $" + eff.number);
 		case VARIABLE:
-			return eff.name;
+			if (eff.fname) {
+				return (eff.fname + ": " + eff.name);
+			} else {
+				return eff.name;				
+			}
 		case PROP:
-			return effToString(eff.effect) + "." + eff.property;
+			return effToString(eff.effect) + "." + JSON.stringify(eff.property);
 		case QUESTIONMARK:
 			return effToString(eff.effect) + ".?";
 		case STAR: 
@@ -641,7 +646,64 @@
 		}
 		return obj;
 	}
-
+	function getFunNameEff(eff) {
+		if (!eff) {
+			return "NO VALID EFFECT";
+		}
+		switch (eff.type) {
+		case PARAMETER:
+			return eff.fname;
+		case VARIABLE:
+			return eff.fname;
+		case PROP:
+			return getFunNameEff(eff.effect);
+		case QUESTIONMARK:
+			return getFunNameEff(eff.effect);
+		case STAR: 
+			return getFunNameEff(eff.effect);
+		case noPROP:
+			return getFunNameEff(eff.effect);
+		default: 
+			return "NO KNOWN EFFECT TYPE: " + JSConTest.utils.valueToString(eff);
+		}		
+	}
+	function getFunNameEffl(effl) {		
+		return getFunNameEff(effl[0]);
+	}
+	
+	function setFunNameEff(eff, fname) {
+		if (!eff) {
+			return "NO VALID EFFECT";
+		}
+		switch (eff.type) {
+		case PARAMETER:
+			eff.fname = fname;
+			break;
+		case VARIABLE:
+			eff.fname = fname;
+			break;
+		case PROP: 
+			setFunNameEff(eff.effect, fname); 
+			break;
+		case QUESTIONMARK: 
+			setFunNameEff(eff.effect, fname);
+			break;
+		case STAR: 
+			setFunNameEff(eff.effect, fname);
+			break;
+		case noPROP: 
+			setFunNameEff(eff.effect, fname);
+			break;
+		}
+	}
+	function setFunNameEffl(effl, fname) {
+		var i;
+		
+		for (i = 0; i < effl.length; i += 1) {
+			setFunNameEff(effl[i], fname);			
+		}
+	}
+	
 	// enableWrapper sorounds f with a wrapper, such that
 	// the resulting function can handle wrappers.
 	// There we have to respect the following two things:
