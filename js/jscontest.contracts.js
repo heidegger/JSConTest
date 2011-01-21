@@ -553,7 +553,7 @@
 																"window", 
 																ctFunction);
 			return mixInEffect(FunctionBaseConstructor(FUNCTION, thisC, pl, rt, false, false),
-												 pl, thisC, fname);
+			                   eff, pl, thisC, fname);
 		};
 		C.FunctionFailSafe = function (pl, rt, eff, fname, handler) {
 			var thisC = new SContract(P.check.isGObject,
