@@ -57,7 +57,7 @@
 	}
 
 	getUid = function () { 
-		return undefined; 
+		return 0; 
 	};
 	getActiveFunName = function () {
 		return undefined;
