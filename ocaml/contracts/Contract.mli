@@ -40,6 +40,8 @@ val create_tgI : (('b,'a,'d,'dd) contract * GenInfo.t) list -> bool option -> ('
 *)
 val create_tgI_fn : (('b,'a,'d,'dd) contract * GenInfo.t) list -> bool option -> string -> ('b,'a,'d,'dd) t
 
+val get_name : ('b,'a,'d,'dd) t -> string option
+
 val is_empty : ('b,'a,'d,'dd) t -> bool
 
 (** similar to [create_t], but also sets the list of analyses *)

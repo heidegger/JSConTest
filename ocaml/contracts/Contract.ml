@@ -45,6 +45,7 @@ let get_clgI { clist=clgI } = clgI
 let get_cl { clist=clgI } = List.map fst clgI
 let get_al { alist=al } = al
 let get_trans { transformation = trans } = trans
+let get_name { function_name = fn } = fn
 
 let rec so_contractl so_b so_a so_d cl = 
   let s = 
@@ -77,7 +78,8 @@ and so_contract so_b so_a so_d = function
       ^(so_al so_a al)
       ^(so_dl so_d dl)
   | CFunction (th,cl,c,_,eff) -> 
-      let effs = Csseff.string_of eff in
+      
+let effs = Csseff.string_of eff in
       let this = match th with
         | None -> ""
         | Some o -> so_contract so_b so_a so_d o

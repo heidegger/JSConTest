@@ -19,8 +19,6 @@ module type TRANS = sig
   type t
   val transform : t 
     -> bool option 
-    -> 'c identifier 
-    -> 'c identifier list 
     -> 'c source_element list 
     -> 'c source_element list
   val before_wrapper : t -> 'c identifier list -> 'c expression -> 'c expression

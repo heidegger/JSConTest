@@ -12,7 +12,7 @@ module TCJS_effects = TCJS.Make(Effects)
 module TCJS_noeffects = TCJS.Make(
   struct 
     type t = unit
-    let transform () _ _ _ e = e
+    let transform () _ e = e
     let after_wrapper _ _ x = x
     let before_wrapper _ _ x = x
   end)

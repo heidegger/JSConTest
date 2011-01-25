@@ -65,7 +65,7 @@ let create_t ~js_namespace ~variable_prefix
   
 
 
-let transform t effects _ _ sel =
+let transform t effects sel =
   let txn = s_to_vare t.js_namespace in
   let assop_binop = function
 
@@ -289,11 +289,11 @@ module Test = struct
         assert_equal
           ~msg:"Program should not have changed"
           p1
-          (transform env (Some true) 1 [] p1);
+          (transform env (Some true) p1);
         assert_equal
           ~msg:"Program should not have changed"
           p2
-          (transform env (Some true) 1 [] p2)
+          (transform env (Some true) p2)
              
         
     in ["",test1]

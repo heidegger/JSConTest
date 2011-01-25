@@ -39,7 +39,7 @@ let create_t ~js_namespace ~variable_prefix
     newCall = newCall;
   }
 
-let transform env effects fname pl sel =
+let transform env effects sel =
   let prefix = i_to_e (s_to_i env.js_namespace) in
 
   let t_o f = function
@@ -418,7 +418,7 @@ module TestEffects = struct
     let na = null_annotation in
     let t1 () =
       let p = [] in
-      let p' = transform env (Some true) (s_to_i "f") [] p in
+      let p' = transform env (Some true) p in
         assert_equal 
           ~msg:"Progtam should not have changed"
           ~printer:(fun sel -> 
@@ -429,7 +429,7 @@ module TestEffects = struct
     let t2 () =
       let e_read = read_prop (s_to_i "x") "a" in
       let p = [g_se_s (g_s_e e_read)] in
-      let p' = transform env (Some true) (s_to_i "f") [] p in
+      let p' = transform env (Some true) p in
       let first_read = 
         do_mcalle_el 
           (i_to_e (s_to_i "PROGLANG.effects"))
@@ -445,7 +445,7 @@ module TestEffects = struct
         
         let e_read2 = Object_access (na,e_read,s_to_i "b") in
         let p2 = [g_se_s (g_s_e e_read2)] in
-        let p2' = transform env (Some true) (s_to_i "f") [] p2 in
+        let p2' = transform env (Some true) p2 in
         let second_read =
           do_mcalle_el
             (i_to_e (s_to_i "PROGLANG.effects"))

@@ -5,8 +5,6 @@ type t
 
 val transform : t 
   -> bool option 
-  -> 'c identifier
-  -> 'c identifier list 
   -> 'c source_element list 
   -> 'c source_element list
 val after_wrapper : t -> 'c identifier list -> 'c expression -> 'c expression

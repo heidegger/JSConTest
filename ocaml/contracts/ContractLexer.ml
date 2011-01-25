@@ -16,7 +16,7 @@ let regexp rid = "id" | "ID" | "Id"
 let regexp robject = "Object" | "object"
 let regexp ror = "or"
 let regexp rlength = "length"
-let regexp rnatural = "natural"
+let regexp rnatural = "natural" | "nat"
 
 let regexp rlparan = "("
 let regexp rrparan = ")"

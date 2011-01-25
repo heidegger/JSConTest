@@ -13,6 +13,7 @@ type a = Analyse.t
 type d = Depend.t
 type tc = (bc,a,d,DependDown.t) Contract.t
 type c = (bc,a,d,DependDown.t) Contract.contract 
+type exp = tc AST.expression
 
 
 type 'a env = {
@@ -29,8 +30,6 @@ module type TRANS = sig
   type t
   val transform : t 
     -> bool option 
-    -> 'c identifier 
-    -> 'c identifier list 
     -> 'c source_element list 
     -> 'c source_element list
   val before_wrapper : t -> 'c identifier list -> 'c expression -> 'c expression
@@ -55,60 +54,41 @@ let so_e = so_expression
      Analyse.string_of 
      Depend.string_of) 
 
+let fopt f = function 
+          | None -> None
+          | Some a -> Some (f a)
+
 module Make(T: TRANS) : S with type t = T.t = struct
   type t = T.t
   
+  type 'c prefix_infos = {
+    ptest: 'c AST.expression;
+    pcontract: 'c AST.expression;
+    ptmp: string;
+  }
+  type infos = {
+    labels: exp;
+    strings: exp;
+    numbers: exp;
+  }
+
+
   (* generate code for contracts *)
-  let generate_top_contract
-      tests_prefix
-      contract_prefix 
-      tmp_prefix 
-      labels_exp strings_exp numbers_exp
-      fname_org
-      gen_tests tc =
-    (* creates code to add Contract and value to the test suite. *)
-    (* print_endline "generate top contract"; *)
-    let add_test e testNumber =
-      let exp = 
-        do_mcalle_el tests_prefix "add" 
-          [c_to_e (s_to_c (so_i fname_org));
-           i_to_e fname_org;
-           e;
-           c_to_e (n_to_c (float_of_int testNumber))]
-      in
-        g_se_s (g_s_e exp)
-    in
-      (* register the contract in the global namespace *)
-    let register e =
-      let new_global_name = Testlib.gen_lib_var_name () in
-      let register_contract =
-        Testlib.set_var tests_prefix new_global_name e
-      in
-        new_global_name,register_contract
-    in
-    let rec generate_contractl : c list -> 
-      (tc expression * tc source_element list) list =
+  let generate_contract : tc prefix_infos -> infos -> Testlib.varname -> c -> exp =
+	fun prefix info fname c ->
+    let rec generate_contractl : c list -> exp list =
       fun cl ->
-        let rl = 
-          List.fold_left 
-            (fun isel c -> 
-               let ic,selc = generate_contract c in
-                 (ic,selc) :: isel)
-            []
-            cl
-        in
-          List.rev rl
+	List.map generate_contract cl
             
-    and generate_contract : c -> tc expression * tc source_element list 
-    = function
+    and generate_contract : c -> exp =
+    function
       | CUnion cl ->
-	let el,sel1 = List.split (generate_contractl cl) in
+	let el = generate_contractl cl in
 	  (do_mcalle_el
-		contract_prefix "Union" 
-		el),
-	List.flatten sel1	
+		prefix.pcontract "Union" 
+		el)
       | BObjectPL (pl,r,al,_) ->
-          let el,sel1 = List.split (generate_contractl (List.map snd pl)) in
+          let el = generate_contractl (List.map snd pl) in
           let ple =
             new_array
               ((List.map2
@@ -126,264 +106,369 @@ module Make(T: TRANS) : S with type t = T.t = struct
                   else []))
               
           in
-            do_mcalle_el contract_prefix "EObject" [ple],List.flatten sel1
+            do_mcalle_el prefix.pcontract "EObject" [ple]
       | BArray c ->
-          let e,sel = generate_contract c in
-            do_mcalle_el contract_prefix "Array" [e],sel
+          let e = generate_contract c in
+            do_mcalle_el prefix.pcontract "Array" [e]
       | CBase (bc,al,depl) -> generate_basecontract al bc
       | CFunction (th,cl,c,dd,effects) -> 
-          let effects_compl = TCssEffJS.js_of_t (ASTUtil.i_to_s fname_org) effects in
-          let el,sel1 = List.split (generate_contractl cl) in
-          let sel1 = List.flatten sel1 in
-          let e,sel2 = generate_contract c in
-          let theo, sel_obj = 
+          let effects_compl = TCssEffJS.js_of_t fname effects in
+          let el = generate_contractl cl in
+          let e = generate_contract c in
+          let theo = 
             match th with
-              | None -> None, []
-              | Some o -> let the,sel = generate_contract o in
-                  Some the, sel
+              | None -> None
+              | Some o -> let the = generate_contract o in
+                  Some the
           in
-          let i,sel3 = 
-            if (DependDown.is_depend dd) then begin
-              let int_of_exp i = float_to_exp (float_of_int i) in
-              let oe = List.map int_of_exp (DependDown.get_order dd) in
-              let iill = DependDown.get_depend dd in
-              let de =
-                List.map
-                  (fun iil ->
-                     new_array
-                       (List.map
-                          (fun d ->
-                             let s = Depend.get_scope d in
-                             let p = Depend.get_param d in
-                               new_array [int_of_exp s;int_of_exp p])
-                          iil))
-                  iill
-              in
-                new_var 
-                  tmp_prefix 
-                  (do_mcalle_el contract_prefix "DFunction" 
-                     [new_array el;e;
-                      new_array oe;
-                      new_array de
-                     ])
-            end else begin
-              match theo with
-                | None -> 
-                    new_var tmp_prefix 
-                      (do_mcalle_el 
-                         contract_prefix "Function" 
-                         [new_array el;   (* Parameter *)
-                          e;              (* return *)
-                          effects_compl;  (* effekte *)
-                          ASTUtil.c_to_e (ASTUtil.s_to_c (ASTUtil.i_to_s fname_org))                (* fname *)
-                         ]
-                      )
-                | Some the -> 
-                    new_var tmp_prefix 
-                      (do_mcalle_el 
-                         contract_prefix "Method" 
-                         [the;            (* this object*)  
-                          (new_array el); (* Parameter *)
-                          e;              (* return *)
-                          effects_compl;   (* effekte *)
-                          ASTUtil.c_to_e (ASTUtil.s_to_c (ASTUtil.i_to_s fname_org))                (* fname *)
-                         ]
-                      )
-            end
-          in
-            i_to_e i, sel1 @ sel2 @ sel_obj @ sel3
+          if (DependDown.is_depend dd) then begin
+            let int_of_exp i = float_to_exp (float_of_int i) in
+            let oe = List.map int_of_exp (DependDown.get_order dd) in
+            let iill = DependDown.get_depend dd in
+            let de =
+              List.map
+                (fun iil ->
+                   new_array
+                     (List.map
+                        (fun d ->
+                           let s = Depend.get_scope d in
+                           let p = Depend.get_param d in
+                             new_array [int_of_exp s;int_of_exp p])
+                        iil))
+                iill
+            in
+              (do_mcalle_el prefix.pcontract "DFunction" 
+                [new_array el;e;
+                 new_array oe;
+                 new_array de
+                ])
+          end else begin
+            match theo with
+              | None -> 
+                    (do_mcalle_el 
+                       prefix.pcontract "Function" 
+                       [new_array el;   (* Parameter *)
+                        e;              (* return *)
+                        effects_compl;  (* effekte *)
+                        Testlib.var_name_to_string_exp fname                (* fname *)
+                       ]
+                    )
+              | Some the -> 
+                    (do_mcalle_el 
+                       prefix.pcontract "Method" 
+                       [the;            (* this object*)  
+                        (new_array el); (* Parameter *)
+                        e;              (* return *)
+                        effects_compl;   (* effekte *)
+                        Testlib.var_name_to_string_exp fname                (* fname *)
+                       ]
+                    )
+          end
+            
 
-    and generate_basecontract : a list -> bc -> 
-    tc expression * tc source_element list 
+    and generate_basecontract : a list -> bc -> exp 
     = fun al bc -> match bc with 
       | BLength ->
-          read_prop_e contract_prefix "Length",[]
+          read_prop_e prefix.pcontract "Length"
       | BNatural ->
-          read_prop_e contract_prefix "Natural",[]
+          read_prop_e prefix.pcontract "Natural"
       | BId ->
-          read_prop_e contract_prefix "Id",[]
+          read_prop_e prefix.pcontract "Id"
       | BTop -> 
-          read_prop_e contract_prefix "Top",[]
+          read_prop_e prefix.pcontract "Top"
       | BVoid | BUndf -> 
-          read_prop_e contract_prefix "Undefined",[]
+          read_prop_e prefix.pcontract "Undefined"
       | BNull -> 
-          read_prop_e contract_prefix "Null",[]
+          read_prop_e prefix.pcontract "Null"
       | BJavaScriptVar jsv ->
           if (List.length al > 0) then begin
             let params = 
               if (List.mem Numbers al) 
-              then [numbers_exp] 
+              then [info.numbers] 
               else []
             in
             let params =
               if (List.mem Strings al) 
-              then strings_exp :: params 
+              then info.strings :: params 
               else params
             in
             let params =
               if (List.mem Labels al)
-              then labels_exp :: params
+              then info.labels :: params
               else params
             in
-              do_fcall (s_to_i jsv) params,[]
+              do_fcall (s_to_i jsv) params
           end else begin
-            i_to_e (s_to_i jsv),[]
+            i_to_e (s_to_i jsv)
           end
       | BJSCContract cc ->
-          do_mcalle_el contract_prefix "load" [s_to_e cc],[]
+          do_mcalle_el prefix.pcontract "load" [s_to_e cc]
       | BSBool b -> 
-          read_prop_e contract_prefix (if b then "True" else "False"),[]
-      | BBool -> read_prop_e contract_prefix "Boolean",[]
+          read_prop_e prefix.pcontract (if b then "True" else "False")
+      | BBool -> read_prop_e prefix.pcontract "Boolean"
       | BInteger ->
           if (List.mem Numbers al) then begin
-            do_mcalle_el contract_prefix "AInteger" [numbers_exp],[]
+            do_mcalle_el prefix.pcontract "AInteger" [info.numbers]
           end else begin
-            read_prop_e contract_prefix "Integer",[]
+            read_prop_e prefix.pcontract "Integer"
           end
       | BSInteger i ->
-          (do_mcalle_el 
-             contract_prefix 
-             "SingletonContract"
-             [int_to_exp i; s_to_e (string_of_int i)],
-           [])
+          do_mcalle_el 
+            prefix.pcontract 
+            "SingletonContract"
+            [int_to_exp i; s_to_e (string_of_int i)]
       | BIInterval (left,right) ->
-          do_mcalle_el contract_prefix "IIntervall" 
-            [int_to_exp left;int_to_exp right], []
-
+          do_mcalle_el prefix.pcontract "IIntervall" 
+            [int_to_exp left;int_to_exp right]
       | BFInterval (f1,f2) -> 
-          do_mcalle_el contract_prefix "NIntervall" 
-            [float_to_exp f1; float_to_exp f2],[]
+          do_mcalle_el prefix.pcontract "NIntervall" 
+            [float_to_exp f1; float_to_exp f2]
       | BSFloat f ->
-          (do_mcalle_el 
-             contract_prefix 
-             "SingletonContract"
-             [float_to_exp f; s_to_e (string_of_float f)],
-           [])
+          do_mcalle_el 
+            prefix.pcontract 
+            "SingletonContract"
+            [float_to_exp f; s_to_e (string_of_float f)]
       | BFloat ->
           if (List.mem Numbers al) then begin
-            do_mcalle_el contract_prefix "ANumber" [numbers_exp],[]
+            do_mcalle_el prefix.pcontract "ANumber" [info.numbers]
           end else begin
-            read_prop_e contract_prefix "Number",[]
+            read_prop_e prefix.pcontract "Number"
           end
-            
       | BString ->
           if (List.mem Strings al) then begin
-            do_mcalle_el contract_prefix "AString" [strings_exp],[]
+            do_mcalle_el prefix.pcontract "AString" [info.strings]
           end else begin
-            read_prop_e contract_prefix "String",[]
+            read_prop_e prefix.pcontract "String"
           end
       | BSString s -> 
-          do_mcalle_el contract_prefix "Singleton" 
-            [c_to_e (s_to_c s)], []
+          do_mcalle_el prefix.pcontract "Singleton" [c_to_e (s_to_c s)]
       | BObject ->
           if (List.mem Labels al) then begin
-            do_mcalle_el contract_prefix "PObject" [labels_exp],[]
+            do_mcalle_el prefix.pcontract "PObject" [info.labels]
           end else begin
-            read_prop_e contract_prefix "Object",[]
+            read_prop_e prefix.pcontract "Object"
           end
+    in      
+      generate_contract c
+
+  let generate_tc : tc prefix_infos -> infos -> Testlib.varname -> tc -> (exp * c * GenInfo.t) list =
+    fun prefix infos fname tc ->
+      List.map
+        (fun (c,gI) -> 
+	  (generate_contract prefix infos fname c, c, gI))
+	(Contract.get_clgI tc)
+	
+  let generate_named_tc : tc prefix_infos -> infos -> Testlib.varname 
+	-> tc -> (exp * c * GenInfo.t * Testlib.varname) list =
+    fun prefix infos fname tc ->
+      let ecgIl = generate_tc prefix infos fname tc in  
+	List.map 
+	  (fun (e,c,gI) -> 
+	    let cn = Testlib.gen_lib_var_name () in
+	    let enamed = Testlib.set_var prefix.ptest cn e in 
+	      enamed,c,gI,cn)
+	  ecgIl
+
+(*  let generate_tests : (bool -> tc prefix_infos -> infos -> exp -> tc -> exp) =
+	fun genTests prefix infos v tc ->
+
+    let add_test fname function_exp contract_exp count_exp =
+      do_mcalle_el prefix.ptest "add" 
+        [c_to_e (s_to_c module_name);
+         function_exp;
+         contract_exp;
+         c_to_e (n_to_c (float_of_int count_exp))]
     in
-      
-    let gen_for_on_c res (e,gen) (c,gI) =
+    let cl = Contract.get_cl tc in
+
+    let ecl = List.map 
+	(fun c -> generate_contract prefix infos -> string -> c, c)
+	cl
+    in *)
+(*    let gen_for_on_c res (e,gen) gI =
       let at = 
-        if (gen_tests && (GenInfo.getTests gI))
-        then [add_test e (GenInfo.getTestNumber gI)]
+        if (genTests && (GenInfo.getTests gI))
+        then (* [add_test e (GenInfo.getTestNumber gI)] *) []
         else []
       in
       let ngn,setV = register e in
         ((ngn,gI),(gen_run_anonym_fun (gen @ at @ [setV]))) :: res
     in
-    let cl = Contract.get_clgI tc in
-    let esel = generate_contractl (List.map fst cl) in
-      List.fold_left2 gen_for_on_c [] esel cl
+      List.fold_left2 gen_for_on_c [] esel (List.map snd cl) *)
         
+  let enableAsserts env fnametest = function
+    | [] -> (fun e -> e, false)
+    | cis -> (fun e -> 
+	let cl = 
+      	  new_array
+	    (List.map 
+		Testlib.var_name_to_string_exp
+		cis)
+	in
+	  do_mcalle_el
+	    (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
+	    "enableAsserts"
+	    [e; cl; Testlib.var_name_to_string_exp fnametest ], true)
 
+  type fun_info = {
+    contract: tc;
+    params: tc AST.identifier list;
+    recursive_name: tc AST.identifier option;
+    body: tc AST.source_element list;
+  }
+  (* transforms the body of a function expression or function statement, returns an
+   * expression representing the function as a function expression. *)
+  let transform_body : T.t env -> fun_info -> (exp -> exp * bool) -> exp = 
+    fun env finfo gen_asserts ->
+    (* - make function expression for toString override with original function body
+        --> org_fcode
+     * - transform body          --> T.transform
+     * - add wrapper             --> T.before_wrapper
+     * - add asserts             --> enableAsserts
+     * - add wrapper             --> T.afert_wrapper
+     * - overrideToString        --> use fcode and org_fcode, call overrideToStringOfFunction
+     *)
+	let org_fcode : exp =  	
+	  Function_expression (null_annotation,
+		Some finfo.contract,
+		finfo.recursive_name,
+		finfo.params,
+		None,
+		finfo.body)
+	in
+	let fcode =
+	  let fbody =  
+      	    T.transform 
+              env.effects_env
+              (Contract.get_trans finfo.contract)
+              finfo.body
+    	  in
+	    Function_expression (null_annotation,
+		Some finfo.contract,
+		finfo.recursive_name,
+		finfo.params,
+		None,
+		fbody)
+	in
+	let fcode = T.before_wrapper env.effects_env finfo.params fcode in
+	let fcode, asserts = gen_asserts fcode in
+    	let fcode = T.after_wrapper env.effects_env finfo.params fcode in
+      	  do_mcalle_el
+            (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
+            "overrideToStringOfFunction" 
+            [fcode; 
+             org_fcode;
+             c_to_e (b_to_c asserts)
+            ]
 
-  let gen_and_introduce env 
-      (* tests asserts effects css_effects *)
-      labels strings numbers 
-      (* trans_prefix test_prefix tmp_prefix *)
-      a c fnametest fnameloc pl fbody fcode =
-    let fname_own = 
-      match extend_i fnameloc "_own" with
-        | Some s -> s
-        | None -> failwith "This should never happen"
-    in
+  let create_code : (T.t env -> infos -> Testlib.varname -> fun_info -> exp) = 
+    (* TODO:
+     * - transform function body --> transform_body
+     * - generate contract code  --> generate_tc
+     * - generate test code      --> add_to_test_suite 
+     *)
+    fun env info fnametest finfo ->
+
+	(* the prefixes needed by generate_tc *)
+	let prefix = { ptest= read_prop (s_to_i env.js_namespace) env.js_test_namespace;  
+		       pcontract = read_prop (s_to_i env.js_namespace) env.js_contract_namespace;
+	       	       ptmp = env.variable_prefix;
+	     	     } 
+	in
+
+	(* the expressions for the contracts together with generate Infos and the contracts itself. *)
+	(* It also creates the code, that registers the contracts in the test suite namespace *)
+    	let e_c_gI_name_list = generate_named_tc prefix info fnametest finfo.contract in
+	let assert_contract_names =
+	  if (env.asserts) then
+	    List.map
+	      (fun (_,_,_,name) -> name)
+	        (List.filter
+	          (fun (_,_,gI,_) -> GenInfo.getAsserts gI)
+	          (* TODO: only let contracts pass, for which asserts are enabled *)
+	          e_c_gI_name_list)
+	  else 
+	    []
+	in
+	
+	(* the new expression that represents the transformed function. To decide if the enableAssert
+	 * part is needed, we need the list of contract names, for which assersts should be generatd. 
+	 * If this is empty, no asserts are generated. If it contains at least one element, the contract
+	 * names are passert to enableAssert, and the overrideToStringOfFunction method gets a true as
+	 * last parameter.
+	 *)	
+	let fcode = transform_body env finfo 
+	  (enableAsserts env fnametest assert_contract_names)
+	in
+	(* register function under its name in test suite *)
+	let fcode = 
+	  Testlib.set_var
+	    prefix.ptest 
+	    fnametest
+	    fcode
+	in
+	(* to add the contracts, for which test cases should be generated, to the library, we 
+	 * split the list of contracts into two parts. The first contains all contracts, for which
+	 * test cases should be generated. The second part just creates the contracts and registers them
+	 * under their name in the library. This is done by passing for parameters to 
+	 * addContracts(module, value, ccdlist), even if the method just ignores the 4th parameter. *)
+	let e_to_test_list, e_no_test_list = 
+	  let tmp1, tmp2 = 
+	    (List.partition
+	      (fun (_,_,gI,_) -> GenInfo.getTests gI)
+	      e_c_gI_name_list)
+          in
+	    List.map 
+	      (fun (e,_,gI,_) -> new_object
+		  ["contract",e;
+		   "count", int_to_exp (GenInfo.getTestNumber gI)]) 
+	      tmp1, 
+	    List.map (fun (e,_,_,_) -> e) tmp2
+	in
+
+	(* Adds the contract,value pairs to the library. *)
+	do_mcalle_el
+            (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
+	    "addContracts"
+	    [Testlib.var_name_to_string_exp fnametest;
+	     fcode;
+	     new_array e_to_test_list;
+	     new_array e_no_test_list]
+
+  let create_infos labels strings numbers =
     let to_array f l = new_array (List.map (fun x -> c_to_e (f x)) l) in
     let numbers_exp = to_array n_to_c numbers in
     let strings_exp = to_array s_to_c strings in
     let labels_exp = to_array s_to_c labels in
-      (* create test code *)
-      (* print_endline (
-         (Contract.string_of 
-         BaseContract.string_of 
-         Analyse.string_of 
-         Depend.string_of)
-         c); *)
-    let contracts = generate_top_contract
-      (read_prop (s_to_i env.js_namespace) env.js_test_namespace) 
-      (read_prop (s_to_i env.js_namespace) env.js_contract_namespace) 
-      env.variable_prefix
-      labels_exp strings_exp numbers_exp
-      fnametest env.tests c 
-    in
-    let cis = List.map (fun ((i,gi),_) -> (i,gi)) contracts in
-    let test_code = (List.map snd contracts) in
-      (* print_endline (string_of_int (List.length test_code)); *)
-      (* transform the function body *)
-    let fbody = 
-      T.transform 
-        env.effects_env
-        (Contract.get_trans c)
-        fname_own
-        pl
-        fbody
-    in
+      { numbers= numbers_exp; strings= strings_exp; labels= labels_exp }    
 
-    (* let toString =
-      [gen_run_anonym_fun 
-         [fcode;
-          (g_se_s 
-             (g_s_e 
-                (do_mcalle_el
-                   (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
-                   "overrideToStringOfFunction" 
-                   [i_to_e fname_own;i_to_e fname_org]
-                )))]]
-    in *)
-    let funcode = [Function_declaration (a,c,fname_own,pl,None,fbody)] in
-    let return_fun = T.before_wrapper env.effects_env pl (i_to_e fname_own) in
-    let return_fun = if (env.asserts && List.length cis > 0) then 
-      let cl = 
-        new_array
-          (List.map 
-             Testlib.get_var_name
-             (List.map fst 
-                (List.filter 
-                   (fun (cs,gI) -> GenInfo.getAsserts gI) 
-                   cis)))
-      in
-        do_mcalle_el
-          (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
-          "enableAsserts"
-          [return_fun; cl; s_to_e (i_to_s fnameloc) ]
-    else
-      return_fun
-    in
-    let return_fun = T.after_wrapper env.effects_env pl return_fun in
-    let return_fun = 
-      do_mcalle_el
-        (read_prop (s_to_i env.js_namespace) env.js_test_namespace)
-        "overrideToStringOfFunction" 
-        [return_fun; 
-         g_e_sel [fcode; g_return (i_to_e fnameloc)];
-         c_to_e (b_to_c (env.asserts && List.length cis > 0))
-        ]
-    in
-      [AST.VarDecl 
-         (fnametest,
-          (g_e_sel (funcode @ [g_return return_fun])))
-      ] @ test_code          
+  (* creates a name from an expression. Used to build the default 
+   * function of get_test_name. *)
+  let rec pathname = function
+    | Variable (an,i) -> Some (so_i i)
+    | Object_access (an,e,i) -> fopt (fun s -> s ^ "_" ^ so_i i) (pathname e)
+    | Array_access (an,e1,e2) ->
+      begin
+	match pathname e1,pathname e2 with
+          | None, _ | _, None -> None
+          | Some s1, Some s2 -> Some (s1 ^ "_" ^ s2)
+      end
+    | e -> None
 
+  (* creates the name, under which the function is stored inside the test library scope 
+   * First the function name itself is considerd. If this does not exists, 
+   * the contract is consulted for a name. If both does not have a name, the
+   * function default is called. Usually it first tries to generate a new name from 
+   * the right hand side of an assignment, if the function is the left hand side of an 
+   * assignment, or it completely generates a new unique name. *)
+  let get_test_name fn tc default =
+	match fn with
+	  | None -> begin
+	      match Contract.get_name tc with
+                | None -> default ()
+                | Some s -> s
+	    end
+	  | Some i -> i	
 
       
   let generate_tests env program = 
@@ -444,22 +529,20 @@ module Make(T: TRANS) : S with type t = T.t = struct
     in
     let transform_se = function
       | Function_declaration (a,c,n,pl,_,sel) as forg ->
-          let mod_fd =
-            gen_and_introduce 
-              env            
-              (get_labels ())
-              (get_strings ())
-              (get_numbers ())
-              a
-              c
-              n
-              n
-              pl
-              sel
-              forg
-          in
-            close_scope ();
-            mod_fd
+          let fname = ASTUtil.i_to_s n in
+          let info = create_infos (get_labels ()) (get_strings ()) (get_numbers ()) in
+	  let ftestname = (Testlib.gen_fun_var_name fname) in
+	  let finfo = {
+		contract= c;
+		params= pl;
+		recursive_name= Some n;
+		body=sel; }
+	  in
+	  let mod_fd = create_code env info ftestname finfo in
+	  let _ = close_scope () in
+	    [AST.VarDecl 
+         	(s_to_i fname,
+          	 mod_fd)]
       | se -> [se]
     in
     let transform_e = function
@@ -471,23 +554,15 @@ module Make(T: TRANS) : S with type t = T.t = struct
           end;
           e
       | Assign (an,e1,aop,Function_expression (a,Some c,no,pl,lvo,sel)) as e-> 
-          let rec pathname exp = match exp with
-               | Variable (an,i) -> Some (so_i i)
-               | Object_access (an,e,i) -> 
-                   begin
-                     match pathname e with
-                      | Some s -> Some (s ^ "_" ^ so_i i)
-                      | None -> None
-                   end
-               | Array_access (an,e1,e2) ->
-                   begin  
-                    match pathname e1 with
-                      | Some s -> Some (s ^ "_" ^ so_e 0 exp)
-                      | None -> None
-                   end
-               | e -> None
-          in begin 
-           match pathname e1 with     
+	e
+	(* TODO *)
+(*	let fopt f = function 
+          | None -> None
+          | Some a -> Some (f a)
+        in
+        in 
+	  begin 
+            match pathname e1 with     
               | Some ntest -> begin
                            let nloc = match no with
                               | Some n -> n
@@ -496,13 +571,10 @@ module Make(T: TRANS) : S with type t = T.t = struct
                            let mod_fd =
                                gen_and_introduce 
                                    env            
-                                   (get_labels ())
-                                   (get_strings ())
-                                   (get_numbers ())
-                                   a
+			           (create_infos (get_labels ()) (get_strings ()) (get_numbers ()))
                                    c
-                                   (s_to_i ntest)
-                                   nloc
+                                   ntest (* test suite name *)
+                                   nloc (* name for recursive calls *)
                                    pl
                                    sel
                                    (Function_declaration (a,c,nloc,pl,lvo,sel))
@@ -512,7 +584,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
                               Assign (an,e1,aop, newfun)   
                          end
               | None -> e          
-          end
+          end *)
       | e -> e
     in            
       AST.visit

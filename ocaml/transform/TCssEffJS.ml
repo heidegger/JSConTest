@@ -16,19 +16,19 @@ let js_of_effect fname =
         ASTUtil.new_object 
           [("type", ASTUtil.int_to_exp pARAMETER_TYPE); 
            ("number", ASTUtil.int_to_exp i);
-           ("fname", ASTUtil.c_to_e (ASTUtil.s_to_c fname));
+           ("fname", Testlib.var_name_to_string_exp fname);
           ]
     | This -> 
           ASTUtil.new_object
             [("type", ASTUtil.int_to_exp vAR_TYPE);
              ("name", ASTUtil.c_to_e (ASTUtil.s_to_c "this"));
-             ("fname", ASTUtil.c_to_e (ASTUtil.s_to_c fname))
+             ("fname", Testlib.var_name_to_string_exp fname)
             ]
     | Var s ->
         ASTUtil.new_object
           [("type", ASTUtil.int_to_exp vAR_TYPE);
            ("name", ASTUtil.c_to_e (ASTUtil.s_to_c s));
-           ("fname", ASTUtil.c_to_e (ASTUtil.s_to_c fname));
+           ("fname", Testlib.var_name_to_string_exp fname);
           ]
     | Prop (e,s) -> 
         ASTUtil.new_object
@@ -85,12 +85,13 @@ module Test = struct
   let init () =
     let t2 () = 
       let t = Csseff.create_effect_list [Parameter 1] in
-      let te = js_of_t "f" t in
+      let fname = Testlib.gen_fun_var_name "f" in
+      let te = js_of_t fname t in
       let te_exp = ASTUtil.new_array 
         [ASTUtil.new_object 
            ["type",ASTUtil.int_to_exp 1;
             "number", ASTUtil.int_to_exp 1;
-            "fname", ASTUtil.s_to_e "f"]]
+            "fname", Testlib.var_name_to_string_exp fname]]
       in
         assert_equal
           ~printer:(AST.string_of_expression (fun () -> ""))
@@ -99,12 +100,13 @@ module Test = struct
     in
     let t3 () = 
       let t = Csseff.create_effect_list [Prop (Parameter 1,"a")] in
-      let te = js_of_t "f" t in
+      let fname = Testlib.gen_fun_var_name "f" in
+      let te = js_of_t fname t in
       let base_exp = 
         ASTUtil.new_object 
           ["type",ASTUtil.int_to_exp 1;
            "number", ASTUtil.int_to_exp 1;
-           "fname", ASTUtil.s_to_e "f"]
+           "fname", Testlib.var_name_to_string_exp fname]
       in
       let te_exp = ASTUtil.new_array 
         [ASTUtil.new_object
@@ -120,12 +122,13 @@ module Test = struct
     in
     let t4 () = 
       let t = Csseff.create_effect_list [Star (Parameter 1)] in
-      let te = js_of_t "g" t in
+      let fname = Testlib.gen_fun_var_name "h" in
+      let te = js_of_t fname t in
       let base_exp = 
         ASTUtil.new_object 
           ["type",ASTUtil.int_to_exp 1;
            "number", ASTUtil.int_to_exp 1;
-           "fname", ASTUtil.s_to_e "g"]
+           "fname", Testlib.var_name_to_string_exp fname]
       in
       let te_exp = ASTUtil.new_array 
         [ASTUtil.new_object
@@ -141,13 +144,15 @@ module Test = struct
 
     let t5 () = 
       let t = Csseff.create_effect_list 
-        [Prop (Question (Parameter 1), "cde")] in
-      let te = js_of_t "h" t in
+        [Prop (Question (Parameter 1), "cde")] 
+      in
+      let fname = Testlib.gen_fun_var_name "h" in
+      let te = js_of_t fname t in
       let base_exp = 
         ASTUtil.new_object 
           ["type",ASTUtil.int_to_exp 1;
            "number", ASTUtil.int_to_exp 1;
-           "fname", ASTUtil.s_to_e "h"]
+           "fname", Testlib.var_name_to_string_exp fname]
       in
       let te_exp = ASTUtil.new_array 
         [ASTUtil.new_object
@@ -167,7 +172,8 @@ module Test = struct
 
     let t6 () =
       let t = Csseff.create_all () in
-      let te = js_of_t "h" t in
+      let fname = Testlib.gen_fun_var_name "h" in
+      let te = js_of_t fname t in
       let te_exp = ASTUtil.new_object 
         ["type", ASTUtil.int_to_exp 6] 
       in
