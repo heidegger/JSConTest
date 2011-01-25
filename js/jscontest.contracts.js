@@ -587,7 +587,7 @@
 																								 new NTC(thisC), 
 																								 pl,
 																								 rt),
-												 eff, thisC, mname);
+												 eff, pl, thisC, mname);
 		};
 		C.Constructor = function (pl, rt, eff, mname) {
 			// TODO

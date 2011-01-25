@@ -418,10 +418,10 @@
       v = value;
     if (P.check.isSArray(ccdlist)) {
       for (; i < ccdlist.length; ++i) {
-        v = add(module, v, ccdlist[i].contract, ccdlist[i].count, ccdlist[i].data);
+        add(module, v, ccdlist[i].contract, ccdlist[i].count, ccdlist[i].data);
       }
     }
-    return v;
+    return value;
   }
 
 	function collectCounterExample(ce) {

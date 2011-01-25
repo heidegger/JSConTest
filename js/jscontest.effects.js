@@ -668,6 +668,9 @@
 		}		
 	}
 	function getFunNameEffl(effl) {		
+		if (!effl || effl.length < 1) {
+			return getActiveFunName();
+		}
 		return getFunNameEff(effl[0]);
 	}
 	
