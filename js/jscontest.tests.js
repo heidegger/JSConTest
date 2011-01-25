@@ -411,7 +411,18 @@
 			data : data
 		});
 		added_tests += 1;
+        return value;
 	}
+  function addContracts(module, value, ccdlist) {
+    var i = 0,
+      v = value;
+    if (P.check.isSArray(ccdlist)) {
+      for (; i < ccdlist.length; ++i) {
+        v = add(module, v, ccdlist[i].contract, ccdlist[i].count, ccdlist[i].data);
+      }
+    }
+    return v;
+  }
 
 	function collectCounterExample(ce) {
 		var cem, i;
@@ -434,6 +445,7 @@
 		var vars = {};
 		T.setVar = function (vname, value) {
 			vars[vname] = value;
+            return value;
 		};
 		T.getVar = function (vname) {
 			return vars[vname];
@@ -443,6 +455,7 @@
 				vars[vname] = [];
 			}
 			vars[vname].push(value);
+            return value;
 		};
 		T.popVar = function (vname) {
 			if (P.check.isSArray(vars[vname])) {
@@ -527,7 +540,7 @@
 		return assertParamsReal(clreal, pl, str, fname);
 	}
 	
-	function enableAsserts(f, cl, fname, forg) {
+	function enableAsserts(f, cl, fname) {
 		return function () {
 			var rc, result;
 			rc = assertParams.call(this, cl, arguments, f, fname);
@@ -554,6 +567,7 @@
 	T.run = run;
 	T.runLazy = runLazy;
 	T.add = add;
+	T.addContracts = addContracts;
 	T.setStepCount = function (ns) {
 		testCountPerStep = ns;
 	};
