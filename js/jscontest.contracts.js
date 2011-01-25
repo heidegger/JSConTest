@@ -2,7 +2,7 @@
 /* author: Phillip Heidegger */
 
 "use strict";
-(function (P) {
+(function (JSConTest) {
 	var C = {},	
 	/* Contract Types */
 	/*
@@ -28,10 +28,10 @@
 		UnionAddSimplRule,
 		cc = {};
 	
-	P.contracts = C;
+	JSConTest.contracts = C;
 
 	function makeContractType(ct) {
-		if (P.check.isInt(ct) && (ct >= 0) && (ct < 7)) {
+		if (JSConTest.check.isInt(ct) && (ct >= 0) && (ct < 7)) {
 			return ct;
 		} else {
 			return 0;
@@ -39,8 +39,8 @@
 	}
 	function fire(msg) {
 		var slice = Array.prototype.slice, args = slice.apply(arguments);
-		if (P.events && P.events.fire && (typeof P.events.fire === 'function')) {
-			P.events.fire.apply(this, args);
+		if (JSConTest.events && JSConTest.events.fire && (typeof JSConTest.events.fire === 'function')) {
+			JSConTest.events.fire.apply(this, args);
 		}
 	}
 
@@ -59,7 +59,7 @@
 			cdes = p.initcdes,	
 			ce;
 		
-		if (P.check.isFunction(p.generate)) {
+		if (JSConTest.check.isFunction(p.generate)) {
 			contract.gen = function () {
 				var g = p.generate.apply(contract, arguments),
 					args = Array.prototype.slice.call(arguments);
@@ -77,14 +77,14 @@
 				return p.generate; 
 			};
 		}
-		if (P.check.isFunction(p.check)) {
-			contract.check = P.utils.bind(p.check, contract);
+		if (JSConTest.check.isFunction(p.check)) {
+			contract.check = JSConTest.utils.bind(p.check, contract);
 		} else {
 			contract.check = function (v) { 
 				return v === p.check; 
 			};
 		}
-		//contract.simpl = P.utils.bind(sv, contract);
+		//contract.simpl = JSConTest.utils.bind(sv, contract);
 		contract.failToString = function (v) {
 			var r = ("Contract '" + contract.getcdes() +
 							 "' is <em>not</em> fulfilled by the value: " + v + ".");
@@ -95,13 +95,13 @@
 							".";
 			return r;
 		};
-		contract.getcdes = P.utils.getFun(p.getcdes, function () {
+		contract.getcdes = JSConTest.utils.getFun(p.getcdes, function () {
 			return cdes;
 		});
-		contract.setcdes = P.utils.getFun(p.setcdes, function (s) {
+		contract.setcdes = JSConTest.utils.getFun(p.setcdes, function (s) {
 			cdes = s;
 		});
-		contract.genNeeded = P.utils.getFun(p.genNeeded, function (v) {
+		contract.genNeeded = JSConTest.utils.getFun(p.genNeeded, function (v) {
 			return false;
 		});
 		contract.getCExp = function () {
@@ -140,7 +140,7 @@
 			genNeeded : genNeeded,
 			initcdes : cdes
 		};
-		if (P.check.isSArray(pl)) {
+		if (JSConTest.check.isSArray(pl)) {
 			return Contract.call(this, p);
 		} else {
 			throw "PContract needs array as parameter";
@@ -159,14 +159,14 @@
 	/** ******** Null, Undefined, Boolean, String, Number ********* */
 	C.Top = new SContract(function () {
 		return true;
-	}, P.gen.genTop, "top");
+	}, JSConTest.gen.genTop, "top");
 	C.TopOUndef = new SContract(function (v) {
 		return (v !== undefined);
-	}, P.gen.genTopOUndef, "utop");
+	}, JSConTest.gen.genTopOUndef, "utop");
 	C.PTop = function (a, p) {
 		return new PContract(ctNoType, function () {
 			return true;
-		}, a, p, P.gen.genTop, "top");
+		}, a, p, JSConTest.gen.genTop, "top");
 	};
 	C.SingletonContract = function (v, s) {
 		return new SingletonContract(v, s);
@@ -176,32 +176,32 @@
 	};
 	C.Null = new SingletonContract(null, "null");
 	C.Undefined = new SingletonContract(undefined, "undefined");
-	C.Boolean = new SContract(P.check.isBoolean, P.gen.genBoolean, "boolean",
+	C.Boolean = new SContract(JSConTest.check.isBoolean, JSConTest.gen.genBoolean, "boolean",
 														ctBasic);
 	C.True = new SingletonContract(true, 'true');
 	C.False = new SingletonContract(false, 'false');
-	C.String = new SContract(P.check.isString, P.gen.genString, 'string', ctBasic);
-	C.Number = new SContract(P.check.isNumber, P.gen.genNumber, "number", ctBasic);
-	C.Natural = new SContract(P.check.isPInt, P.gen.genPInt, "natural", ctBasic);
-	C.Length = new SContract(P.check.isPInt, P.gen.genLength, "length", ctBasic);
-	C.Integer = new SContract(P.check.isInt, P.gen.genInt, "integer", ctBasic);
+	C.String = new SContract(JSConTest.check.isString, JSConTest.gen.genString, 'string', ctBasic);
+	C.Number = new SContract(JSConTest.check.isNumber, JSConTest.gen.genNumber, "number", ctBasic);
+	C.Natural = new SContract(JSConTest.check.isPInt, JSConTest.gen.genPInt, "natural", ctBasic);
+	C.Length = new SContract(JSConTest.check.isPInt, JSConTest.gen.genLength, "length", ctBasic);
+	C.Integer = new SContract(JSConTest.check.isInt, JSConTest.gen.genInt, "integer", ctBasic);
 	C.PInteger = function (iA, p) {
-		return new PContract(ctBasic, P.check.isInt, iA, p, P.gen.genInt,
-												 "PInteger{" + P.utils.valueToString(iA) + "}");
+		return new PContract(ctBasic, JSConTest.check.isInt, iA, p, JSConTest.gen.genInt,
+												 "PInteger{" + JSConTest.utils.valueToString(iA) + "}");
 	};
 	C.AInteger = function (iList, fList) {
 		if (!iList) {
 			iList = [ 0, 1 ];
 		}
-		iList = P.utils.sadd(0, iList);
-		iList = P.utils.sadd(1, iList);
+		iList = JSConTest.utils.sadd(0, iList);
+		iList = JSConTest.utils.sadd(1, iList);
 		if (!fList) {
 			fList = C.ABasicFuns;
 		}
-		return new SContract(P.check.isInt, function () {
-			return P.gen.genAInt(iList, fList);
-		}, "AInteger{" + P.utils.valueToString(iList) + "; " +
-			 P.utils.valueToString(fList) + "}", ctBasic);
+		return new SContract(JSConTest.check.isInt, function () {
+			return JSConTest.gen.genAInt(iList, fList);
+		}, "AInteger{" + JSConTest.utils.valueToString(iList) + "; " +
+			 JSConTest.utils.valueToString(fList) + "}", ctBasic);
 	};
 	C.Id = new SContract(function (x, y) {
 		return x === y;
@@ -242,11 +242,11 @@
 		}
 	} ];
 	C.IIntervall = function (low, high) {
-		if (P.check.isInt(low) && P.check.isInt(high)) {
+		if (JSConTest.check.isInt(low) && JSConTest.check.isInt(high)) {
 			var o = new SContract(function (v) {
-				return P.check.isIInt(low, high, v);
+				return JSConTest.check.isIInt(low, high, v);
 			}, function () {
-				return P.gen.genIInt(low, high);
+				return JSConTest.gen.genIInt(low, high);
 			}, "[" + low + "..." + high + "]", ctBasic);
 			return o;
 		} else {
@@ -258,11 +258,11 @@
 		}
 	};
 	C.NIntervall = function (low, high) {
-		if (P.check.isNumber(low) && P.check.isNumber(high)) {
+		if (JSConTest.check.isNumber(low) && JSConTest.check.isNumber(high)) {
 			var o = new SContract(function (v) {
-				return P.check.isNInt(low, high, v);
+				return JSConTest.check.isNInt(low, high, v);
 			}, function () {
-				return P.gen.genNInt(low, high);
+				return JSConTest.gen.genNInt(low, high);
 			}, "[/" + low + "..." + high + "]", ctBasic);
 			return o;
 		} else {
@@ -272,13 +272,13 @@
 
 	/** ******** Objects ********* */
 	// Object without additional informations
-	C.Object = new SContract(P.check.isObject, P.gen.genObject, "object",
+	C.Object = new SContract(JSConTest.check.isObject, JSConTest.gen.genObject, "object",
 													 ctObject);
 	/*
 	 * Object with properties, that are simple. Property names only contains
 	 * characters and digits.
 	 */
-	C.SObject = new SContract(P.check.isObject, P.gen.genSObject, "sobject",
+	C.SObject = new SContract(JSConTest.check.isObject, JSConTest.gen.genSObject, "sobject",
 														ctObject);
 	/*
 	 * Object like "Object", but with additional information about properties that
@@ -288,9 +288,9 @@
 	 * digits is generated.
 	 */
 	C.PObject = function (pl, p) {
-		return new SContract(P.check.isObject, function () {
-			return P.gen.genPObject(pl, p);
-		}, "pobject{" + P.utils.valueToString(pl) + "}", ctObject);
+		return new SContract(JSConTest.check.isObject, function () {
+			return JSConTest.gen.genPObject(pl, p);
+		}, "pobject{" + JSConTest.utils.valueToString(pl) + "}", ctObject);
 	};
 	/*
 	 * Objects with an exact property list. pl is a list of objects which contains
@@ -304,10 +304,10 @@
 		var p = {
 			contractType : ctObject,
 			check : function (v) {
-				return P.check.isObject(v, pl);
+				return JSConTest.check.isObject(v, pl);
 			},
 			generate : function () {
-				return P.gen.genObject(pl);
+				return JSConTest.gen.genObject(pl);
 			},
 			getcdes : function () {
 				var s = "{", 
@@ -324,12 +324,12 @@
 							if (p.random) {
 								random = true;
 							} else {
-								pls.push(P.utils.valueToString(p));
+								pls.push(JSConTest.utils.valueToString(p));
 							}
 						}						
 					}
 				}
-				s += P.utils.concat(pls, ",", "", "", false);
+				s += JSConTest.utils.concat(pls, ",", "", "", false);
 				if (random) {
 					s += ",...";
 				}
@@ -338,17 +338,17 @@
 		};
 		return new Contract(p);
 	};
-	C.EmptyObject = new SContract(P.check.isEmptyObject, { }, "{ }", ctObject);		
+	C.EmptyObject = new SContract(JSConTest.check.isEmptyObject, { }, "{ }", ctObject);		
 	
 	/* An Array. t is the type of the elements. */
 	C.Array = function (t) {
 		var p = {
 			contractType : ctArray,
 			check : function (v) {
-				return P.check.isArray(v, t);
+				return JSConTest.check.isArray(v, t);
 			},
 			generate : function () {
-				return P.gen.genArray(t);
+				return JSConTest.gen.genArray(t);
 			},
 			getcdes : function () {
 				return "array[" + t.getcdes() + "]";
@@ -447,7 +447,7 @@
 					return true;
 				}
 				/* create and store counterexample */
-				this.registerCExp(new P.cexp.CExp({
+				this.registerCExp(new JSConTest.cexp.CExp({
 					value: v,
 					contract: this,
 					t: t,
@@ -484,10 +484,10 @@
 			};
 
 			
-			if (P.check.isFunction(rh)) {
-				runcheck = (P.check.isFunction(failSafe)) ? runFailSafeRh : runRh;
+			if (JSConTest.check.isFunction(rh)) {
+				runcheck = (JSConTest.check.isFunction(failSafe)) ? runFailSafeRh : runRh;
 			} else {
-				runcheck = (P.check.isFunction(failSafe)) ? runFailSafe : run;
+				runcheck = (JSConTest.check.isFunction(failSafe)) ? runFailSafe : run;
 			}
 			for (i = 0; i < paramC.length; i += 1) {
 				if (i > 0) {
@@ -511,7 +511,7 @@
 				generate : gen,
 				getcdes : getcdes,
 				setcdes : setcdes,
-				genNeeded : P.check.isFunction
+				genNeeded : JSConTest.check.isFunction
 			});
 			
 			contract.checkParams = checkParams;
@@ -523,19 +523,21 @@
 			return contract;
 		}
 		
-		function mixInEffect(contract, eff, pl, thisC, fname) {
+		function mixInEffect(contract, effl_maybe_unpure, pl, thisC, fname) {
+			var effl = JSConTest.effects.toPure(effl_maybe_unpure, fname);
+			
 			function registerEffects() {
-				if (P.tests.callback.registerEffect) {
+				if (JSConTest.tests.callback.registerEffect) {
 					// call registerEffect, which will return a uid
 					// create new object, that has a method called
 					// unregisterEffect, that is able to call
 					// the callback function unregisterEffect with
 					// the uid gernerated by registerEffect.
-					var uid = P.tests.callback.registerEffect(eff, pl, thisC, fname);
-					if (P.tests.callback.unregisterEffect) {
+					var uid = JSConTest.tests.callback.registerEffect(effl, pl, thisC, fname);
+					if (JSConTest.tests.callback.unregisterEffect) {
 						return {
 							unregisterEffect : function () {
-								P.tests.callback.unregisterEffect(uid);
+								JSConTest.tests.callback.unregisterEffect(uid);
 								return contract;
 							}
 						};
@@ -548,16 +550,16 @@
 		}
 		
 		C.Function = function (pl, rt, eff, fname) {
-			var thisC = new SContract(P.check.isGObject,
-																P.utils.gObj, 
+			var thisC = new SContract(JSConTest.check.isGObject,
+																JSConTest.utils.gObj, 
 																"window", 
 																ctFunction);
 			return mixInEffect(FunctionBaseConstructor(FUNCTION, thisC, pl, rt, false, false),
 			                   eff, pl, thisC, fname);
 		};
 		C.FunctionFailSafe = function (pl, rt, eff, fname, handler) {
-			var thisC = new SContract(P.check.isGObject,
-																P.utils.gObj, 
+			var thisC = new SContract(JSConTest.check.isGObject,
+																JSConTest.utils.gObj, 
 																"window", 
 																ctFunction);
 			return mixInEffect(FunctionBaseConstructor(FUNCTION, thisC, pl, rt, false, handler),
@@ -568,14 +570,14 @@
 			// undefined (ES5/Strict) is not allowed for this.
 			function NTC(org) {
 				var p,
-					check = P.utils.condBind(org.check, org, this);
+					check = JSConTest.utils.condBind(org.check, org, this);
 				for (p in org) {
 					if (org.hasOwnProperty(p)) {
-						this[p] = P.utils.condBind(org[p], org, this);						
+						this[p] = JSConTest.utils.condBind(org[p], org, this);						
 					}
 				}
 				this.check = function (v) {
-					if (P.check.isGObject(this)) {
+					if (JSConTest.check.isGObject(this)) {
 						return false;
 					} else {
 						return check.apply(this, arguments);
@@ -680,12 +682,12 @@
 
 					dvalues.setValue(p, value);
 				}
-				lcvs = P.utils.valueToString(pvl);
+				lcvs = JSConTest.utils.valueToString(pvl);
 				res = v.apply(null, pvl);
 				cres = rt.check(res);
 				if (!cres) {
 					/* collect counterexample */
-					this.registerCExp(new P.cexp.CExp(v, this, pvl, res));
+					this.registerCExp(new JSConTest.cexp.CExp(v, this, pvl, res));
 					return false;
 				} else {
 					return true;
@@ -703,10 +705,10 @@
 				generate : {},
 				getcdes : getcdes,
 				setcdes : setcdes,
-				genNeeded : P.check.isFunction
+				genNeeded : JSConTest.check.isFunction
 			};
 			// var c = new Contract(ctFunction,check,{},getcdes,setcdes,
-			// P.check.isFunction);
+			// JSConTest.check.isFunction);
 			c = new Contract(p);
 			c.checkParams = function (plv) {
 				var i, v, c;
@@ -739,7 +741,7 @@
 		var simplRules = [];
 		
 		function addSimpl(sr) {
-			if (P.check.isFunction(sr)) {
+			if (JSConTest.check.isFunction(sr)) {
 				simplRules.push(sr);
 			}
 		}
@@ -756,7 +758,7 @@
 						ce1 = c1.getCExp();
 						ce2 = c2.getCExp();
 						if (ce1 && ce2) {
-							this.registerCExp(new P.cexp.CExpUnion(this, ce1, ce2));
+							this.registerCExp(new JSConTest.cexp.CExpUnion(this, ce1, ce2));
 						} else {
 							if (ce1) {
 								this.registerCExp(ce1);
