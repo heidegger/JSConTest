@@ -21,6 +21,7 @@
 		noPROP = 7,
 		regExProp = 8,
 		regExVar = 9,
+		PURE = 10,
 		
 		globalObj = (function () { 
 			return this; 
@@ -99,6 +100,7 @@
 	// our task here is, to check if a read access is valid here
 	function isAllowedEff(access_path, eff) {
 		switch (eff.type) {
+		case PURE: return false;
 		case PARAMETER:
 			return ((access_path.type === PARAMETER) && 
 							(eff.number === access_path.number));
@@ -613,6 +615,7 @@
 			} else {
 				return eff.name;				
 			}
+			break;
 		case PROP:
 			return effToString(eff.effect) + "." + JSON.stringify(eff.property);
 		case QUESTIONMARK:
@@ -621,6 +624,8 @@
 			return effToString(eff.effect) + ".*";
 		case noPROP:
 			return effToString(eff.effect) + ".@";
+		case PURE:
+			return eff.fname + "@";
 		default: 
 			return "NO KNOWN EFFECT TYPE: " + JSConTest.utils.valueToString(eff);
 		}
@@ -654,6 +659,8 @@
 		case PARAMETER:
 			return eff.fname;
 		case VARIABLE:
+			return eff.fname;
+		case PURE: 
 			return eff.fname;
 		case PROP:
 			return getFunNameEff(eff.effect);
@@ -696,6 +703,9 @@
 			break;
 		case noPROP: 
 			setFunNameEff(eff.effect, fname);
+			break;
+		case PURE: 
+			eff.fname = fname;
 			break;
 		}
 	}
@@ -799,7 +809,15 @@
 		}
 		return o;
 	}
+	function toPure(effl, fname) {
+		if (!effl || effl.length < 1) {
+			return [{type: PURE, fname: fname}];
+		} else {
+			return effl;
+		}
+	}
 	
+	E.toPure = toPure;
 	E.isBox = isBox;
 	E.unbox = unbox;
 	E.mCall = mCall;
