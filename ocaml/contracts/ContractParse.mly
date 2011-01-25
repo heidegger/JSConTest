@@ -138,6 +138,7 @@ fun_contract:
   */
 effects:  
   |                                               { Csseff.create_none () }
+  | LWith LBRAKET  RBRAKET                        { Csseff.create_none () }
   | LWith LSTAR                                   { Csseff.create_all () }
   | LWith LBRAKET css_list RBRAKET                { Csseff.create_effect_list $3 }
 ;
