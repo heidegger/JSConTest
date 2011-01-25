@@ -159,7 +159,10 @@ let transform env effects sel =
     | Conditional (a,e1,e2,e3) ->
        Conditional (a,t_e e1, t_e e2, t_e e3) 
     | Function_call (a,e,el) ->
-        let el = List.map (fun e -> ub_e (t_e e)) el in
+	(* the unbox is done by fmCall, it also stores the box to read them
+	 * later inside of the function (after Assert checks, but before entering
+         * the function body. *)
+	(*        let el = List.map (fun e -> ub_e (t_e e)) el in *)
           begin
             match e with 
               | Object_access (_,e1,i) -> 
