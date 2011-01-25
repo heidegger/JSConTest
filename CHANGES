@@ -1,6 +1,9 @@
 Compiler
 --------
 
+version 0.4.3.
+- transformation code refactored
+
 version 0.4.2.
 - default namespace changes from PROGLANG to JSConTest.
 

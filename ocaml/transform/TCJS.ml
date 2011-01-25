@@ -385,7 +385,6 @@ module Make(T: TRANS) : S with type t = T.t = struct
 	      (fun (_,_,_,name) -> name)
 	        (List.filter
 	          (fun (_,_,gI,_) -> GenInfo.getAsserts gI)
-	          (* TODO: only let contracts pass, for which asserts are enabled *)
 	          e_c_gI_name_list)
 	  else 
 	    []
@@ -553,38 +552,17 @@ module Make(T: TRANS) : S with type t = T.t = struct
               | _ -> ()
           end;
           e
-      | Assign (an,e1,aop,Function_expression (a,Some c,no,pl,lvo,sel)) as e-> 
-	e
-	(* TODO *)
-(*	let fopt f = function 
-          | None -> None
-          | Some a -> Some (f a)
-        in
-        in 
-	  begin 
-            match pathname e1 with     
-              | Some ntest -> begin
-                           let nloc = match no with
-                              | Some n -> n
-                              | None -> (s_to_i ntest)
-                           in 
-                           let mod_fd =
-                               gen_and_introduce 
-                                   env            
-			           (create_infos (get_labels ()) (get_strings ()) (get_numbers ()))
-                                   c
-                                   ntest (* test suite name *)
-                                   nloc (* name for recursive calls *)
-                                   pl
-                                   sel
-                                   (Function_declaration (a,c,nloc,pl,lvo,sel))
-                           in
-                           let newfun = g_e_sel (mod_fd @ [g_return (i_to_e (s_to_i ntest))])
-                           in 
-                              Assign (an,e1,aop, newfun)   
-                         end
-              | None -> e          
-          end *)
+      | Function_expression (a,Some c,no,pl,lvo,sel) -> 	
+          let fname = match no with None -> "" | Some n -> ASTUtil.i_to_s n in
+          let info = create_infos (get_labels ()) (get_strings ()) (get_numbers ()) in
+	  let ftestname = (Testlib.gen_fun_var_name fname) in
+	  let finfo = {
+		contract= c;
+		params= pl;
+		recursive_name=no;
+		body=sel; }
+	  in
+	    create_code env info ftestname finfo
       | e -> e
     in            
       AST.visit
@@ -597,7 +575,12 @@ module Make(T: TRANS) : S with type t = T.t = struct
            | Function_declaration _ as se -> new_scope ();
                [se]
            | se -> [se])
-        program
+	~b_expression:
+	(function
+	  |  Function_expression _ as e -> new_scope ();
+		e
+	  | e -> e)
+	program
 
 
 
