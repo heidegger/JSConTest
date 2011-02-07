@@ -1034,7 +1034,7 @@
 			slider.setAttribute("min", min);
 			slider.setAttribute("max", max);
 			slider.setAttribute("step", steps);
-			slider.setAttribute("value", defv);
+			slider.value = defv;
 			slider.onchange = function () {
 				span.innerHTML = this.value;
 				return handler(this.value, slider, span, parent);
@@ -1061,7 +1061,7 @@
 		return sliderControlNamed(document.createTextNode(name), 
 		                          min, max,
 		                          handler,
-		                          20, 1);
+		                          def, steps);
 	}
 	
 	function stat(divNode) {
@@ -1105,9 +1105,9 @@
 		divNode.appendChild(config_control("HIGH_DEGREE", gconfig.gdef, "HIGH_DEGREE", doStat, -1, 100, 20, 1));
 
 		divNode.appendChild(config_control("prefix depth", gconfig.def, "prefix_depth", doStat, -1, 25, -1, 1));
-		divNode.appendChild(config_control("prefix global frac", gconfig.def, "prefix_globalfrac", doStat, -1, 25, -1, 1));
+		//divNode.appendChild(config_control("prefix global frac", gconfig.def, "prefix_globalfrac", doStat, -1, 25, -1, 1));
 		divNode.appendChild(config_control("suffix_depth", gconfig.def, "suffix_depth", doStat, -1, 25, -1, 1));
-		divNode.appendChild(config_control("suffix_globalfrac", gconfig.def, "suffix_globalfrac", doStat, -1, 25, -1, 1));
+		//divNode.appendChild(config_control("suffix_globalfrac", gconfig.def, "suffix_globalfrac", doStat, -1, 25, -1, 1));
 
 		divNode.appendChild(divChild);
 		divNode = divChild;
