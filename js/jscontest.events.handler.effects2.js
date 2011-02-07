@@ -1075,9 +1075,13 @@
 
 		function sliderControlP(parent, min, max, handler, defv, steps) {
 			var slider, span, parent;
-			
-			defv = defv || Math.floor((max - min) / 2);
-			steps = steps || Math.floor((max - min) / 10) || 1;
+
+			if (defv === undefined) {
+				defv = Math.floor((max - min) / 2);
+			}
+			if (steps === undefined) {
+				steps = Math.floor((max - min) / 10) || 1;
+			}
 
 			uid += 1;
 
