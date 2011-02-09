@@ -67,6 +67,16 @@ version 0.1.17:
 JSConTest JavaScript Library
 ----------------------------
 
+version 0.4.2
+- effect inference algorithm 
+  (jscontest.events.handler.effects.js or 
+   jscontest.events.handler.effects2.js)
+- default namespace: jscontest
+  Under this namespace all the parts of the library does
+  register themselves, e.g. jscontest.tests is the testing
+  part of the library. 
+- file names are now named: jscontest.*.js
+
 version 0.2.0 (for compiler version 0.4.*):
 - default namespace: PROGLANG
   Under this namespace all the parts of the library does
