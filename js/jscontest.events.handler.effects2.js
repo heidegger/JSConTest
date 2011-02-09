@@ -3,7 +3,9 @@
 (function (JSConTest) {
 	var SELF = {},
 		// the local config data
-		gconfig;
+		gconfig,
+        sliderControl,
+        sliderControlNamed;
 	JSConTest.events.handler.effects = SELF;
 
 	// initialize global config default values
@@ -599,9 +601,12 @@
 	  return result;
 	}
 
-	// @returns  1 if permission <= candidate
+	// @returns  1 if permission < candidate
+	// @returns  0 if permission == candidate
 	// @returns -1 if permission > candidate
+	// @returns NaN otherwise
 	function subsume (permission, candidate) {
+	  var INCOMPARABLE= NaN, EQUAL= 0, LESS= 1, GREATER= -1;
 	  var i = 0;
 	  var pi, ci;
 	  var plen = permission.length;
@@ -613,23 +618,23 @@
 	      if (ci.type === PROP && pi.name === ci.name) {
 		i++; continue;
 	      } else {
-		return 0;
+		return INCOMPARABLE;
 	      }
 	    } else if (pi.type === STAR && ci.type === STAR) {
 	      i++; continue;
 	    } else {
-	      return 0;
+	      return INCOMPARABLE;
 	    }
 	  }
-	  // TODO: something about matching @ against @*
 	  if (i < plen) {
 	    // candidate is proper prefix of permission
-	    return -1;
+	    return GREATER;
 	  } else if (i < clen) {
 	    // permission is prefix of candidate
-	    return 1;
+	    return LESS;
 	  } else {
-	    return 1;
+	    // permissions are equal
+	    return EQUAL;
 	  }
 	}
 	
@@ -744,21 +749,34 @@
 	    for (var j=i+1; j<rlen; j++) {
 	      var s = subsume (readPermissions[i], readPermissions[j]);
 	      // console.log ("subsume (read): ", readPermissions[i], readPermissions[j], s);
-	      if (s > 0) todrop.push (i); // i is subsumed
-	      if (s < 0) todrop.push (j); // j is subsumed
+	      if (s >= 0) todrop.push (i); // i is subsumed
+	      if (s <  0) todrop.push (j); // j is subsumed
 	    }
 	    for (var k=0; k<wlen; k++) {
 	      var sw = subsume (readPermissions[i], writePermissions[k]);
 	      // console.log ("subsume (write): ", readPermissions[i], writePermissions[k], sw);
-	      if (sw > 0) todrop.push (i); // read permission i is subsumed
+	      if (sw >= 0) todrop.push (i); // read permission i is subsumed
 	    }
 	  }
 	  readPermissions.forEach (function (perm, i) {
 				     if (todrop.indexOf (i) < 0)
 				       result.push (perm);
 				   });
+	  // clear duplicated write permissions
+	  var writeResult = [];
+	  todrop = [];
+	  for (var m=0; m<wlen; m++) {
+	    for (var n=m+1; n<wlen; n++) {
+	      var ww = subsume(writePermissions[m], writePermissions[n]);
+	      if (ww == 0) todrop.push(m);
+	    }
+	  }
+	  writePermissions.forEach (function (perm, i) {
+				      if (todrop.indexOf(i) <0)
+					writeResult.push (perm);
+				    });
 	  // console.log ("simplify: ", permissions, result);
-	  return {read: result, write: writePermissions};
+	  return {read: result, write: writeResult};
 	}
 
 	// compute prefixes, apply reduction, and extract permissions
@@ -1050,7 +1068,7 @@
 	writeEffects = emptyES ();
 
 	(function () { 
-		var uid;
+      var uid;
 		
 		function namedControl(f) {
 			return (function (namenode) {
