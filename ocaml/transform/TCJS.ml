@@ -345,7 +345,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
     	  in
 	    Function_expression (null_annotation,
 		Some finfo.contract,
-		None,
+		finfo.recursive_name,
 		finfo.params,
 		None,
 		fbody)
