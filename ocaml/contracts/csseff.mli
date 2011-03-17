@@ -22,6 +22,7 @@ val create : unit -> t
 val create_all : unit -> t
 val create_none : unit -> t
 val create_effect_list : effect list -> t
+val create_effect_list_neg : effect list -> effect list -> t
 val get_effects : t -> effect list
 val map : (effect -> 'a) -> (effect -> 'b) -> (unit -> 'c) -> t -> ('a list * 'b list,'c) either
 val is_empty : t -> bool

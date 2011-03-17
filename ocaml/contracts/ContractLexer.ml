@@ -66,7 +66,7 @@ let regexp reffects = "~Effects" | "~effects"
 let regexp rthis = "this"
 let regexp rwith = "with" | "With"
 let regexp rquestionmark = "?"
-
+let regexp rexcept = "without" | "except" | "Without" | "Except"
 
 
 let regexp re_escape_sequence =
@@ -155,6 +155,7 @@ let token =
       | reffects        -> LEffects
       | rthis           -> LThis
       | rwith           -> LWith
+      | rexcept		-> LExcept
       | rquestionmark   -> LQUESTION
       | rnatural        -> LNatural
       | rlength         -> LLength

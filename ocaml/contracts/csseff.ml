@@ -21,6 +21,7 @@ type ('a,'b) either =
 let create () = El ([],[])
 let create_all () = All
 let create_effect_list el = El (el,[])
+let create_effect_list_neg pos neg = El (pos, neg)
 let create_none () = El ([],[])
 
 (* let rec rem_var = function

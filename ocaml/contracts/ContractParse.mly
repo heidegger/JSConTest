@@ -31,6 +31,7 @@
 %token LEffects
 %token <int> LNumberTests
 %token LWith
+%token LExcept
 %token LThis
 
 %token LBool
@@ -137,10 +138,11 @@ fun_contract:
   * benign as shifting is taken as the default. 
   */
 effects:  
-  |                                               { Csseff.create_none () }
-  | LWith LBRAKET  RBRAKET                        { Csseff.create_none () }
-  | LWith LSTAR                                   { Csseff.create_all () }
-  | LWith LBRAKET css_list RBRAKET                { Csseff.create_effect_list $3 }
+  |                                                  { Csseff.create_none () }
+  | LWith LBRAKET  RBRAKET                           { Csseff.create_none () }
+  | LWith LSTAR                                      { Csseff.create_all () }
+  | LWith LBRAKET css_list RBRAKET                   { Csseff.create_effect_list $3 }
+  | LWith LBRAKET css_list RBRAKET LExcept LBRAKET css_list RBRAKET { Csseff.create_effect_list_neg $3 $7 }  
 ;
 
 fun_contract_without_effect:
