@@ -80,7 +80,14 @@
 		}
 		function registerEffectPrivate(effl, pl, thisC, fname) {
 			var i = getUid();
-			effect_store[i] = effl;
+			if (JSConTest.check.isSArray(effl)) {
+				// If the effect list effl is an array,
+				// it contains a list of positiv permissions
+				effect_store[i] = {pos: effl };
+			} else {
+				// otherwise, the object is expected
+				effect_store[i] = effl;
+			}
 			getActiveFunName = (function (fname) {
 				return (function () {
 					return fname;
@@ -204,7 +211,7 @@
 
 	function isAllowedEffl(uid, access_pathl, effl, isAllow) {
 		function isAllowedEffl_priv(access_path) {
-			var i, eff;
+			var i, eff, perm = false;
 			// each entry in the effect store, that is 
 			// not younger then the object itself, is allowed
 			if (access_path && (access_path.alloc >= uid)) {
@@ -215,11 +222,48 @@
 			}
 			// if the object is older then the entry in the effect store
 			// check the access. Here, one of them must allow the access
-			for (i = 0; i < effl.length; i += 1) {
-				eff = effl[i];
-				if (isAllow(access_path, eff)) {
-					return true;
+
+			// an effl, that is an array is a list of positive effects
+			if (JSConTest.check.isSArray(effl)) {
+				for (i = 0; i < effl.length; i += 1) {
+					eff = effl[i];
+					if (isAllow(access_path, eff)) {
+						return true;
+					}
+				}				
+			}
+
+			// if effl is an object without tupe === ALL, it is an
+			// object storing a list of positive effects in the property
+			// pos as an array, and maybe a list of negative permissions
+			// in the property neg.
+			if ((typeof effl === 'object') && effl.pos) {
+				// first check, if there is a permission granting the access
+				i = 0;
+				while (perm === false && i < effl.pos.length) {
+					eff = effl.pos[i];
+					if (isAllow(access_path, eff)) {
+						perm = true;
+					}
 				}
+				// if perm is false, there was no positive permission for
+				// this access, hence we only have to worry, if perm is
+				// positive.
+				
+				if (perm && effl.neg && JSConTest.check.isSArray(effl.neg)) {
+					// If we have a permission, and a negative list of permissions,
+					// now lets check, if a negative permission matches
+					i = 0;
+					while (perm === true && i < effl.neg.length) {
+						eff = effl.pos[i];
+						if (isAllow(access_path, eff)) {
+							// permisssion is rejected, hence quit with false
+							return false;
+						}
+					}					
+				}
+				// return the permission
+				return perm;
 			}
 			return false;			
 		}
@@ -281,7 +325,7 @@
 					setFunNameEffl(new_context,getFunNameEffl(effect_store[uid]))
           eventHandler(o, p,
 					             JSConTest.utils.valueToString(effStoreToString(effect_store)), 
-					             JSConTest.utils.valueToString(efflToString(effect_store[uid])),
+					             JSConTest.utils.valueToString(efflToStringArray(effect_store[uid])),
 					             new_context);
 				}				
 			}
@@ -680,22 +724,44 @@
 		}
 	}
 
-	function efflToString(effl) {
-		var a, i;
+	function efflToStringArray(effl) {
+		var a, b, i;
 		if ((typeof effl === 'object') && (effl.type === ALL)) {
 			return "*";
 		}
-		a = [];
-		for (i = 0; i < effl.length; i += 1) {
-			a.push(effToString(effl[i]));
+		if (JSConTest.check.isSArray(effl)) {
+			a = [];
+			for (i = 0; i < effl.length; i += 1) {
+				a.push(effToString(effl[i]));
+			}
+			return a;			
 		}
-		return a;
+
+		if ((typeof effl === 'object') && effl.pos && !effl.neg) {
+			a = [];
+			for (i = 0; i < effl.pos.length; i += 1) {
+				a.push(effToString(effl[i]));
+			}	
+			return a;
+		}
+
+		if ((typeof effl === 'object') && effl.pos && effl.neg) {
+			a = [];
+			for (i = 0; i < effl.pos.length; i += 1) {
+				a.push(effToString(effl[i]));
+			}
+			b = [];
+			for (i = 0; i < effl.neg.length; i += 1) {
+				b.push(effToString(effl[i]));
+			}			
+			return {pos: a, neg: b};
+		}
 	}
 	function effStoreToString(eff_store) {
 		var obj = {}, uid;
 		for (uid in eff_store) {
 			if (eff_store.hasOwnProperty(uid)) {
-				obj[uid] = efflToString(eff_store[uid]);
+				obj[uid] = efflToStringArray(eff_store[uid]);
 			}
 		}
 		return obj;
@@ -723,7 +789,10 @@
 			return "NO KNOWN EFFECT TYPE: " + JSConTest.utils.valueToString(eff);
 		}		
 	}
-	function getFunNameEffl(effl) {		
+	function getFunNameEffl(effl) {
+		if (typeof effl === 'object' && effl.pos) {
+			return getFunNameEff(effl.pos[0]);
+		}
 		if (!effl || effl.length < 1) {
 			return getActiveFunName();
 		}
@@ -760,10 +829,21 @@
 	}
 	function setFunNameEffl(effl, fname) {
 		var i;
-		
-		for (i = 0; i < effl.length; i += 1) {
-			setFunNameEff(effl[i], fname);			
+		if (typeof effl === 'object' && effl.pos) {
+			for (i = 0; i < effl.pos.length; i += 1) {
+				setFunNameEff(effl.pos[i], fname);			
+			}
+			if (effl.neg) {
+				for (i = 0; i < effl.neg.length; i += 1) {
+					setFunNameEff(effl.neg[i], fname);			
+				}				
+			}
+		} else {
+			for (i = 0; i < effl.length; i += 1) {
+				setFunNameEff(effl[i], fname);			
+			}			
 		}
+		
 	}
 	
 	// enableWrapper sorounds f with a wrapper, such that
@@ -859,6 +939,9 @@
 		return o;
 	}
 	function toPure(effl, fname) {
+		if (typeof effl === 'object' && effl.pos && effl.pos.length > 0) {
+			return effl;
+		}		
 		if (!effl || effl.length < 1) {
 			return [{type: PURE, fname: fname}];
 		} else {
