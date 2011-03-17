@@ -86,7 +86,7 @@ let effs = Csseff.string_of eff in
       in
 	this ^ "{" ^ so_contractl so_b so_a so_d cl 
 	^ " -> " ^ so_contract so_b so_a so_d c 
-      	^ (if (String.length effs > 0) then " with " ^ effs else "")
+      	^ (if (String.length effs > 0) then " " ^ effs else "")
       	^ "}"
   | CUnion (cl) ->
      let cl = List.map (so_contract so_b so_a so_d) cl in

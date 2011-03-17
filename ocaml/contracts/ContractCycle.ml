@@ -220,7 +220,7 @@ module Test = struct
                   | [vl] ->
                       assert_equal
                         ~printer:(fun s -> s)
-                        "[{{(int($2), int)} -> bool};bool;int;int($2)]"
+                        "[bool;int;{{(int($2), int)} -> bool};int($2)]"
                         (String_of.string_of_list
                            (fun v ->   
                               (Contract.so_contract 
@@ -242,7 +242,7 @@ module Test = struct
                   | [vl] ->
                       assert_equal
                         ~printer:(fun s -> s)
-                        "[{{(int($2), int, int($1))} -> bool};bool;int;int($2);int($1)]"
+                        "[bool;int;{{(int($2), int, int($1))} -> bool};int($2);int($1)]"
                         (String_of.string_of_list
                            (fun v ->   
                               (Contract.so_contract 
@@ -265,7 +265,7 @@ module Test = struct
                 | [vl] -> 
                     assert_equal
                       ~printer:(fun s -> s)
-                      "[{lengh: int}{{} -> int};{lengh: int};int]"
+                      "[{lengh: int};int;{lengh: int}{{} -> int}]"
                       (String_of.string_of_list
                          (fun v ->   
                             (Contract.so_contract 
@@ -295,7 +295,7 @@ module Test = struct
                                Analyse.string_of
                                Depend.string_of v))
                          vl)                    
-                |_ -> failwith "This should neve happen"
+                |_ -> failwith "This should never happen"
             end
           | _ -> assert_failure "Graph was not computed correctly"
       ()
@@ -306,8 +306,8 @@ module Test = struct
        "Check Cycle Test 2", t3;
        "Check Cycle Test, Order 3", t4;
        "Check Cycle Test, Order 4", t5;      
-       "Check Cycle Test, Methods", t6;
-       "Check Cycle Test, Methods", t7
+       "Check Cycle Test, Methods 1", t6;
+       "Check Cycle Test, Methods 2", t7
       ]
         
   let _ = 

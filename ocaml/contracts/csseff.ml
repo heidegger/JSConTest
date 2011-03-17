@@ -13,15 +13,15 @@ type effect =
   | StarProp of effect * string
   | StarRegExProp of effect * string
 
-type t = El of effect list | All
+type t = El of effect list * effect list | All
 type ('a,'b) either =
     Left of 'a
   | Right of 'b
 
-let create () = El []
+let create () = El ([],[])
 let create_all () = All
-let create_effect_list el = El el
-let create_none () = El []
+let create_effect_list el = El (el,[])
+let create_none () = El ([],[])
 
 (* let rec rem_var = function
     | Parameter i as e -> e
@@ -38,11 +38,11 @@ let create_none () = El []
     El (List.map rem_var el) *)
 
 let get_effects = function
-  | El el -> el
+  | El (el,_) -> el
   | All -> failwith "get_effects of All"
 
-let map f fall = function
-  | El t -> Left (List.map f t)
+let map f f2 fall = function
+  | El (t,t2) -> Left (List.map f t,List.map f2 t2)
   | All -> Right (fall ())
 
 let rec string_of_effect = function
@@ -64,13 +64,21 @@ let rec string_of_effect = function
       (string_of_effect e) ^ "." ^ s ^ "*"
 
 let is_empty = function
-  | El t -> List.length t < 1
+  | El (t,_) -> List.length t < 1
   | All -> false
 
 
 let string_of = function
-  | El t ->
-      String.concat "," (List.map string_of_effect t)
+  | El (t,t2) ->
+	if (List.length t > 0) then begin 
+		if (List.length t2 < 1) 
+		then ("with [" ^ String.concat "," (List.map string_of_effect t) ^ "]")
+		else ("with [" ^ String.concat "," (List.map string_of_effect t) 
+	      		^ "] without [" 
+		      	^ String.concat "," (List.map string_of_effect t2) ^ "]")
+	end else begin
+		""
+	end
   | All -> "*"
 module Test = struct
   open ProglangUtils
@@ -78,111 +86,111 @@ module Test = struct
 
   let init () =
     let t1 () = 
-      let t = El [Parameter 1] in
+      let t = El ([Parameter 1],[]) in
       let ts = string_of t in
         assert_equal 
           ~printer:(fun x -> x)
-          "$1"
+          "with [$1]"
           ts
     in
     let t2 () = 
-      let t = El [Var "test"] in
+      let t = El ([Var "test"],[]) in
       let ts = string_of t in
         assert_equal 
           ~printer:(fun x -> x)
-          "test"
+          "with [test]"
           ts
     in
 
     let t3 () =
-      let t = El [Prop (Prop (Parameter 5,"acd"),"_fd")] in
+      let t = El ([Prop (Prop (Parameter 5,"acd"),"_fd")],[]) in
       let ts = string_of t in
         assert_equal 
           ~printer:(fun x -> x)
-          "$5.acd._fd"
+          "with [$5.acd._fd]"
           ts
     in
 
     let t4 () =
-      let t = El [Prop (Prop (Parameter 2,"a"),"b")] in
+      let t = El ([Prop (Prop (Parameter 2,"a"),"b")],[]) in
       let ts = string_of t in
         assert_equal 
           ~printer:(fun x -> x)
-          "$2.a.b"
+          "with [$2.a.b]"
           ts
     in
     let t5 () =
-      let t = El [Star (Prop (Parameter 2,"b"))] in
+      let t = El ([Star (Prop (Parameter 2,"b"))],[]) in
       let ts = string_of t in
         assert_equal
           ~printer:(fun x -> x)
-          "$2.b.*"
+          "with [$2.b.*]"
           ts
     in
     let t5a () =
-      let t = El [Star (Parameter 2)] in
+      let t = El ([Star (Parameter 2)],[]) in
       let ts = string_of t in
         assert_equal
           ~printer:(fun x -> x)
-          "$2.*"
+          "with [$2.*]"
           ts
     in
     let t6 () =
-      let t = El [Prop (Star (Prop (Parameter 2,"b")),"c")] in
+      let t = El ([Prop (Star (Prop (Parameter 2,"b")),"c")],[]) in
       let ts = string_of t in
         assert_equal
           ~printer:(fun x -> x)
-          "$2.b.*.c"
+          "with [$2.b.*.c]"
           ts
     in
     let t7 () =
-      let t = El [Question (Prop (Parameter 2,"b"))] in
+      let t = El ([Question (Prop (Parameter 2,"b"))],[]) in
       let ts = string_of t in
         assert_equal
           ~printer:(fun x -> x)
-          "$2.b.?"
+          "with [$2.b.?]"
           ts
     in
     let t7a () =
-      let t = El [Question (Parameter 2)] in
+      let t = El ([Question (Parameter 2)],[]) in
       let ts = string_of t in
         assert_equal
           ~printer:(fun x -> x)
-          "$2.?"
+          "with [$2.?]"
           ts
     in
     let t8 () =
-      let t = El [Prop (Question (Prop (Parameter 2,"b")),"c")] in
+      let t = El ([Prop (Question (Prop (Parameter 2,"b")),"c")],[]) in
       let ts = string_of t in
         assert_equal
           ~printer:(fun x -> x)
-          "$2.b.?.c"
+          "with [$2.b.?.c]"
           ts
     in
     let t9 () =
-      let t = El [NoProp (Parameter 2)] in
+      let t = El ([NoProp (Parameter 2)],[]) in
       let ts = string_of t in
         assert_equal
           ~printer:(fun x -> x)
-          "$2.@"
+          "with [$2.@]"
           ts
     in
 
     let t10 () =
-      let t = El [Var "blub"] in
+      let t = El ([Var "blub"],[]) in
       let ts = string_of t in
         assert_equal
           ~printer:(fun x -> x)
-          "blub"
+          "with [blub]"
           ts
     in
 
     let t11 () =
-      let t = El [This] in
+      let t = El ([This],[]) in
       let ts = string_of t in
         assert_equal
           ~printer:(fun x -> x)
-          "this"
+          "with [this]"
           ts
     in
     ["to string of $1: ",t1;

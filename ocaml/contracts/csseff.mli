@@ -23,7 +23,7 @@ val create_all : unit -> t
 val create_none : unit -> t
 val create_effect_list : effect list -> t
 val get_effects : t -> effect list
-val map : (effect -> 'a) -> (unit -> 'b) -> t -> ('a list,'b) either
+val map : (effect -> 'a) -> (effect -> 'b) -> (unit -> 'c) -> t -> ('a list * 'b list,'c) either
 val is_empty : t -> bool
 
 val string_of : t -> string
