@@ -10,6 +10,9 @@ type effect =
   | NoProp of effect
   | RegExProp of effect * string
 
+  | StarProp of effect * string
+  | StarRegExProp of effect * string
+
 type t = El of effect list | All
 type ('a,'b) either =
     Left of 'a
@@ -55,6 +58,10 @@ let rec string_of_effect = function
   | NoProp e -> (string_of_effect e) ^ ".@"
   | RegExProp (e,s) ->
       (string_of_effect e) ^ "." ^ s
+  | StarProp (e,s) ->
+      (string_of_effect e) ^ "." ^ s ^ "*"
+  | StarRegExProp (e,s) ->
+      (string_of_effect e) ^ "." ^ s ^ "*"
 
 let is_empty = function
   | El t -> List.length t < 1

@@ -22,6 +22,8 @@
 		regExProp = 8,
 		regExVar = 9,
 		PURE = 10,
+		METASTAR = 11,
+		METAregEx = 12,
 		
 		globalObj = (function () { 
 			return this; 
@@ -100,7 +102,8 @@
 	// our task here is, to check if a read access is valid here
 	function isAllowedEff(access_path, eff) {
 		switch (eff.type) {
-		case PURE: return false;
+		case PURE: 
+			return false;
 		case PARAMETER:
 			return ((access_path.type === PARAMETER) && 
 							(eff.number === access_path.number));
@@ -141,19 +144,46 @@
 		case regExProp:
 			if ((access_path.type === PROP) && eff.regEx) {
 				if (eff.regEx.test(access_path.property)) {
+					return isAllowedEff(access_path.effect, eff.effect);
+				}
+			}
+			return false;
+		case regExVar:
+			if ((access_path.type === VARIABLE) && eff.regEx) {
+				if (eff.regEx.test(access_path.name)) {
 					return true;
 				}
 			}
 			return false;
-			// TODO: this is a regular expression, that describes a set
-			// of properties. Hence it will match, if access_path is
-			// a property, and the name of the property is part of the language
-			// of this regular expression
-		case regExVar:
-			// TODO:
-			return false;
 		case noPROP: 
 			return false;
+		case METASTAR:			
+			// if match works with (regEx)* = nothing, just return true 
+			if (isAllowedEff(access_path,eff.effect)) {
+				return true;
+			}
+			// here the METSTAR has to consume something
+			// it is only allowed to consume properties, hence
+			// at least a property must be consumed
+			if (access_path.type === PROP) {
+				// the check is a regular expression on properties
+				if (eff.regEx) {
+					if (eff.regEx.test(access_path.property)) {
+						// the property matches, hence remove it
+						return isAllowedEff(access_path.effect, eff);
+					}					
+				}
+				// the check is a property name
+				if (eff.property) {
+					if (eff.property === access_path.property) {
+						// the property matches, hence remove it
+						return isAllowedEff(access_path.effect, eff);
+					}						
+				}
+			}
+			return false;
+		case METAregEx:
+			return eff.regEx.test(apToString(access_path));
 		default: 
 			return false;
 		}
@@ -602,6 +632,25 @@
 		return f(v1, v2, v3, ap1, ap2, ap3);
 	}
 
+	function apToString(ap) {
+		if (!ap) {
+			return "NO VALID EFFECT";
+		}
+		switch (ap.type) {
+		case PARAMETER:
+			return (ap.fname + ": $" + ap.number);
+		case VARIABLE:
+			if (ap.fname) {
+				return (ap.fname + ": " + ap.name);
+			} else {
+				return ap.name;				
+			}
+			break;
+		case PROP:
+			return apToString(ap.effect) + "." + JSON.stringify(ap.property);
+		}
+	}
+	
 	function effToString(eff) {
 		if (!eff) {
 			return "NO VALID EFFECT";

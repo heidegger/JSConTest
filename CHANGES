@@ -76,6 +76,11 @@ version 0.4.2
   register themselves, e.g. jscontest.tests is the testing
   part of the library. 
 - file names are now named: jscontest.*.js
+- AJAX handler (jscontest.events.handler.ajax.js)
+  This handler allows export of counter example
+- JSTestDriver support added
+- jquerry handler added
+- JSON output of test cases supported in jquerry handler
 
 version 0.2.0 (for compiler version 0.4.*):
 - default namespace: PROGLANG

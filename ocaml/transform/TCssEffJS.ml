@@ -9,6 +9,7 @@ let aLL = 6
 let nOPROP_TYPE = 7
 let rEGEXPROP = 8
 let rEGEXVAR = 9
+let rEGEXMETA = 11
       
 let js_of_effect fname = 
   let rec js_of_effect = function
@@ -58,6 +59,16 @@ let js_of_effect fname =
         ASTUtil.new_object
           ["type", ASTUtil.int_to_exp rEGEXVAR;
            "regEx", ASTUtil.i_to_e (ASTUtil.s_to_i s)]
+    | StarProp (e,s) ->
+        ASTUtil.new_object
+          ["type", ASTUtil.int_to_exp rEGEXMETA;
+           "effect", js_of_effect e;
+           "property", ASTUtil.i_to_e (ASTUtil.s_to_i s)]
+    | StarRegExProp (e,s) ->
+        ASTUtil.new_object
+          ["type", ASTUtil.int_to_exp rEGEXMETA;
+           "effect", js_of_effect e;
+           "regex", ASTUtil.i_to_e (ASTUtil.s_to_i s)]
   in
     js_of_effect
 

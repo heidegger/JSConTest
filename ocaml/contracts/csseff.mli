@@ -10,6 +10,9 @@ type effect =
   | NoProp of effect
   | RegExProp of effect * string  
 
+  | StarProp of effect * string
+  | StarRegExProp of effect * string
+ 
 type t 
 type ('a,'b) either =
     Left of 'a
