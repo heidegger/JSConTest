@@ -184,6 +184,9 @@ css_property:
   | LDOT LAT                        { fun cs -> Csseff.NoProp cs }
   | LDOT LSingleString              { fun cs -> Csseff.Prop (cs,$2) }
   | LDOT LRegEx                     { fun cs -> Csseff.RegExProp (cs,$2) }
+
+  | LDOT LSingleString LSTAR        { fun cs -> Csseff.StarProp (cs,$2) }
+  | LDOT LRegEx LSTAR               { fun cs -> Csseff.StarRegExProp (cs,$2) }
 ;
 
 paraml:
