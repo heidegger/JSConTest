@@ -220,6 +220,17 @@
 			if ((typeof effl === 'object') && (effl.type === ALL)) {
 				return true;
 			}
+
+			// regex for all permissions for a function
+			if ((typeof effl === 'object') && (effl.regex)) {
+				return access_path.test(effl.regex);
+			}
+			// user defined decision about permission language
+			if ((typeof effl === 'object') && (effl.decide) &&
+					(typeof effl.decide === 'function')) {
+				return (true === effl.decide(access_path));
+			}
+
 			// if the object is older then the entry in the effect store
 			// check the access. Here, one of them must allow the access
 
@@ -333,6 +344,25 @@
 	}
 
 	function propAcc(wo, wp) {
+		function override(u, M, N) {
+			var pmap = { },
+				uid;
+			for (uid in N) {
+				if (N.hasOwnProperty(uid)) {
+					pmap[uid] = N[uid];
+				}
+			}
+			for (uid in M) {
+				// uid \in \dom(M) \ \dom(N)
+				if (M.hasOwnProperty(uid) && (!N.hasOwnProperty(uid))) {
+					if (u < uid) {
+						// the second case
+						pmap[uid] = M[uid];
+					}
+				}
+			}
+			return pmap;		
+		}
 		function read(o, p, apo, app) {
 			// checks if read is allowed using apo
 			check_obj_access({ obj: o,
@@ -346,27 +376,37 @@
 			// to the wrapper.
 			// uses informations stored in o.__infos__ to
 			// create correct box, if needed.
-			var result = o[p], napo;
-			if (result && result.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
+			var v = o[p], 
+				u,
+				N, 
+				Mp, 
+				new_pmap;
+
+			if (typeof v !== 'object') {
+				return v;
+			}
+			if (v && v.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
 				// the property value is already boxed
-				return result;
+				// this should never happen
+				throw "Found a box inside of an object!";
+				//return result;
 			} else {
-				if (apo) {
-					// information found in the wrapper of o
-					// TODO: extend apo with p, create new wrapper
-					// return the new wrapper
-					napo = extend_path(apo, p);
-					return new Create_wrapper_with_pmap(result, napo);
-				} else {
-					if (o && (o.__infos__) && (o.__infos__)[p]) {
-						// information is found in host object
-						return new Create_wrapper_with_pmap(result, (o.__infos__)[p]);
-					} else {
-						// no information in the property and in the host object,
-						// and no wrapper ==> this should never happen
-						throw "No box info for property value!";
-					}
+				// v is an object, and it is an unboxed, hence v = \ell
+				// have a look at the PMap inside of the heap
+				if (o && (o.__infos__) && (o.__infos__)[p]) {
+					u = (o.__infos__)[p].uid;
+					N = (o.__infos__)[p].box;
 				}
+				// have a look at the PMap from the object
+				if (apo) {
+					Mp = extend_path(apo, p);
+				}
+
+				// we have to compute 
+				//   (u,(l,N)) \oplus M.p
+				// = (\ell,M.p \override_u N)
+				// = (v, override(u,Mp,N))
+				return new Create_wrapper_with_pmap(v, override(u, Mp, N));
 			}
 		}
 		return doWithUnwrap2(wo, wp, read);		
@@ -374,7 +414,9 @@
 
 	function propAss(wo, wp, wv) {
 		function write(o, p, v, apo, app, apv) {
-			// checks if read is allowed using apo
+			var uid;
+			
+			// checks if write is allowed using apo
 			check_obj_access({ obj: o,
 												 object_pmap: apo,
 												 property: p, 
@@ -385,6 +427,12 @@
 			// store unboxed value in the object
 			o[p] = v;
 			
+			// store uid in order to save it to __infos__ later
+			uid = getUid();
+			
+			// increase uid
+			incrementUid();
+			
 			if (apv) {
 				// store in o the information about the access
 				// path of the property p (which is apv)
@@ -393,7 +441,9 @@
 				if (!(o.__infos__)) {
 					o.__infos__ = { };
 				}
-				o.__infos__[p] = apv;			
+								
+				// store the wrapper and the uid for the assignment
+				o.__infos__[p] = { box: apv, uid: uid };
 			}
 			return undefined;
 		}
@@ -923,7 +973,7 @@
 	}
 	
 	function fixObjectLiteral(o) {
-		var pw, p;
+		var pw, p, u = getUid();
 		for (p in o) {
 			if (o.hasOwnProperty(p)) {
 				pw = o[p];
@@ -931,25 +981,14 @@
 					if (!(o.__infos__)) {
 						o.__infos__ = { };					
 					}
-					o.__infos__[p] = pw;
+					o.__infos__[p] = { box: pw, uid: u };
 					o[p] = unbox(o[p]);
 				}				
 			}
 		}
+		incrementUid();
 		return o;
 	}
-	function toPure(effl, fname) {
-		if (typeof effl === 'object' && effl.pos && effl.pos.length > 0) {
-			return effl;
-		}		
-		if (!effl || effl.length < 1) {
-			return [{type: PURE, fname: fname}];
-		} else {
-			return effl;
-		}
-	}
-	
-	E.toPure = toPure;
 	E.isBox = isBox;
 	E.unbox = unbox;
 	E.mCall = mCall;

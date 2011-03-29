@@ -26,7 +26,8 @@
 		ctName = 6,
 		Union, 
 		UnionAddSimplRule,
-		cc = {};
+		cc = {},
+		PURE = 10;
 	
 	JSConTest.contracts = C;
 
@@ -524,7 +525,17 @@
 		}
 		
 		function mixInEffect(contract, effl_maybe_unpure, pl, thisC, fname) {
-			var effl = JSConTest.effects.toPure(effl_maybe_unpure, fname);
+			function toPure(effl, fname) {
+				if (typeof effl === 'object' && effl.pos && effl.pos.length > 0) {
+					return effl;
+				}		
+				if (!effl || effl.length < 1) {
+					return [{type: PURE, fname: fname}];
+				} else {
+					return effl;
+				}
+			}
+			var effl = toPure(effl_maybe_unpure, fname);
 			
 			function registerEffects() {
 				if (JSConTest.tests.callback.registerEffect) {
