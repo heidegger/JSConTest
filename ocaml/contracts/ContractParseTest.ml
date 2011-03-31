@@ -450,6 +450,36 @@ module Test = struct
           tc
     in      
 
+    let t29 () =
+      let s = "/*c () -> string with [js:x] */" in
+      let tc = parse s in
+        assert_equal
+          ~printer:so_t
+          (tc_cl 
+             [CFunction 
+                (None,
+                 [],
+                 cs,
+                 (),
+                 Csseff.create_effect_list [Csseff.Js "x"])])
+          tc
+    in      
+
+    let t30 () =
+      let s = "/*c () -> string with [/x(.(left|right)).value*/] */" in
+      let tc = parse s in
+        assert_equal
+          ~printer:so_t
+          (tc_cl 
+             [CFunction 
+                (None,
+                 [],
+                 cs,
+                 (),
+                 Csseff.create_effect_list [Csseff.RegEx "/x(.(left|right)).value*/"])])
+          tc
+    in      
+
       ["Parse int -> int", t1;
        "Parse () -> undefined", t1a;
        "Parse (true,false) -> bool", t2;
@@ -478,6 +508,8 @@ module Test = struct
        "Parse () -> () with [$1./bla/i]", t26; 
        "Parse () -> string with [$1./bla|blub/*]", t27; 
        "Parse () -> string with [$1./bla|blub/*] except [$1.blub]", t28; 
+       "Parse () -> string with [js:x]", t29; 
+       "Parse () -> string with [/x(.(left|right))*.value/]", t30; 
       ]
         
   let _ = 
