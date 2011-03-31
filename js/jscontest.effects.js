@@ -24,6 +24,7 @@
 		PURE = 10,
 		METASTAR = 11,
 		METAregEx = 12,
+		METAjs = 13,
 		
 		globalObj = (function () { 
 			return this; 
@@ -191,6 +192,13 @@
 			return false;
 		case METAregEx:
 			return eff.regEx.test(apForRMatch(access_path));
+		case METAjs:
+			if (eff.f && typeof eff.f === 'function') {
+				return eff.f(access_path);				
+			} else {
+				return false;
+			}
+			break;
 		default: 
 			return false;
 		}
