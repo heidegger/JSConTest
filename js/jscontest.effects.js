@@ -190,7 +190,7 @@
 			}
 			return false;
 		case METAregEx:
-			return eff.regEx.test(apToString(access_path));
+			return eff.regEx.test(apForRMatch(access_path));
 		default: 
 			return false;
 		}
@@ -726,6 +726,21 @@
 		return f(v1, v2, v3, ap1, ap2, ap3);
 	}
 
+	function apForRMatch(ap) {
+		if (!ap) {
+			return "NO VALID EFFECT";
+		}
+		switch (ap.type) {
+		case PARAMETER:
+			return ("$" + ap.number);
+		case VARIABLE:
+			return (ap.name);
+		case PROP:
+			return apForRMatch(ap.effect) + "." + ap.propertys.replace(/[.]/g,"\\.");
+		}
+		
+	}
+	
 	function apToString(ap) {
 		if (!ap) {
 			return "NO VALID EFFECT";
