@@ -177,6 +177,8 @@ css_path:
   | LSingleString                   { Csseff.Var $1 } 
 
   | css_path css_property           { $2 ($1) }
+  | LJSIdent                        { Csseff.Js $1}
+  | LRegEx                          { Csseff.RegEx $1 }
 ;
 
 css_property:

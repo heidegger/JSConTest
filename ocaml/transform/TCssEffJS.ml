@@ -10,7 +10,9 @@ let nOPROP_TYPE = 7
 let rEGEXPROP = 8
 let rEGEXVAR = 9
 let rEGEXMETA = 11
-      
+let rMETAREGEX = 12
+let rMETAJS = 13
+
 let js_of_effect fname = 
   let rec js_of_effect = function
     | Parameter i ->
@@ -69,6 +71,14 @@ let js_of_effect fname =
           ["type", ASTUtil.int_to_exp rEGEXMETA;
            "effect", js_of_effect e;
            "regex", ASTUtil.i_to_e (ASTUtil.s_to_i s)]
+    | Js s -> 
+       ASTUtil.new_object
+          ["type",ASTUtil.int_to_exp rMETAJS;
+           "f",ASTUtil.i_to_e (ASTUtil.s_to_i s)]
+    | RegEx s -> 
+       ASTUtil.new_object
+          ["type",ASTUtil.int_to_exp rMETAREGEX;
+           "regEx",ASTUtil.c_to_e (ASTUtil.s_to_c s)]
   in
     js_of_effect
 

@@ -12,6 +12,9 @@ type effect =
 
   | StarProp of effect * string
   | StarRegExProp of effect * string
+
+  | Js of string   
+  | RegEx of string
  
 type t 
 type ('a,'b) either =

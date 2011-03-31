@@ -13,6 +13,9 @@ type effect =
   | StarProp of effect * string
   | StarRegExProp of effect * string
 
+  | Js of string
+  | RegEx of string
+
 type t = El of effect list * effect list | All
 type ('a,'b) either =
     Left of 'a
