@@ -275,8 +275,12 @@
 					i = 0;
 					while (perm === true && i < effl.neg.length) {
 						eff = effl.pos[i];
-						if (isAllow(access_path, eff)) {
-							// permisssion is rejected, hence quit with false
+						// we use isAllowedEff here, instead of isAllowed,
+						// since a negative permission should always forbid
+						// exactly the path, and not all prefixes, too, even
+						// if we are check for read access here. 
+						if (isAllowedEff(access_path, eff)) {
+							// permission is rejected, hence quit with false
 							return false;
 						}
 					}					
