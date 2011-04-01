@@ -22,8 +22,8 @@ SOURCES = date.ml \
 	      contracts/analyse.mli contracts/analyse.ml \
 	      contracts/BaseContract.mli contracts/BaseContract.ml \
 		  js/JSParse.mly \
-		  js/JSLexer.ml \
 		  js/PrettyToken.ml \
+		  js/JSLexer.ml \
 		  js/JSParseInterface.ml \
 		  contracts/ContractParse.mly \
 	      contracts/ContractLexer.ml \

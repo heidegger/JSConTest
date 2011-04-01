@@ -716,8 +716,12 @@ let (mainlexer) =
       | neq                  -> Lneq (set_ending ann)
       | sc_or                -> Lsc_or (set_ending ann)
       | sc_and               -> Lsc_and (set_ending ann)
-      | incr                 -> Lincr (set_ending ann)
-      | decr                 -> Ldecr (set_ending ann)
+      | incr                 -> 
+	(* after the incr, we still are in div mode *)
+	Stack.push DivMode s; Lincr (set_ending ann)
+      | decr                 -> 
+	(* after the decr, we still are in div mode *)
+	Stack.push DivMode s; Ldecr (set_ending ann)
       | plus                 -> Lplus (set_ending ann)
       | minus                -> Lminus (set_ending ann)
       | star                 -> Lstar (set_ending ann)
@@ -766,20 +770,37 @@ let (mainlexer) =
             
       in  
         match Stack.top s with
-            XMLTag  -> (* print_string("Tag:"); print_stack s; *) 
-              xml_tag_lexer lexbuf
-          | XMLData -> (*  print_string("Data:"); print_stack s; *)  
+            XMLTag  -> 
+		if (Etc.get_print_tokens ()) then begin
+ 	          print_string("Tag:"); 
+		  print_stack s;  
+		end;              	
+		xml_tag_lexer lexbuf
+          | XMLData ->   
+		if (Etc.get_print_tokens ()) then begin
+ 	          print_string("Data:"); 
+		  print_stack s;  
+		end;              	
               xml_data_lexer lexbuf
-          | RegEx -> (* print_string("Reg:"); print_stack s; *) 
+          | RegEx -> 
+		if (Etc.get_print_tokens ()) then begin
+ 	          print_string("Reg:"); 
+		  print_stack s;  
+		end;              	
               java_regex lexbuf
-          | DivMode -> (* print_string("DIV:"); print_stack s; *) 
+          | DivMode -> 
+		if (Etc.get_print_tokens ()) then begin
+ 	          print_string("Div:"); 
+		  print_stack s;  
+		end;
               stack_pop s; java_div lexbuf
-    in ml
+    in 
       
-      
-      
-(* zum debuggen alle tokens rausschreiben ... )
+(* zum debuggen alle tokens rausschreiben ... *) 
    
-   (fun lexbuf ln -> let x = ml lexbuf ln 
-   in print_endline (PrettyToken.string_of_token x) ; x)
-*)
+   (fun lexbuf ln -> 
+	let x = ml lexbuf ln in 
+  	  if (Etc.get_print_tokens ()) then
+  	    print_endline (PrettyToken.string_of_token x) ; 
+	  x)
+

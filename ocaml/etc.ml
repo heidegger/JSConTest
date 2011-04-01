@@ -73,3 +73,6 @@ let set_effect_observation, get_effect_observation=
 
 let set_effect_state,get_effect_state =
   m_b_o Effect.Default
+
+let set_print_tokens, get_print_tokens =
+  m_b_o false

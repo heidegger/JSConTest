@@ -5,6 +5,10 @@
  open Annotation
  open AST
 
+let raise_parse_error e = 
+	print_endline e;
+	raise Parse_error e
+
 let fsto3 (a, _, _) = a
 let sndo3 (_, a, _) = a
 let trdo3 (_, _, a) = a
@@ -224,11 +228,6 @@ source_element :
     {(Statement ((default_annotation (sndo3 $1) (trdo3 $1)), fsto3 $1), 
       sndo3 $1, trdo3 $1)}
 | function_declaration {$1}
-/*| LInitBegin source_elements LInitEnd { 
-    InitStatementList (default_annotation $1 $3,fsto3 $2),
-    $1,
-    $3 
-  } */
 ;
 
 /* Function declarations */
@@ -238,12 +237,13 @@ function_declaration :
   Llbrace function_body Lrbrace 
   {(Function_declaration ((default_annotation $1 $8),"",fsto3 $2, fsto3 $4,None, fsto3 $7),
     $1, $8)}
+/*
 |
-  LCcomment  
-  KWfunction identifier Llparen formal_parameter_list Lrparen
+  LCcomment KWfunction identifier Llparen formal_parameter_list Lrparen
   Llbrace function_body Lrbrace 
   {(Function_declaration ((default_annotation (fst $1) $9),snd $1,fsto3 $3, fsto3 $5, None, fsto3 $8),
     fst $1, $9) }
+*/
 ;
 
 function_expression :
@@ -490,12 +490,12 @@ continue_statement :
   KWcontinue
   identifier Lsemicolon
   {if (different_line $1 (sndo3 $2))
-   then raise Parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
+   then raise_parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
    else (Continue ((default_annotation $1 $3),Some (fsto3 $2)), $1, $3)}
 | KWcontinue
   Lsemicolon
   {if (different_line $1 $2) 
-   then raise Parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
+   then raise_parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
    else (Continue ((default_annotation $1 $2), None), $1, $2)}
 ;
 
@@ -503,12 +503,12 @@ break_statement :
   KWbreak
   identifier Lsemicolon
     {if (different_line (sndo3 $2)  $1) 
-    then raise Parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
+    then raise_parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
     else (Break ((default_annotation $1 $3), Some (fsto3 $2)), $1, $3)}
 | KWbreak
   Lsemicolon
     {if (different_line $1 $2) 
-    then raise Parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
+    then raise_parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
     else (Break ((default_annotation $1 $2), None), $1, $2)}
 ;
 		
@@ -516,12 +516,12 @@ return_statement :
   KWreturn
   expression Lsemicolon
     {if different_line (sndo3 $2) $1
-    then raise Parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
+    then raise_parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
     else (Return ((default_annotation $1 $3), Some (fsto3 $2)), $1, $3)}
 | KWreturn 
   Lsemicolon
     {if (different_line $1 $2) 
-    then raise Parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
+    then raise_parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
     else (Return ((default_annotation $1 $2), None), $1, $2)}
 ;
 
@@ -545,7 +545,7 @@ throw_statement :
   KWthrow 
   expression Lsemicolon 
     {if (different_line (sndo3 $2) $1)
-    then raise Parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
+    then raise_parse_error("Illegal line terminator in line "^(string_of_starting_line $1))
     else (Throw ((default_annotation $1 $3), fsto3 $2), $1, $3)}
 ;
 
@@ -1041,16 +1041,16 @@ postfix_expression :
     {$1}
 | left_hand_side_expression
   Lincr
-    {if (different_line (trdo3 $1)  $2)
-    then raise Parse_error("Illegal line terminator in line "^(string_of_starting_line (trdo3 $1)))
-    else (Unop ((default_annotation (sndo3 $1) $2),(fsto3 $1), 
+    { if (different_line (trdo3 $1)  $2)
+      then raise_parse_error("Illegal line terminator in line "^(string_of_starting_line (trdo3 $1)))
+      else (Unop ((default_annotation (sndo3 $1) $2),(fsto3 $1), 
 	    Incr_postfix (default_annotation $2 $2)),
       sndo3 $1, $2)}
 | left_hand_side_expression
   Ldecr
-    {if (different_line (trdo3 $1) $2)
-    then raise Parse_error("Illegal line terminator in line "^(string_of_starting_line (trdo3 $1)))
-    else (Unop ((default_annotation (sndo3 $1) $2),(fsto3 $1), 
+    { if (different_line (trdo3 $1) $2)
+      then raise_parse_error("Illegal line terminator in line "^(string_of_starting_line (trdo3 $1)))
+      else (Unop ((default_annotation (sndo3 $1) $2),(fsto3 $1), 
 	    Decr_postfix (default_annotation $2 $2)),
       sndo3 $1, $2)}
 ;
@@ -1061,14 +1061,14 @@ postfix_init_expression :
 | left_hand_side_init_expression
   Lincr
     {if (different_line (sndo3 $1) $2) 
-    then raise Parse_error("Illegal line terminator in line "^(string_of_starting_line (sndo3 $1)))
+    then raise_parse_error("Illegal line terminator in line "^(string_of_starting_line (sndo3 $1)))
     else (Unop ((default_annotation (sndo3 $1) $2),(fsto3 $1), 
 	    Incr_postfix (default_annotation $2 $2)),
       sndo3 $1, $2)}
 | left_hand_side_init_expression
   Ldecr
     {if (different_line (sndo3 $1) $2)
-    then raise Parse_error("Illegal line terminator in line "^(string_of_starting_line (sndo3 $1)))
+    then raise_parse_error("Illegal line terminator in line "^(string_of_starting_line (sndo3 $1)))
     else (Unop ((default_annotation (sndo3 $1) $2),(fsto3 $1), 
 	    Decr_postfix (default_annotation $2 $2)),
       sndo3 $1, $2)}
@@ -1214,7 +1214,7 @@ relational_expression :
   shift_expression
     {$1}
 | relational_expression Lless shift_expression
-    {(Binop ((default_annotation (sndo3 $1) (trdo3 $3)),(fsto3 $1), Less (default_annotation $2 $2), (fsto3 $3)), sndo3 $1, trdo3 $3)}
+    { (Binop ((default_annotation (sndo3 $1) (trdo3 $3)),(fsto3 $1), Less (default_annotation $2 $2), (fsto3 $3)), sndo3 $1, trdo3 $3)}
 | relational_expression Lgreater shift_expression
     {(Binop ((default_annotation (sndo3 $1) (trdo3 $3)),(fsto3 $1), Greater (default_annotation $2 $2) , (fsto3 $3)), sndo3 $1, trdo3 $3)}
 | relational_expression Lle shift_expression
@@ -1231,7 +1231,7 @@ relational_expression_no_in :
   shift_expression
     {$1}
 | relational_expression_no_in Lless shift_expression
-    {(Binop ((default_annotation (sndo3 $1) (trdo3 $3)),(fsto3 $1), Less (default_annotation $2 $2) , (fsto3 $3)), sndo3 $1, trdo3 $3)}
+    { (Binop ((default_annotation (sndo3 $1) (trdo3 $3)),(fsto3 $1), Less (default_annotation $2 $2) , (fsto3 $3)), sndo3 $1, trdo3 $3)}
 | relational_expression_no_in Lgreater shift_expression
     {(Binop ((default_annotation (sndo3 $1) (trdo3 $3)),(fsto3 $1), Greater (default_annotation $2 $2), (fsto3 $3)), sndo3 $1, trdo3 $3)}
 | relational_expression_no_in Lle shift_expression

@@ -140,6 +140,7 @@ let normal_run arg =
         print_endline "Error!";
         if (String.length !progsref > 0) then
           print_endline !progsref;
+	print_endline (Printexc.to_string e);
         raise e
       end
   in

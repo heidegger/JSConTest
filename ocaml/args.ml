@@ -194,6 +194,8 @@ let spec =
    ("--effect-js-namespace",String (Etc.set_javascript_effect_namespace),
     " sets the namespace used to interact with the "^
       "transaction library (DEFAULT: effect)");
+   ("--tokens",Unit (fun () -> Etc.set_print_tokens true),
+    " prints the tokens one by one, to make parser error recovery easier.");
   ]
 let get_spec () = 
   Arg.align spec

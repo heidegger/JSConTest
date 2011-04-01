@@ -162,4 +162,8 @@ let string_of_token t =
   | XMLotag_open i       -> (soa i)^"XML:<"
   | XMLctag_open i       -> (soa i)^"XML:</"
 
-  | LDcomment (i,s)      -> (soa i)^"//*"^s^"*/"
+  | LDcomment (i,s)      -> (soa i)^s
+  | LInitEnd _ -> ""
+  | LInitBegin _ -> ""
+  | LCcomment (i,s) -> (soa i)^s
+

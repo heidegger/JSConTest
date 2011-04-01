@@ -155,3 +155,11 @@ val get_local_scope_prefix : unit -> string
 
 (** Prints the version of the program and exits *)
 val print_version : unit -> unit
+
+(** If set to true, the lexer will print all it's lexed tokens.
+    This makes parse error problems a little bit easier to handel. *)
+val set_print_tokens : bool -> unit
+
+(** If set to true, the lexer will print all it's lexed tokens.
+    This makes parse error problems a little bit easier to handel. *)
+val get_print_tokens : unit -> bool
