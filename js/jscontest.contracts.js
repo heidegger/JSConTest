@@ -477,7 +477,7 @@
 			checkReturn = function (v) {
 				var ok = returnC.check(v);
 				if (!ok) {
-					fire.call(P, 'assertReturn', contract, v);
+					fire.call(JSConTest, 'assertReturn', contract, v);
 				}
 			};
 			getLastCreatedValues = function () {
@@ -736,7 +736,7 @@
 			c.checkReturn = function (v) {
 				var ok = rt.check(v);
 				if (!ok) {
-					fire.call(P, 'assertReturn', c, v);
+					fire.call(JSConTest, 'assertReturn', c, v);
 				}
 			};
 			c.get_last_created_values = function () {
