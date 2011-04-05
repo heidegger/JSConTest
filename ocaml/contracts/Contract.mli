@@ -29,7 +29,7 @@ type ('b,'a,'dup,'ddown) t
 (** creates a contract list from a list of contracts to attach 
     it to a function, and set the list of analyses to [[]].
 *)
-val create_tgI : (('b,'a,'d,'dd) contract * GenInfo.t) list -> bool option -> ('b,'a,'d,'dd) t
+(*val create_tgI : (('b,'a,'d,'dd) contract * GenInfo.t) list -> bool option -> ('b,'a,'d,'dd) t*)
 
 (** creates a contract list from a list of contracts to attach 
     it to a function, and set the list of analyses to [[]].
@@ -38,7 +38,8 @@ val create_tgI : (('b,'a,'d,'dd) contract * GenInfo.t) list -> bool option -> ('
     function values for later access, even if the closure itself is
     hidden and not public accessable. 
 *)
-val create_tgI_fn : (('b,'a,'d,'dd) contract * GenInfo.t) list -> bool option -> string -> ('b,'a,'d,'dd) t
+val create_tgI_fn : (('b,'a,'d,'dd) contract * GenInfo.t) list 
+  -> bool option -> string -> ('b,'a,'d,'dd) t
 
 val get_name : ('b,'a,'d,'dd) t -> string option
 

@@ -265,10 +265,10 @@
 						perm = true;
 					}
 				}
+				
 				// if perm is false, there was no positive permission for
 				// this access, hence we only have to worry, if perm is
 				// positive.
-				
 				if (perm && effl.neg && JSConTest.check.isSArray(effl.neg)) {
 					// If we have a permission, and a negative list of permissions,
 					// now lets check, if a negative permission matches
@@ -285,6 +285,7 @@
 						}
 					}					
 				}
+				
 				// return the permission
 				return perm;
 			}
@@ -359,17 +360,35 @@
 		function override(u, M, N) {
 			var pmap = { },
 				uid;
+			// first case
+			if (!N) {
+				N = {};				
+			}
+			if (!M) {
+				M = {};				
+			}
+			if (!u) {
+				u = Number.NEGATIVE_INFINITY;
+			}
 			for (uid in N) {
-				if (N.hasOwnProperty(uid)) {
+				if (N.hasOwnProperty(uid) && effect_store.hasOwnProperty(uid)) {
+					// if exists in N, and the uid is valid (second part)
+					// this is an error
+					// throw "Error in first case of override";
 					pmap[uid] = N[uid];
 				}
 			}
+			// second and third case
 			for (uid in M) {
 				// uid \in \dom(M) \ \dom(N)
 				if (M.hasOwnProperty(uid) && (!N.hasOwnProperty(uid))) {
 					if (u < uid) {
 						// the second case
 						pmap[uid] = M[uid];
+					} else {
+						// the third case was, to put unidefined
+						// into the property map, which means, to do 
+						// nothing, hence nothing is done here
 					}
 				}
 			}
@@ -868,7 +887,11 @@
 	}
 	function getFunNameEffl(effl) {
 		if (typeof effl === 'object' && effl.pos) {
-			return getFunNameEff(effl.pos[0]);
+			if (effl.pos.length > 0) {
+				return getFunNameEff(effl.pos[0]);				
+			} else {
+				return getActiveFunName();				
+			}
 		}
 		if (!effl || effl.length < 1) {
 			return getActiveFunName();

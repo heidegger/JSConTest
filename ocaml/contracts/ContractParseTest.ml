@@ -23,12 +23,18 @@ module Test = struct
     let cb = b_to_c BBool in
     let cs = b_to_c BString in
     let b_to_c_dep b depl = CBase (b,[],depl) in
+    let create_tgI a b = Contract.create_tgI_fn
+      a 
+      b
+      ""
+    in
 
-    let tc_fun pl r = Contract.create_tgI 
+    let tc_fun pl r = create_tgI 
       [CFunction (None,pl,r,(),Csseff.create ()),
        GenInfo.create ()]
-      (None) in
-    let tc_cl cl = Contract.create_tgI 
+      (None) 
+    in
+    let tc_cl cl = create_tgI 
       (List.map (fun c -> (c,GenInfo.create ())) cl)
       (None)
     in
@@ -197,7 +203,7 @@ module Test = struct
       let tc = parse s in
         assert_equal
           ~printer:so_t
-          (Contract.create_tgI [c1,gi1; c2,gi2] None)
+          (create_tgI [c1,gi1; c2,gi2] None)
           tc
     in
     let t13 () =

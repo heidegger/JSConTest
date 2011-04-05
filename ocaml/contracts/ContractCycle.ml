@@ -167,7 +167,7 @@ module Test = struct
       let c5 = CBase (BInteger,[],[Depend.create 1 1]) in
       let c6 = CBase (BBool, [], [Depend.create 1 2]) in
       let c7 = CFunction (None,[c4; c5],c6,(),Csseff.create ()) in
-      let tc = create_tgI [c3,GenInfo.create ();c7,GenInfo.create ()] None in
+      let tc = create_tgI_fn [c3,GenInfo.create ();c7,GenInfo.create ()] None "" in
         match create tc with
           | None -> assert_failure 
               "An error happends during creating of the graph for the contraints"

@@ -14,7 +14,7 @@ let parse_top_contract : string -> tc =
         in
           raise_analyse c
       end else begin
-        Contract.create_tgI [] None
+        Contract.create_tgI_fn [] None ""
       end
 
 let parse program =

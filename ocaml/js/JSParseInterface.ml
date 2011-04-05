@@ -81,7 +81,17 @@ let parse_program ic enc =
           Ulexing.from_latin1_channel ic
       | EUtf16 opt_bo -> from_utf16_channel ic opt_bo
   in
-    JSParse.program next_lexeme lexemes
+  JSParse.program next_lexeme lexemes
+
+let parse_program_str s enc =
+  let lexemes =
+    match enc with
+      | Regular Ulexing.Utf8 -> Ulexing.from_utf8_string s
+      | Regular Ulexing.Ascii | Regular Ulexing.Latin1 ->
+	Ulexing.from_latin1_string s
+      | EUtf16 opt_bo -> from_utf16_string s opt_bo
+  in
+  JSParse.program next_lexeme lexemes
 
 let parse_selts ic enc = 
   let AST.Program (_,selts) = parse_program ic enc in

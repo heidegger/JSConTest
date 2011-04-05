@@ -146,81 +146,81 @@ let transform t effects sel =
           e *)
     | Assign (_,lhs,op,rhs) as ass ->
         ( match lhs with
-            | Method_call (_,prefix,mname,
-                           [e1; Constant (_,String (_,s))]) ->
-                let i = s_to_i s in
-                  if ((prefix = txn) 
-                      && (mname = (s_to_i t.propAcc))) 
-                  then begin
-                    do_mcalle_el 
-                      txn 
-                      (t.propAss) 
-                      [e1; s_to_e s; rhs; assop_lambda op] 
-                  end 
-                  else ass
-            | Object_access (_,e1,i) -> 
-                do_mcalle_el 
-                  txn 
-                  (t.propAss) 
-                  [e1; s_to_e (i_to_s i); rhs; assop_lambda op] 
-            | Array_access (_,e1,e2) -> 
-                do_mcalle_el 
-                  txn 
-                  (t.propAss) 
-                  [e1; e2; rhs; assop_lambda op] 
-            | Variable (_,i) -> resetlambda (i_to_e i) ass
-            | e -> ass
+          | Method_call (_,prefix,mname,
+                         [e1; Constant (_,String (_,s))]) ->
+            let i = s_to_i s in
+            if ((prefix = txn) 
+                && (mname = (s_to_i t.propAcc))) 
+            then begin
+              do_mcalle_el 
+                txn 
+                (t.propAss) 
+                [e1; s_to_e s; rhs; assop_lambda op] 
+            end 
+            else ass
+          | Object_access (_,e1,i) -> 
+            do_mcalle_el 
+              txn 
+              (t.propAss) 
+              [e1; s_to_e (i_to_s i); rhs; assop_lambda op] 
+          | Array_access (_,e1,e2) -> 
+            do_mcalle_el 
+              txn 
+              (t.propAss) 
+              [e1; e2; rhs; assop_lambda op] 
+          | Variable (_,i) -> resetlambda (i_to_e i) ass
+          | e -> ass
         )
-  
+	  
     | Function_call (_,e,el) as fcall ->  
-        (match e with
-           | Object_access (_,e1,i) -> 
-               do_mcalle_el 
-                 txn 
-                 (t.mCall) 
-                 [e1; s_to_e (i_to_s i); new_array el] 
-           | Array_access (_,e1,e2) ->                
-               do_mcalle_el 
-                 txn 
-                 (t.mCall) 
-                 [e1; e2; new_array el]
-           | e -> fcall    
-        ) 
-    | Method_call (_,e1,i,el) as mcall ->  
-        do_mcalle_el 
-          (s_to_e t.js_namespace) 
-          (t.mCall) 
-          [e1; i_to_e i; new_array el] 
-
-    | Unop (_,e,op) as unop -> resetlambda e unop
-
-    | Object_access(_,e,i) as eorg -> 
-        if (t.trackReads) then
-          do_mcalle_el txn (t.propAcc) [e; s_to_e (i_to_s i)]
-        else eorg
-    | Array_access(_,e1,e2) as eorg -> 
-        if (t.trackReads) then
-          do_mcalle_el txn (t.propAcc) [e1; e2]
-        else eorg
-    | Object_construction (a,pnel) as eorg -> 
-        if (t.trackReads) then
-          eorg
-            (* TODO
-          Object_construction 
-            (a,pnel @ 
-               [StaticName (null_annotation,s_to_c "__context__"),
-                do_mcalle_el 
-               ]) *)
-        else
-          eorg
-    | New_expression (_,e,el) as eorg ->
-        if (t.trackReads) then
+      (match e with
+        | Object_access (_,e1,i) -> 
           do_mcalle_el 
-            txn (t.newObj) [e;ASTUtil.new_array el]
-        else
-          eorg
+            txn 
+            (t.mCall) 
+            [e1; s_to_e (i_to_s i); new_array el] 
+        | Array_access (_,e1,e2) ->                
+          do_mcalle_el 
+            txn 
+            (t.mCall) 
+            [e1; e2; new_array el]
+        | e -> fcall
+      ) 
+    | Method_call (_,e1,i,el) ->
+      do_mcalle_el 
+        (s_to_e t.js_namespace) 
+        (t.mCall) 
+        [e1; i_to_e i; new_array el] 
+	
+    | Unop (_,e,op) as unop -> resetlambda e unop
+      
+    | Object_access(_,e,i) as eorg -> 
+      if (t.trackReads) then
+        do_mcalle_el txn (t.propAcc) [e; s_to_e (i_to_s i)]
+      else eorg
+    | Array_access(_,e1,e2) as eorg -> 
+      if (t.trackReads) then
+        do_mcalle_el txn (t.propAcc) [e1; e2]
+      else eorg
+    | Object_construction (a,pnel) as eorg -> 
+      if (t.trackReads) then
+        eorg
+        (* TODO
+           Object_construction 
+           (a,pnel @ 
+           [StaticName (null_annotation,s_to_c "__context__"),
+           do_mcalle_el 
+           ]) *)
+      else
+        eorg
+    | New_expression (_,e,el) as eorg ->
+      if (t.trackReads) then
+        do_mcalle_el 
+          txn (t.newObj) [e;ASTUtil.new_array el]
+      else
+        eorg
     | e -> e
-
+      
   in
   let a_s = function 
     | With (ann,Variable (_,i),s) -> 

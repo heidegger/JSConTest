@@ -237,13 +237,11 @@ function_declaration :
   Llbrace function_body Lrbrace 
   {(Function_declaration ((default_annotation $1 $8),"",fsto3 $2, fsto3 $4,None, fsto3 $7),
     $1, $8)}
-/*
 |
   LCcomment KWfunction identifier Llparen formal_parameter_list Lrparen
   Llbrace function_body Lrbrace 
   {(Function_declaration ((default_annotation (fst $1) $9),snd $1,fsto3 $3, fsto3 $5, None, fsto3 $8),
     fst $1, $9) }
-*/
 ;
 
 function_expression :
@@ -261,14 +259,14 @@ function_expression :
     Llbrace function_body Lrbrace 
     {(Function_expression ((default_annotation (fst $1) $9),Some (snd $1), (Some (fsto3 $3)), fsto3 $5, None, fsto3 $8),
       (fst $1), $9)}
-| KWfunction Llparen formal_parameter_list Lrparen
+/*| KWfunction Llparen formal_parameter_list Lrparen
     Llbrace LCcomment function_body Lrbrace        
     {(Function_expression ((default_annotation $1 $8), Some (snd $6) ,None, fsto3 $3, None, fsto3 $7), $1, $8)}
 | KWfunction identifier Llparen formal_parameter_list Lrparen
     Llbrace LCcomment function_body Lrbrace 
     {(Function_expression ((default_annotation $1 $9),Some (snd $7) ,(Some (fsto3 $2)), fsto3 $4, None, fsto3 $8),
       $1, $9)}
-    ;
+*/    ;
 
 formal_parameter_list :
                                           {([], null_annotation, null_annotation)}

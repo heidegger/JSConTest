@@ -169,17 +169,22 @@ let transform env effects sel =
                   do_mcalle_el 
                     prefix 
                     env.mCall 
-                    [t_e e1; s_to_e (i_to_s (t_i i)); new_array el] 
+                    [t_e e1; 
+		     s_to_e (i_to_s (t_i i)); 
+		     new_array (List.map t_e el)] 
               | Array_access (_,e1,e2) ->                
                   do_mcalle_el 
                     prefix
                     env.mCall
-                    [t_e e1; t_e e2; new_array el]
+                    [t_e e1; 
+		     t_e e2; 
+		     new_array (List.map t_e el)] 
               | e -> 
                   do_mcalle_el
                     prefix
                     env.fCall
-                    [t_e e; new_array el]
+                    [t_e e; 
+		     new_array (List.map t_e el)] 
           end
     | Method_call (_,e1,i,el) as e -> e
 (*        let e1 = t_e e1 in
@@ -391,7 +396,7 @@ let transform env effects sel =
                                     (i_to_e (s_to_i "arguments"))])))))
            ] *)
       
-let  before_wrapper env pl e = 
+let before_wrapper env pl e = 
   do_mcalle_el 
     (i_to_e (s_to_i env.js_namespace))
     "enableWrapper"

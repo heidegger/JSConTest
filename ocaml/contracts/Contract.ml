@@ -33,11 +33,12 @@ type ('b,'a,'dup,'ddown) t =
 let create_tgI_fno clgI al trans fno = 
   { clist= clgI; alist= al; transformation= trans; function_name= fno; }
 
-let create_tgI_fn clgI trans fn = create_tgI_fno clgI [] trans (Some fn)
+let create_tgI_fn clgI trans fn = 
+  create_tgI_fno clgI [] trans (Some fn)
 
-let create_tgI_al_trans clgI al trans = create_tgI_fno clgI al trans None
+(* let create_tgI_al_trans clgI al trans = create_tgI_fno clgI al trans None *)
 
-let create_tgI clgI trans = create_tgI_al_trans clgI [] trans
+(* let create_tgI clgI trans = create_tgI_al_trans clgI [] trans *)
 (* let create_t cl = create_tgI_al_trans (creategI cl) [] None *)
 
 
@@ -133,11 +134,18 @@ let transform :
   let rec visit_t : ('b,'a,'dup,'ddown) t -> ('b2,'a2,'dup2,'ddown2) t = fun t ->
     let t =
       match b_t t with
-        | { clist= cl_gI; alist= al; transformation = trans } ->
+        | { clist= cl_gI; 
+	    alist= al; 
+	    transformation = trans; 
+	    function_name=fn
+	  } ->
             let cl,gI = List.split cl_gI in
             let cl = List.map visit_tc cl in
             let al = List.map ba_analyse al in
-              { clist = List.combine cl gI; alist = al; transformation = trans; function_name= None; }
+              { clist = List.combine cl gI; 
+		alist = al; 
+		transformation = trans; 
+		function_name= fn; }
     in
       a_t t
 
@@ -235,7 +243,9 @@ let transform_c :
           ~ba_analyse:ba_an
           ~ba_depend_up:ba_du
           ~ba_depend_down:ba_dd
-          { clist = [c,GenInfo.create ()]; alist = []; transformation = None; function_name= None; }
+          { clist = [c,GenInfo.create ()]; alist = []; 
+	    transformation = None; 
+	    function_name= None; }
       in
         match t with
           | { clist = [c,_]; alist = []; transformation = None } -> c
@@ -252,7 +262,8 @@ let raise_analyse : ('b,'a,'dup,'ddown) t -> ('b,'a,'dup,'ddown) t = fun tc ->
   let a_tc tc = 
     let cl = get_clgI tc in
     let trans = get_trans tc in
-    let tc = create_tgI_al_trans cl !al trans in
+    let fn = get_name tc in
+    let tc = create_tgI_fno cl !al trans fn in
       al := [];
       tc
   in

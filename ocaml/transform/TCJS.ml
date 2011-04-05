@@ -528,20 +528,20 @@ module Make(T: TRANS) : S with type t = T.t = struct
     in
     let transform_se = function
       | Function_declaration (a,c,n,pl,_,sel) as forg ->
-          let fname = ASTUtil.i_to_s n in
-          let info = create_infos (get_labels ()) (get_strings ()) (get_numbers ()) in
-	  let ftestname = (Testlib.gen_fun_var_name fname) in
-	  let finfo = {
-		contract= c;
+        let fname = ASTUtil.i_to_s n in
+        let info = create_infos (get_labels ()) (get_strings ()) (get_numbers ()) in
+	let ftestname = (Testlib.gen_fun_var_name fname) in
+	let finfo = {
+	  contract= c;
 		params= pl;
 		recursive_name= Some n;
 		body=sel; }
-	  in
-	  let mod_fd = create_code env info ftestname finfo in
-	  let _ = close_scope () in
-	    [AST.VarDecl 
-         	(s_to_i fname,
-          	 mod_fd)]
+	in
+	let mod_fd = create_code env info ftestname finfo in
+	let _ = close_scope () in
+	[AST.VarDecl 
+            (s_to_i fname,
+             mod_fd)]
       | se -> [se]
     in
     let transform_e = function
@@ -552,17 +552,26 @@ module Make(T: TRANS) : S with type t = T.t = struct
               | _ -> ()
           end;
           e
-      | Function_expression (a,Some c,no,pl,lvo,sel) -> 	
-          let fname = match no with None -> "" | Some n -> ASTUtil.i_to_s n in
-          let info = create_infos (get_labels ()) (get_strings ()) (get_numbers ()) in
-	  let ftestname = (Testlib.gen_fun_var_name fname) in
-	  let finfo = {
-		contract= c;
-		params= pl;
-		recursive_name=no;
-		body=sel; }
-	  in
-	    create_code env info ftestname finfo
+      | Function_expression (a,Some c,no,pl,lvo,sel) as e-> 	
+	let nos = match no with
+	  | None -> None
+	  | Some n -> Some (ASTUtil.i_to_s n)
+	in
+        let fname = get_test_name 
+	  nos 
+	  c 
+	  (fun () -> match pathname e with None -> "" | Some s -> s)
+	in
+	let _ = print_endline fname in
+        let info = create_infos (get_labels ()) (get_strings ()) (get_numbers ()) in
+	let ftestname = (Testlib.gen_fun_var_name fname) in
+	let finfo = {
+	  contract= c;
+	  params= pl;
+	  recursive_name=no;
+	  body=sel; }
+	in
+	create_code env info ftestname finfo
       | e -> e
     in            
       AST.visit
