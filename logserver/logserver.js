@@ -72,7 +72,7 @@ function writeToFile(data,response) {
       throw err;
     }
     console.log('Logdata saved!');      
-    response.doOwnClose('\nsaving data successfully <a href="log.txt">to log</a>');
+    response.doOwnClose('\nsaving data successfully <a href="./logs/' + data.functionName + '.txt">to log</a>');
   };
 
   path.exists(filename,function(exists) {
@@ -97,7 +97,7 @@ http.createServer(function(request, response) {
     });
     request.addListener('end', function () {
       console.log('write log entry to file');
-      response.sendHeader(200);
+      response.writeHeader(200);
       response.write("<html><head><title>log server</title></head><body>");
       response.write("log entry added!");
       response.doOwnClose = function (s) {
@@ -111,20 +111,20 @@ http.createServer(function(request, response) {
     var filename = path.join(process.cwd(), uri);  
     path.exists(filename, function(exists) {
       if(!exists) {  
-        response.sendHeader(404, {"Content-Type": "text/plain"});  
+        response.writeHeader(404, {"Content-Type": "text/plain"});  
         response.write("404 Not Found\n");  
         response.end();  
         return;  
       }  
       fs.readFile(filename, "binary", function(err, file) {  
         if(err) {  
-          response.sendHeader(500, {"Content-Type": "text/plain"});  
+          response.writeHeader(500, {"Content-Type": "text/plain"});  
           response.write(err + "\n");  
           response.end();  
           return;  
         }  
         console.log("send file: " + filename);
-        response.sendHeader(200);  
+        response.writeHeader(200);  
         response.write(file, "binary");  
         response.end();  
       });
