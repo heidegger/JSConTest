@@ -19,7 +19,8 @@
 		o,
 		cancel,
 		log_console,
-		lastUid;
+		lastUid,
+		counter = 0;
 	
 	if (!P.events) {
 		P.events = {};
@@ -76,6 +77,21 @@
 			n2 = document.createElement("dd");
 			dl.appendChild(n2);
 			n2.appendChild(tree);
+			return n2;
+		}
+		
+		function createJsonString (tree){
+			var str;
+			for (var attr in tree){
+				if (tree[attr].data === (function () {return this;} ())) {
+					return "window";
+				} 
+				if (tree.hasOwnProperty(attr)){
+					str = JSON.stringify(JSON.decycle(tree[attr].data));
+				}
+			}
+			
+			return str;
 		}
 		
 		function nextLine() {
@@ -120,6 +136,47 @@
 				}		
 			});
 			
+		}
+		
+		function extractFunctionname (cexValue) {
+			var index,str,a;
+			index = cexValue.indexOf('(');
+			str = cexValue.substring (0,index);
+			a = str.split(" ");
+			return a[1];
+			
+		}
+		
+		function createServerButton (id,ce,exampleId){
+			counter++;
+			
+			$('<button>').text("send to server").appendTo('#' + id).button().click(function () {
+				var field, text,functionName;
+				
+				//counter: was gehört zusammen, function name: beispiele einer function in eine datei, type: this, paramter, result, entry:inhalt
+				functionName = extractFunctionname(P.utils.valueToString(ce.getValue()));
+				$.post('http://localhost:8080/log.htm',
+				       { functionName: functionName, exampleId: exampleId, type: "value", entry: P.utils.valueToString(ce.getValue()) });
+				
+				$.post('http://localhost:8080/log.htm',
+				       { functionName: functionName, exampleId: exampleId, type: "contract", entry: ce.getContract().getcdes() });
+				
+				field = document.getElementById(id+"_"+"this");
+				text = field.getAttribute('value');
+				$.post('http://localhost:8080/log.htm',
+				       { functionName: functionName, exampleId: exampleId, type: "this", entry: text });
+				
+				field = document.getElementById(id+"_"+"params");
+				text = field.getAttribute('value');
+				$.post('http://localhost:8080/log.htm',
+				       { functionName: functionName, exampleId: exampleId, type: "parameters", entry: text });
+				
+				field = document.getElementById(id+"_"+"result");
+				text = field.getAttribute('value');
+				$.post('http://localhost:8080/log.htm',
+				       { functionName: functionName, exampleId: exampleId, type: "result", entry: text });
+				
+			});
 		}
 		
 		function createMenuButtons(appendingId) {
@@ -212,7 +269,7 @@
 		}
 	
 		function aCE(ce) {
-			var enLog, item, uid, dl, treeDiv, exp_header, exp_content;
+			var enLog, item, uid, dl, treeDiv, exp_header, exp_content,text,dd,paraTree,label,resultTree,thisTree;
 
 			uid = "ce_dl_item" + ce.uid;
 			if (lastUid !== ce.uid) {
@@ -249,17 +306,42 @@
 			exp_header.appendChild(dl);
 			
 			treeDiv = document.createElement("div");
-			newTree(dl, "this", treeDiv);
-			P.treeView.init(ce.getThisValue(), treeDiv);
-
-			treeDiv = document.createElement("div");
-			newTree(dl, "parameters", treeDiv);
-			P.treeView.init(ce.getParams(), treeDiv);
-
-			treeDiv = document.createElement("div");
-			newTree(dl, "result", treeDiv);
-			P.treeView.init(ce.getResult(), treeDiv);
+			dd = newTree(dl, "this", treeDiv);
+			thisTree = P.treeView.init(ce.getThisValue(), treeDiv);
+			text = document.createElement("input");
+			text.setAttribute('type','text');
+			text.setAttribute('value',createJsonString(thisTree._nodes));
+			text.setAttribute('id',uid + "_" + id+"_"+"this");
+			label = document.createElement("label");
+			label.innerHTML = 'JSON: ';
+			dd.appendChild(label);
+			dd.appendChild(text);
 			
+			treeDiv = document.createElement("div");
+			dd = newTree(dl, "parameters", treeDiv);
+			paraTree = P.treeView.init(ce.getParams(), treeDiv);
+			text = document.createElement("input");
+			text.setAttribute('type','text');
+			text.setAttribute('value',createJsonString(paraTree._nodes));
+			text.setAttribute('id',uid + "_" + id+"_"+"params");
+			label = document.createElement("label");
+			label.innerHTML = 'JSON: ';
+			dd.appendChild(label);
+			dd.appendChild(text);
+			
+			treeDiv = document.createElement("div");
+			dd = newTree(dl, "result", treeDiv);
+			resultTree = P.treeView.init(ce.getResult(), treeDiv);
+			text = document.createElement("input");
+			text.setAttribute('type','text');
+			text.setAttribute('value',createJsonString(resultTree._nodes));
+			text.setAttribute('id',uid + "_" + id+"_"+"result");
+			label = document.createElement("label");
+			label.innerHTML = 'JSON: ';
+			dd.appendChild(label);
+			dd.appendChild(text);
+			
+			createServerButton (uid + "_" + id,ce,"Example"+id);
 		}
 		
 		
