@@ -1,3 +1,7 @@
+/* version 0.1 */
+/* author: Dirk Kienle, Phillip Heidegger */
+
+
 var sys = require("sys"),  
     http = require("http"),  
     url = require("url"),  
