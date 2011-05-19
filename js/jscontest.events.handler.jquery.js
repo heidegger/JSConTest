@@ -1,5 +1,40 @@
 /* Version: 0.2.0 */
-/* author: Phillip Heidegger,Dirk Kienle */
+/* author: Phillip Heidegger,Dirk Kienle 
+ * 
+ * This event handler is build on version 1.8.13 of 
+ * 
+ *               JQUERY-UI
+ * 		http://jqueryui.com/download
+ * 
+ * Tested under version: 1.8.6, 1.8.13
+ * 
+ * You should at least download the following parts of jqueryui:
+ *   UNI Core:
+ *   - core
+ *   - Widget
+ *   
+ *   Widgets:
+ *   - Button
+ *   
+ *   Themes:
+ *   - Pepper Grinder
+ *   
+ *  For the examples to work without any changes place the code in:
+ *    libs/jquery-ui-1.8.13/
+ *   
+ * 
+ *   
+ * It also used the 
+ * 
+ *                          JSON 
+ *         https://github.com/douglascrockford/JSON-js
+ * 
+ * implementation from Douglas Crackford 
+ *      
+ * For the examples to work without any changes place the code in:
+ *    libs/JSON-js/
+ * 
+ * */
 
 "use strict";
 (function (P) {
