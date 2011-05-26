@@ -176,7 +176,7 @@
 		function split(a) {
 			var result = [], 
 				key, pos, i, prop_val;
-			for (key = 0; key < result.length; key += 1) {
+			for (key = 0; key < a.length; key += 1) {
 				result[key] = [];
 			}
 			for (pos = 0; pos < a.length; pos += 1) {
@@ -191,7 +191,7 @@
 		function osplit(a) {
 			var result = [], 
 				key, pos, i, j, prop_val;
-			for (key = 0; key < result.length; key += 1) { 
+			for (key = 0; key < a.length; key += 1) { 
 				result[key] = [];
 			}
 			for (pos = 0; pos < a.length; pos += 1) {
@@ -284,10 +284,10 @@
 			return function (a){
 				
 				var str = "";
-				if (isString(a)) {
+				if (P.check.isString(a)) {
 					return p(a);
-				} else if (isArray(a)){
-					for (i = 0;i<a.length;i++){
+				} else if (P.check.isArray(a)) {
+					for (i = 0; i < a.length; i++){
 				
 						str += a[i];
 					}
@@ -310,32 +310,32 @@
 			the functon will return param.
 	*/
 	function p_ddmin_number(p, param) {
+		function divideByPrims(p, x) {
+			var result = 0;
+			var testResult = 0;
+			var prims = new Array(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31,
+					37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
+					101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151,
+					157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211,
+					223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271,
+					277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347,
+					349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409,
+					419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467,
+					479, 487, 491, 499, 503, 509, 521, 523, 541);
+
+			for ( var z = 0; z < prims.length; z++) {
+				testResult = Math.round(x / prims[z]);
+				if (p(testResult))
+					result = testResult;
+			}
+
+			return result;
+		}
 		var result = 0;
 		if (!p(param)) {
 			throw ("Invalid call to ddmin, it is not allowed to call it with an object "
 					+ "that do not pass the predicate");
 		} else {
-			function divideByPrims(p, x) {
-				var result = 0;
-				var testResult = 0;
-				var prims = new Array(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31,
-						37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
-						101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151,
-						157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211,
-						223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271,
-						277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347,
-						349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409,
-						419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467,
-						479, 487, 491, 499, 503, 509, 521, 523, 541);
-
-				for ( var z = 0; z < prims.length; z++) {
-					testResult = Math.round(x / prims[z]);
-					if (p(testResult))
-						result = testResult;
-				}
-
-				return result;
-			}
 			if (p(0))
 				return 0;
 			if (p(1))
@@ -354,7 +354,7 @@
 			result = divideByPrims(p, param);
 			if (result !== 0)
 				return p_ddmin(p, result, 2);
-			if (!isInt(param)) {
+			if (!P.check.isInt(param)) {
 				var floatResult = param - Math.floor(param);
 				var roundedResult = Math.round(param);
 				if (p(floatResult))
