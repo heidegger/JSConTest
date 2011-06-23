@@ -14,7 +14,7 @@
 
 "use strict";
 (function (P) {
-	var DEBUG = true,
+	var DEBUG = false,
 		/*
 		 * create a new object, and register it in the namespace JSConTest
 		 */

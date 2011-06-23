@@ -13,6 +13,7 @@
     <script type="text/javascript" src="../../js/jscontest.events.js"></script>
     <script type="text/javascript" src="../../js/jscontest.ddmin.js"></script>
     <script type="text/javascript" src="../../js/jscontest.events.handler.data.js"></script>
+    <script type="text/javascript" src="../../js/jscontest.events.handler.ajax.js"></script>
     <script type="text/javascript" src="../../js/jscontest.utils.md5.js"></script>
     <script type="text/javascript" src="../forJsTestDriver/makeChecker.js"></script>
     <script type="text/javascript" src="../../js/jscontest.treeView.js"></script>
@@ -20,13 +21,13 @@
     <script type="text/javascript" src="../forJsTestDriver/register_data_checker.js"></script>
 
     <!--jquery-->
-    <link rel="stylesheet" href="../../jquery/development-bundle/themes/base/jquery.ui.all.css" type="text/css">
-    <link rel="stylesheet" href="../../jquery/css/pepper-grinder/jquery-ui-1.8.6.custom.css" type="text/css">
-    <script src="../../jquery/development-bundle/jquery-1.4.2.js"></script>
-    <script src="../../jquery/development-bundle/ui/jquery.ui.core.js"></script>
-    <script src="../../jquery/development-bundle/ui/jquery.ui.widget.js"></script>
-    <script src="../../jquery/development-bundle/ui/jquery.ui.button.js"></script>
-    <link rel="stylesheet" href="../../jquery/development-bundle/demos/demos.css">
+    <link rel="stylesheet" href="../../libs/jquery-ui-1.8.13/development-bundle/themes/base/jquery.ui.all.css" type="text/css">
+    <link rel="stylesheet" href="../../libs/jquery-ui-1.8.13//css/pepper-grinder/jquery-ui-1.8.13.custom.css" type="text/css">
+    <script src="../../libs/jquery-ui-1.8.13/development-bundle/jquery-1.5.1.js"></script>
+    <script src="../../libs/jquery-ui-1.8.13/development-bundle/ui/jquery.ui.core.js"></script>
+    <script src="../../libs/jquery-ui-1.8.13/development-bundle/ui/jquery.ui.widget.js"></script>
+    <script src="../../libs/jquery-ui-1.8.13/development-bundle/ui/jquery.ui.button.js"></script>
+    <link rel="stylesheet" href="../../libs/jquery-ui-1.8.13/development-bundle/demos/demos.css">
 
     <script type="text/javascript" src="../../js/jscontest.events.handler.jquery.js"></script>
 
@@ -47,6 +48,9 @@
 	 
 	<!-- TreeView source file --> 
 	<script src="http://yui.yahooapis.com/2.8.1/build/treeview/treeview-min.js" ></script>
+	
+	<!-- JASON -->
+	<script type="text/javascript" src="../../libs/JSON-js/cycle.js"></script>
 
   </head>
 
@@ -84,6 +88,7 @@
 	  	}		    
 		var dl = JSConTest.events.handler.jquery.create('logger',"ul");
 		JSConTest.events.register(dl);
+		JSConTest.events.register(JSConTest.events.handler.ajax.create());
     </script>
     
 

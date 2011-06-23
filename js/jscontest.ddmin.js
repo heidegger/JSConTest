@@ -176,7 +176,7 @@
 		function split(a) {
 			var result = [], 
 				key, pos, i, prop_val;
-			for (key = 0; key < result.length; key += 1) {
+			for (key = 0; key < a.length; key += 1) {
 				result[key] = [];
 			}
 			for (pos = 0; pos < a.length; pos += 1) {
@@ -191,7 +191,7 @@
 		function osplit(a) {
 			var result = [], 
 				key, pos, i, j, prop_val;
-			for (key = 0; key < result.length; key += 1) { 
+			for (key = 0; key < a.length; key += 1) { 
 				result[key] = [];
 			}
 			for (pos = 0; pos < a.length; pos += 1) {
@@ -260,18 +260,46 @@
 	*/
 	function p_ddmin_string(p, param)
 	{
+		var result,str, i;
 		if (!p(param)) {
 			throw ("Invalid call to ddmin, it is not allowed to call it with an object " +
 						 "that do not pass the predicate");
 		} else {
 			if (p("")) {
 				return "";
+			} else if (param.length > 1){
+				str = "";
+				result = p_ddmin(createPred(p),param.split(""),2);
+				for (i = 0;i<result.length;i++){
+					
+					str += result[i];
+				}
+				return str;
 			}
-			// TODO @DIRK: vereinfache Strings, indem Du Zeichen entfernst. 
-			//						 Das sollte so sein, als ob der String ein Char-Array ist.
 		}
+	
 		return param;
+	
+		function createPred (p){
+			return function (a){
+				
+				var str = "";
+				if (P.check.isString(a)) {
+					return p(a);
+				} else if (P.check.isArray(a)) {
+					for (i = 0; i < a.length; i++){
+				
+						str += a[i];
+					}
+					return p(str);
+				}
+				return false;
+				
+			};
+			
+		}
 	}
+
 
 	/** ddmin_number: number -> boolean, number -> number
 			ddmin_number(p,param) does:
@@ -281,22 +309,69 @@
 			if this value fulfills p. If it does not,
 			the functon will return param.
 	*/
-	function p_ddmin_number(p, param)
-	{
+	function p_ddmin_number(p, param) {
+		function divideByPrims(p, x) {
+			var result = 0;
+			var testResult = 0;
+			var prims = new Array(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31,
+					37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
+					101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151,
+					157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211,
+					223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271,
+					277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347,
+					349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409,
+					419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467,
+					479, 487, 491, 499, 503, 509, 521, 523, 541);
+
+			for ( var z = 0; z < prims.length; z++) {
+				testResult = Math.round(x / prims[z]);
+				if (p(testResult))
+					result = testResult;
+			}
+
+			return result;
+		}
+		var result = 0;
 		if (!p(param)) {
-			throw ("Invalid call to ddmin, it is not allowed to call it with an object " +
-						 "that do not pass the predicate");
+			throw ("Invalid call to ddmin, it is not allowed to call it with an object "
+					+ "that do not pass the predicate");
 		} else {
-			if (p(0)) {
+			if (p(0))
 				return 0;
-			}
-			if (p(1)) {
+			if (p(1))
 				return 1;
-			}
-			if (p(-1)) {
+			if (p(-1))
 				return -1;
+			if (p(2))
+				return 2;
+			if (p(-2))
+				return -2;
+			if (param < 0) {
+				result = param - (2 * param);
+				if (p(result))
+					return p_ddmin(p, result, 2);
 			}
-			// TODO @Dirk: Was kann man hier noch machen?
+			result = divideByPrims(p, param);
+			if (result !== 0)
+				return p_ddmin(p, result, 2);
+			if (!P.check.isInt(param)) {
+				var floatResult = param - Math.floor(param);
+				var roundedResult = Math.round(param);
+				if (p(floatResult))
+					return p_ddmin(p, floatResult, 2);
+				if (p(roundedResult))
+					return p_ddmin(p, roundedResult, 2);
+			}
+			if (param > 0) {
+				result = param - 1;
+				if (p(result))
+					return p_ddmin(p, result, 2);
+			}
+			if (param < 0) {
+				result = param + 1;
+				if (p(result))
+					return p_ddmin(p, result, 2);
+			}
 		}
 		return param;
 	}
