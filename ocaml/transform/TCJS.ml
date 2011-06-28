@@ -443,6 +443,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
 
   (* creates a name from an expression. Used to build the default 
    * function of get_test_name. *)
+  
   let rec pathname = function
     | Variable (an,i) -> Some (so_i i)
     | Object_access (an,e,i) -> fopt (fun s -> s ^ "_" ^ so_i i) (pathname e)
@@ -458,17 +459,22 @@ module Make(T: TRANS) : S with type t = T.t = struct
    * First the function name itself is considerd. If this does not exists, 
    * the contract is consulted for a name. If both does not have a name, the
    * function default is called. Usually it first tries to generate a new name from 
-   * the right hand side of an assignment, if the function is the left hand side of an 
+   * the left hand side of an assignment, if the function is a right hand side of an 
    * assignment, or it completely generates a new unique name. *)
   let get_test_name fn tc default =
-	match fn with
-	  | None -> begin
-	      match Contract.get_name tc with
-                | None -> default ()
-                | Some s -> s
-	    end
-	  | Some i -> i	
-
+    let s = 
+      match fn with
+	| None -> begin
+	  match Contract.get_name tc with
+            | None -> ""
+            | Some s -> s
+	end
+	| Some i -> i	
+    in
+    if String.length s < 1 then
+      default ()
+    else
+      s
       
   let generate_tests env program = 
     (* gt ga ge gcsseff trans_prefix js_ns tmp_prefix program = *)
@@ -544,6 +550,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
              mod_fd)]
       | se -> [se]
     in
+    let lhs_ref = ref [] in
     let transform_e = function
       | Object_access (_,_,i) as e -> 
           begin
@@ -552,15 +559,22 @@ module Make(T: TRANS) : S with type t = T.t = struct
               | _ -> ()
           end;
           e
-      | Function_expression (a,Some c,no,pl,lvo,sel) as e-> 	
+      | Function_expression (a,Some c,no,pl,lvo,sel) as e ->
 	let nos = match no with
 	  | None -> None
 	  | Some n -> Some (ASTUtil.i_to_s n)
 	in
+	
         let fname = get_test_name 
 	  nos 
 	  c 
-	  (fun () -> match pathname e with None -> "" | Some s -> s)
+	  (fun () ->
+	    match List.find
+	      (function | None -> false | Some s -> true)
+	      !lhs_ref
+	    with 
+	      | None -> ""
+	      | Some s -> s)
 	in
 	let _ = print_endline fname in
         let info = create_infos (get_labels ()) (get_strings ()) (get_numbers ()) in
@@ -572,6 +586,10 @@ module Make(T: TRANS) : S with type t = T.t = struct
 	  body=sel; }
 	in
 	create_code env info ftestname finfo
+      | Assign (_,lhs,Regular_assign _,rhs) as e ->
+	lhs_ref := List.tl !lhs_ref;
+	(* print_endline "remove from stack"; *)
+	e
       | e -> e
     in            
       AST.visit
@@ -586,8 +604,15 @@ module Make(T: TRANS) : S with type t = T.t = struct
            | se -> [se])
 	~b_expression:
 	(function
-	  |  Function_expression _ as e -> new_scope ();
-		e
+	  | Function_expression _ as e -> new_scope ();
+	    e
+	  | Assign (_,lhs,Regular_assign _,rhs) as e ->
+	    let so = pathname lhs in
+	    (* (match so with
+	      | Some s -> (* print_endline ("lhs set " ^ s) *)
+	      | _ -> ()); *)
+	    lhs_ref := so :: !lhs_ref;
+	    e
 	  | e -> e)
 	program
 
