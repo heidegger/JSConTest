@@ -168,7 +168,7 @@
 		}
 		return function (test, stat, count, resultHandler) {
 			return function () {
-				var doInThisCall  = Math.min(count - test.done, perCall);
+				var doInThisCall  = P.math.min(count - test.done, perCall);
 				if (doInThisCall < 1  || result.error || result.normal === false) {
 					if (result.normal === true) {
 						stat.incWellTested();

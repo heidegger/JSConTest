@@ -142,7 +142,7 @@
 					os = osplit(o);
 					for (key = 0; key < os.length; key += 1) {
 						if (p(os[key])) {
-							return p_ddmin(p, os[key], Math.max(gran - 1, 2));
+							return p_ddmin(p, os[key], P.math.max(gran - 1, 2));
 						}
 					}
 				}
@@ -184,7 +184,7 @@
 				prop_val = a[pos];
 				result[i].push(prop_val);
 				
-				//result[i][Math.floor(pos/gran)] = prop_val;
+				//result[i][P.math.floor(pos/gran)] = prop_val;
 			}
 			return result;
 		}
@@ -232,7 +232,7 @@
 					as = osplit(a);
 					for (key = 0; key < as.length; key += 1) {
 						if (p(as[key])) {
-							return p_ddmin(p, as[key], Math.max(gran - 1, 2));
+							return p_ddmin(p, as[key], P.math.max(gran - 1, 2));
 						}
 					}
 				}
@@ -324,7 +324,7 @@
 					479, 487, 491, 499, 503, 509, 521, 523, 541);
 
 			for ( var z = 0; z < prims.length; z++) {
-				testResult = Math.round(x / prims[z]);
+				testResult = P.math.round(x / prims[z]);
 				if (p(testResult))
 					result = testResult;
 			}
@@ -355,8 +355,8 @@
 			if (result !== 0)
 				return p_ddmin(p, result, 2);
 			if (!P.check.isInt(param)) {
-				var floatResult = param - Math.floor(param);
-				var roundedResult = Math.round(param);
+				var floatResult = param - P.math.floor(param);
+				var roundedResult = P.math.round(param);
 				if (p(floatResult))
 					return p_ddmin(p, floatResult, 2);
 				if (p(roundedResult))

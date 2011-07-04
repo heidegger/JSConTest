@@ -376,8 +376,8 @@
 	 var hexa_c="";
 	 var hexa_m=n;
 	 for (hexa_i=0;hexa_i<8;hexa_i++) {
-	   hexa_c=hexa_h.charAt(Math.abs(hexa_m)%16)+hexa_c;
-	   hexa_m=Math.floor(hexa_m/16);
+	   hexa_c=hexa_h.charAt(JSConTest.math.abs(hexa_m)%16)+hexa_c;
+	   hexa_m = JSConTest.math.floor(hexa_m/16);
 	 }
 	 return hexa_c;
 	}

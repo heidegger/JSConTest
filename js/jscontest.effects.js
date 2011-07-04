@@ -524,7 +524,7 @@
 			});			
 			getReturnBox = (function (rv) {
 				var b = rv;
-				if (return_box) {
+				if (return_box && return_box.box) {
 					b = return_box.box;
 					return_box = false;
 				}
@@ -566,10 +566,14 @@
 			// but before we can call the function, we have to incremnt the
 			// uid, to be able to distinguish effects registers by the method 
 			// and new objects created
-
-			incrementUid();
-			result = f.apply(that_ub, plub);
-			deleteThisParams();
+			
+			if (f && "apply" in f) {
+				incrementUid();
+				result = f.apply(that_ub, plub);
+				deleteThisParams();				
+			} else {
+				console.log("strange apply setting");
+			}
 			return getReturnBox(result);
 		});
 
@@ -578,6 +582,8 @@
 		});
 		
 		mCall = (function mCall(o, m, pl) {
+			var thisvalue,
+				slice = Array.prototype.slice;
 			// FIXME: deal with the situation, that m is also a box
 			//			 take the value of m, convert it to a string, do
 			//			 the method call with this string
@@ -586,23 +592,49 @@
 			if (o && o.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
 				return fmCall((o.reference)[m], o, pl);
 			} else {
+				if (typeof o === "function") {
+					// => o has the internal property [[call]], which is used to execute the function
+					// therefor, the code o.call(...) or o.apply(...) will execute the internall [[call]]
+					// since the property lookups o["call"] and o["apply"] will both returns typically
+					// undefined, we have to handle the two cases special
+					// TODO: check if the second condition is needed
+					if (m === "call") {
+						// pl = [this, p1, ..., pn]
+						thisvalue = pl[0];
+						return fmCall(o, thisvalue, slice.call(pl, 1));
+					} else if (m === "apply") {
+						// pl = [this, pl]
+						return fmCall(o,pl[0],pl[1]);
+					}
+				}
+				// default behaviour, 
 				return fmCall(o[m], o, pl);
 			}			
 		});
 
 		newCall = function (f, pl) {
+//			var result;
+//			switch (pl.length) {
+//			case 0: result = new f(); break;
+//			case 1: result = new f(pl[0]); break;
+//			case 2: result = new f(pl[0], pl[1]); break;
+//			case 3: result = new f(pl[0], pl[1], pl[2]); break;
+//			default: 
+//				throw("too many parameters of constructor!");
+//			}
+//			return result;
 			function Dummy() { }
 			Dummy.prototype = f.prototype;
 			var newObj = new Dummy(),
 				result = fmCall(f, newObj, pl);
 			// a constructor returns the value return by a
-			// return statement, if that was != undefined
+			// return statement, if that was !== undefined
 			// If the return value is === undefined, the new
 			// created object is returned.
 
 			// the result might be a wrapper
 			if (result && result.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
-				if (!result.reference) {
+				if (result.reference === undefined) {
 					result.reference = newObj;
 					return result;
 				} else {
@@ -611,7 +643,7 @@
 			}
 
 			// the result was not a wrapper
-			if (!result) {
+			if (result === undefined) {
 				return newObj;
 			} else {
 				return result;
@@ -1025,7 +1057,7 @@
 	function fixObjectLiteral(o) {
 		var pw, p, u = getUid();
 		for (p in o) {
-			if (o.hasOwnProperty(p)) {
+			if (JSConTest.utils.hasOwnProperty.apply(o,[p])) {
 				pw = o[p];
 				if (pw && pw.THIS_IS_A_WAPPER_b3006670bc29b646dc0d6f2975f3d685) {
 					if (!(o.__infos__)) {

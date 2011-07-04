@@ -786,7 +786,7 @@
 				}
 			}
 			function generate() {
-				var r = Math.random();
+				var r = JSConTest.math.random();
 				if (r < 0.5) {
 					return c1.gen();
 				} else {

@@ -42,7 +42,38 @@ var JSConTest = (function (P) {
 			P.math.MAXINT = x;
 		}
 	}());
-
+	P.math.E = Math.E;
+	P.math.LN10 = Math.LN10;
+	P.math.LN2 = Math.LN2;
+	P.math.LOG10E = Math.LOG10E;
+	P.math.LOG2E = Math.LOG2E;
+	P.math.PI = Math.PI;
+	P.math.SQRT1_2 = Math.SQRT1_2;
+	P.math.SQRT2 = Math.SQRT2;
+	P.math.abs = Math.abs;
+	P.math.acos = Math.acos;
+	P.math.asin = Math.asin;
+	P.math.atan = Math.atan;
+	P.math.atan2 = Math.atan2;
+	P.math.ceil = Math.ceil;
+	P.math.cos = Math.cos;
+	P.math.exp = Math.exp;
+	P.math.floor = Math.floor;
+	P.math.log = Math.log;
+	P.math.max = Math.max;
+	P.math.min = Math.min;
+	P.math.pow = Math.pow;
+	P.math.random = Math.random;
+	P.math.round = Math.round;
+	P.math.sin = Math.sin;
+	P.math.sqrt = Math.sqrt;
+	P.math.tan = Math.tan;
+	P.utils.hasOwnProperty = Object.prototype.hasOwnProperty;
+	
+	for (var p in Math) {
+		P.math[p] = Math[p];
+	}
+	
 	/********** utils **********/
 	function smem(e, set) {
 		var j;
@@ -84,17 +115,17 @@ var JSConTest = (function (P) {
 		return true;
 	}
 	function unSafePick(a) {
-		return a[Math.floor(Math.random() * a.length)];
+		return a[P.path.floor(P.math.random() * a.length)];
 	}
 	function pick(a) {
 		if (isSArray(a)) {
-			return a[Math.floor(Math.random() * a.length)];
+			return a[P.math.floor(P.math.random() * a.length)];
 		} else {
 			throw "Call pick with an array";
 		}
 	}
 	function pickOrF(a, p, f) {
-		if (isSArray(a) && p && (p >= 0) && (p <= 1) && (Math.random() < p)) {
+		if (isSArray(a) && p && (p >= 0) && (p <= 1) && (P.math.random() < p)) {
 			return pick(a);
 		} else {
 			return f();
@@ -263,10 +294,10 @@ var JSConTest = (function (P) {
 		return (typeof(v) === 'number' && (!isNaN(v))); 
 	}
 	function isInt(v) {
-		return (typeof(v) === 'number' && (!isNaN(v)) && (Math.floor(v) === v));
+		return (typeof(v) === 'number' && (!isNaN(v)) && (P.math.floor(v) === v));
 	}
 	function isPInt(v) {
-		return (typeof(v) === 'number' && (!isNaN(v)) && (v >= 0) && (Math.floor(v) === v));
+		return (typeof(v) === 'number' && (!isNaN(v)) && (v >= 0) && (P.math.floor(v) === v));
 	}
 	function isIInt(low, high, v) {
 		return ((low <= v) && (v <= high) && isInt(v));
@@ -371,15 +402,15 @@ var JSConTest = (function (P) {
 		return undefined; 
 	}
 	function genBoolean() {
-		if (Math.random() < 0.5) {
+		if (P.math.random() < 0.5) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 	function genInt() {
-		var ri = Math.round(Math.random() * P.math.MAXINT);
-		if (Math.random() < 0.5) {
+		var ri = P.math.round(P.math.random() * P.math.MAXINT);
+		if (P.math.random() < 0.5) {
 			ri = ri * -1;
 			ri = ri - 1;
 		}
@@ -395,7 +426,7 @@ var JSConTest = (function (P) {
 	}
 	function genIInt(low, high) {
 		if (isInt(low) && isInt(high)) {
-			return Math.floor(Math.random() * (high - low)) + low;
+			return P.math.floor(P.math.random() * (high - low)) + low;
 		} else {
 			return genInt();
 		}
@@ -410,27 +441,27 @@ var JSConTest = (function (P) {
 	*/
 	function genNInt(low, high) {
 		if (isNumber(low) && isNumber(high)) {
-			return (Math.random() * (high - low)) + low;
+			return (P.math.random() * (high - low)) + low;
 		} else {
 			return genNumber();
 		}
 	}
 	function genRNDFloat() {
 		var r, e, i;
-		if (Math.random() < 0.2) {
-			return unSafePick([Math.E, Math.LN2, Math.LN10, 
-												 Math.LOG2E, Math.LOG10E,
-												 Math.PI, Math.SQRT2, Math.SQRT1_2,
+		if (P.math.random() < 0.2) {
+			return unSafePick([P.math.E, P.math.LN2, P.math.LN10, 
+												 P.math.LOG2E, P.math.LOG10E,
+												 P.math.PI, P.math.SQRT2, P.math.SQRT1_2,
 												 1 / 0, -1 / 0]);
 		}
-		r = Math.random();
+		r = P.math.random();
 		e = genIInt(-1074, 971);
-		return r * Math.pow(2, e);
+		return r * P.math.pow(2, e);
 	}
 	function genNumber(low, high) {
 		if (isNumber(low) && isNumber(high)) {
 			// generate random float in range
-			return Math.random() * (high - low) + low;
+			return P.math.random() * (high - low) + low;
 		} else {
 			if ((!isNumber(low)) && (!isNumber(high))) {
 				return genRNDFloat();
@@ -442,7 +473,7 @@ var JSConTest = (function (P) {
 	}
 	function genLength() {
 		var i = 0;
-		while (Math.random() < 0.8) {
+		while (P.math.random() < 0.8) {
 			i += 1;
 		}
 		return i;
@@ -467,7 +498,7 @@ var JSConTest = (function (P) {
 		}
 		function gen(p) {
 			var r;
-			if (Math.random() < p) {
+			if (P.math.random() < p) {
 				r = genNode(p);
 				return r;
 			}
@@ -532,11 +563,11 @@ var JSConTest = (function (P) {
 //		}
 //		function gen(p) {
 //			var r;
-//			if (Math.random() < p) {
+//			if (P.math.random() < p) {
 //				r = genFInt(p);
 //				return r;
 //			}
-//			if (Math.random() < q) {
+//			if (P.math.random() < q) {
 //				return genInt();
 //			}
 //			r = pick(iList);			
@@ -595,7 +626,7 @@ var JSConTest = (function (P) {
 		} else {
 			r = "";
 			for (j = 0; j < i; j = j + 1) {
-				r += chars[Math.floor(Math.random() * chars.length)];
+				r += chars[P.math.floor(P.math.random() * chars.length)];
 			}
 			return r;
 		}
@@ -714,7 +745,7 @@ var JSConTest = (function (P) {
 	function genTop() {
 		// reduce probability, that an object or array is
 		// created. This ensures Termination. 
-		var r = Math.floor(Math.random() * 1000);
+		var r = P.math.floor(P.math.random() * 1000);
 		if (r < 2) {
 			genF.push(genBoolean);
 		}
@@ -741,7 +772,7 @@ var JSConTest = (function (P) {
 	function genTopOUndef() {
 		// reduce probability, that an object or array is
 		// created. This ensures Termination. 
-		var r = Math.floor(Math.random() * 1000);
+		var r = P.math.floor(P.math.random() * 1000);
 		if (r < 2) {
 			genFoU.push(genBoolean);
 		}

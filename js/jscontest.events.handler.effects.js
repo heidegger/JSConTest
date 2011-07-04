@@ -159,7 +159,7 @@
 			pathstep;
 		for (pathstep in ht) {
 			if (ht.hasOwnProperty(pathstep)) {
-				localsize = Math.max(localsize, 1 + greatestLengthOfES(ht[pathstep]));
+				localsize = JSConTest.math.max(localsize, 1 + greatestLengthOfES(ht[pathstep]));
 			}			
 		}
 		return localsize;
@@ -184,7 +184,7 @@
 			if (ht.hasOwnProperty(pathstep)) {
 				esOfPathstep = ht[pathstep];
 				localnumber += esOfPathstep.n;
-				localsize = Math.min(localsize, 1 + shortestLengthOfES(esOfPathstep));
+				localsize = JSConTest.math.min(localsize, 1 + shortestLengthOfES(esOfPathstep));
 			}
 		}
 		if (localnumber < globalnumber) {
@@ -246,7 +246,7 @@
 	      // var greatestLength = greatestLengthOfES (ht[p]);
 				losp = lengthOfStrictPrefixes(ht[p]);
 				subsize += ht[p].n;
-				sublength = Math.min(sublength, 1 + losp);
+				sublength = JSConTest.math.min(sublength, 1 + losp);
 			}			
 		}
 		
@@ -496,8 +496,8 @@
 			for (pathstep in ht) {
 				if (ht.hasOwnProperty(pathstep)) {
 					w = ht[pathstep].n / localsize;
-					min_weight = Math.min(min_weight, w);
-					max_weight = Math.max(max_weight, w);
+					min_weight = JSConTest.math.min(min_weight, w);
+					max_weight = JSConTest.math.max(max_weight, w);
 					weights[pathstep] = w;
 				}	    	
 			}
@@ -1022,8 +1022,8 @@
 		function sliderControlP(parent, min, max, handler, defv, steps) {
 			var slider, span, parent;
 			
-			defv = defv || Math.floor((max - min) / 2);
-			steps = steps || Math.floor((max - min) / 10) || 1;
+			defv = defv || JSConTest.math.floor((max - min) / 2);
+			steps = steps || JSConTest.math.floor((max - min) / 10) || 1;
 
 			uid += 1;
 

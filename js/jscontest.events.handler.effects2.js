@@ -5,7 +5,8 @@
 		// the local config data
 		gconfig,
         sliderControl,
-        sliderControlNamed;
+        sliderControlNamed, 
+        Math = JSConTest.math;
 	JSConTest.events.handler.effects = SELF;
 
 	// initialize global config default values

@@ -280,10 +280,10 @@ let transform env effects sel =
     | Switch (a,e,regcases,sloo,regcases2) ->
         let t_regcases rc = 
           List.map 
-            (fun (e,slo) -> t_e e, t_o (fun sl -> List.map t_s sl) slo) 
+            (fun (e,slo) -> ub_e (t_e e), t_o (fun sl -> List.map t_s sl) slo) 
             rc 
         in
-          Switch (a,t_e e,t_regcases regcases, 
+          Switch (a,ub_e (t_e e),t_regcases regcases, 
                   t_o (t_o (fun sl -> List.map t_s sl)) sloo,
                   t_regcases regcases2)
     | Throw (a,e) -> Throw (a,t_e e)

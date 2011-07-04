@@ -328,10 +328,10 @@ module Make(T: TRANS) : S with type t = T.t = struct
      * - add wrapper             --> T.afert_wrapper
      * - overrideToString        --> use fcode and org_fcode, call overrideToStringOfFunction
      *)
-	let org_fcode : exp =  	
+      let org_fcode : exp =  	
 	  Function_expression (null_annotation,
 		Some finfo.contract,
-		finfo.recursive_name,
+	        finfo.recursive_name,
 		finfo.params,
 		None,
 		finfo.body)
@@ -345,7 +345,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
     	  in
 	    Function_expression (null_annotation,
 		Some finfo.contract,
-		finfo.recursive_name,
+		None,
 		finfo.params,
 		None,
 		fbody)
@@ -540,7 +540,7 @@ module Make(T: TRANS) : S with type t = T.t = struct
 	let finfo = {
 	  contract= c;
 		params= pl;
-		recursive_name= Some n;
+		recursive_name=Some n;
 		body=sel; }
 	in
 	let mod_fd = create_code env info ftestname finfo in
