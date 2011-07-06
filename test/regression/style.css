@@ -1,0 +1,107 @@
+div#logger div#first div { 
+  float:clear;
+}
+
+div#logger div#first div.left { 
+  float: left;
+}
+
+div#logger div#first div.left { 
+  float: right;
+}
+
+div#logger h2 { 
+  margin: 1em 0 0 0;
+  padding: 2px;
+  background: #B9B6CF;
+}
+
+div#logger ul { 
+  margin: 0 0 1em 0;
+  padding: 2px;
+  background: #DCDAE7;
+}
+
+div#logger ul li { 
+  list-style-type: none;
+}
+
+div#logger ul li em { 
+  color: #68476D;
+}
+
+div#logger ul#loggercex { 
+  padding: 0em 1.5em;
+  background: #647A61;
+}
+
+div#logger ul#loggercex li {
+  margin: 0em;
+  padding: 1em;
+  list-style-type: square;
+}
+
+
+div#effects div#first div { 
+  float:clear;
+}
+
+div#effects div#first div.left { 
+  float: left;
+}
+
+div#effects div#first div.left { 
+  float: right;
+}
+
+div#effects h2 { 
+  margin: 1em 0 0 0;
+  padding: 2px;
+  background: #B9B6CF;
+}
+
+div#effects h3 { 
+  margin: 1em 0 0 0;
+  padding: 2px;
+  background: #B9B6CF;
+}
+
+div#effects table { 
+  margin: 0 0 1em 0;
+  padding: 2px;
+  background: #DCDAE7;
+}
+
+div#effects ul { 
+  margin: 0 0 1em 0;
+  padding: 2px;
+  background: #DCDAE7;
+}
+
+div#effects ul li { 
+  list-style-type: none;
+}
+
+div#effects ul li em { 
+  color: #68476D;
+}
+
+div#effects ul#effectscex { 
+  padding: 0em 1.5em;
+  background: #647A61;
+}
+
+div#effects ul#effectscex li {
+  margin: 0em;
+  padding: 1em;
+  list-style-type: square;
+}
+
+div#effects td { 
+  border: 4px groove grey;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  font-family: monospace;
+}
