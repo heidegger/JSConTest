@@ -475,8 +475,10 @@
 								
 				// store the wrapper and the uid for the assignment
 				o.__infos__[p] = { box: apv, uid: uid };
+				return apv;
+			} else {
+				return v;				
 			}
-			return undefined;
 		}
 		return doWithUnwrap3(wo, wp, wv, write);
 	}
