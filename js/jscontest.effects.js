@@ -1002,14 +1002,81 @@
 		return (function () {
 			var i, 
 				pl = [],
+				plboxed, 
+				thisbox,
+				plorg,
+				that,
+				wrong_box = false;
+			
+			// we should have a look at the boxes stored for us to pass aditional
+			// informations about the parameters
+			// If these boxes does not exits, use the parameters passed to us
+			//plorg = getParams() || arguments,
+			// Analogious for this
+			//that = box_this(getThis() || this);
 
-				// we should have a look at the boxes stored for us to pass aditional
-				// informations about the parameters
-				// If these boxes does not exits, use the parameters passed to us
-				plorg = getParams() || arguments,
-				// Analogious for this
-				that = box_this(getThis() || this);
-				
+			
+			// if a transformed function (f) calls a untransformed function (g)
+			// that then does call a transformed function (h)
+			// then the call of g inside of g is done by a fcall execution
+			// => the boxes of the parameters of the call of g were stored
+			// => g is not transformed, therefor it will not touch the boxes
+			// => since g is not transformed, the call of h inside of g does not 
+			//    clear the boxes from the prevoius call
+			// => therefor, the wrapper of h, which is the situation we might be 
+			//    in here at this code place, has to handle the situation, that
+			//    the box on the box-stack is an invalid one.
+			// Therefor we have to check, if there exists boxes for the parameters
+			// are really boxes for this function call.
+			// The check we use is, that each stored box has to refer to the 
+			// same value, that we got due to the usual parameter passsing mechanisms.
+			// => If a box does point to a value, not passed a a corresponding parameter
+			//    in the arguments object (or the this), the boxes are invalid, and we
+			//    have to create new local ones for the function h
+			// => If that is the case, the dynamic extend principle is violated!!!
+
+			// get the boxes from the box stack
+			plboxed = getParams();
+			if (plboxed) {
+				// there are boxes
+				for (i = 0; i < plboxed.length; i++) {
+					// if the stored boxed points to the values
+					// we get throw arguments, the boxes were stored
+					// for us (this is not for sure!)
+					if (isBox(plboxed[i])) {
+						if (unbox(plboxed[i]) !== arguments[i]) {
+							wrong_box = true;
+							break;
+						}						
+					} else {
+						wrong_box = true;
+						break;
+					}
+				}
+			} else {
+				wrong_box = true;
+			}
+			// get the this box from the box stack
+			thisbox = getThis();
+			if (thisbox) {
+				// there is a box
+				if (!(isBox(thisbox)) || thisbox.reference !== this) {
+					wrong_box = true;
+				}
+			} else {
+				wrong_box = true;
+			}
+			if (wrong_box) {
+				// one of the boxes is wrong => the boxes does not suite to the
+				// parameters, do not use them!
+				plorg = arguments;
+				that = this;
+			} else {
+				// the boxes were valid, use them
+				plorg = plboxed;
+				that = box_this(thisbox);
+			}
+
 			// mark parameters with names and numbers
 			for (i = 0; i < pnames.length; i += 1) {
 				pl.push(box_param(i + 1, box(pnames[i], plorg[i])));
