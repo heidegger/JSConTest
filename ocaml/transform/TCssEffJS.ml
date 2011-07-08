@@ -86,12 +86,13 @@ let js_of_t fname t =
   match (Csseff.map 
            (js_of_effect fname)
 	   (js_of_effect fname) 
-           (fun () -> ASTUtil.new_object ["type", ASTUtil.int_to_exp aLL])
+           (fun () -> ASTUtil.new_object ["type", ASTUtil.int_to_exp aLL; "fname", Testlib.var_name_to_string_exp fname])
            t) with
     | Left (pl,nl) -> 
 	ASTUtil.new_object 
 		["pos",ASTUtil.new_array pl;
-		 "neg",ASTUtil.new_array nl]      
+		 "neg",ASTUtil.new_array nl;
+		 "fname",  Testlib.var_name_to_string_exp fname]      
     | Right e -> e
         
 
@@ -118,7 +119,8 @@ module Test = struct
         	    ["type",ASTUtil.int_to_exp 1;
         	     "number", ASTUtil.int_to_exp 1;
 	             "fname", Testlib.var_name_to_string_exp fname]];
-		 "neg",ASTUtil.new_array []]
+		 "neg",ASTUtil.new_array [];
+		 "fname", Testlib.var_name_to_string_exp fname]
       in
         assert_equal
           ~printer:(AST.string_of_expression (fun () -> ""))
@@ -143,7 +145,8 @@ module Test = struct
 	        	    "property", ASTUtil.s_to_e "a";
 		            "effect", base_exp
 		           ]];
-		"neg", ASTUtil.new_array []]
+		"neg", ASTUtil.new_array [];
+		"fname", Testlib.var_name_to_string_exp fname]
       in
         assert_equal
           ~printer:(AST.string_of_expression (fun () -> ""))
@@ -167,7 +170,8 @@ module Test = struct
 		           ["type", ASTUtil.int_to_exp 5;
 		            "effect", base_exp
 		           ]];
-		"neg", ASTUtil.new_array []]
+		"neg", ASTUtil.new_array [];
+		"fname", Testlib.var_name_to_string_exp fname]
       in
         assert_equal
           ~printer:(AST.string_of_expression (fun () -> ""))
@@ -198,7 +202,8 @@ module Test = struct
 		               ["type", ASTUtil.int_to_exp 4;
 		                "effect", base_exp])
 		           ]];
-		"neg", ASTUtil.new_array []]
+		"neg", ASTUtil.new_array [];
+		"fname", Testlib.var_name_to_string_exp fname]
       in
         assert_equal
           ~printer:(AST.string_of_expression (fun () -> ""))
@@ -211,7 +216,8 @@ module Test = struct
       let fname = Testlib.gen_fun_var_name "h" in
       let te = js_of_t fname t in
       let te_exp = ASTUtil.new_object 
-        ["type", ASTUtil.int_to_exp 6] 
+        ["type", ASTUtil.int_to_exp 6;
+	"fname",  Testlib.var_name_to_string_exp fname] 
       in
         assert_equal
           ~printer:(AST.string_of_expression (fun () -> ""))

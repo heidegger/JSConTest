@@ -74,11 +74,11 @@ function f(x) {
       let p,np = parse_c p in
       let tp = gen_js_of_c_effects np in
       let s = "
-var f = JSConTest.tests.addContracts(\"f_f7\", JSConTest.tests.setVar(\"f_f7\", JSConTest.tests.overrideToStringOfFunction(JSConTest.tests.enableAsserts(JSConTest.effects.enableWrapper((function f (x) {
+var f = JSConTest.tests.addContracts(\"f_f7\", JSConTest.tests.setVar(\"f_f7\", JSConTest.tests.overrideToStringOfFunction(JSConTest.tests.enableAsserts(JSConTest.effects.enableWrapper((function  (x) {
       JSConTest.effects.fCall(f, [JSConTest.effects.propAcc(x, \"a\")]);
     }), [\"x\"]), [\"c_8\"], \"f_f7\"), (function f (x) {
       f(x.a);
-    }), true)), [{contract : JSConTest.tests.setVar(\"c_8\", JSConTest.contracts.Function([JSConTest.contracts.Integer], JSConTest.contracts.Integer, {pos : [], neg : []}, \"f_f7\")), count : 1000. }], []);"
+    }), true)), [{contract : JSConTest.tests.setVar(\"c_8\", JSConTest.contracts.Function([JSConTest.contracts.Integer], JSConTest.contracts.Integer, {pos : [], neg : [], fname : \"f_f7\"}, \"f_f7\")), count : 1000. }], []);"
       in
       assert_equal 
 	~printer:(fun s -> s)
