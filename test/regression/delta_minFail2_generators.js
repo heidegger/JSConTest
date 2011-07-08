@@ -12,13 +12,10 @@ var c =
 var s =
      (function () {
         function gen() {
-            return Strength.REQUIRED;
+            return 5;
         }
         function test(x) {
-            return (x === Strength.REQUIRED);  
+            return (x === 5);
         }
         return new JSConTest.contracts.SContract(test,gen,"Strength.Required");
      })();
-var StrengthClass = JSConTest.contracts.SContract(function (x) { return x === Strength }, 
-						  function () { return Strength },
-						  "StrengthClass");
