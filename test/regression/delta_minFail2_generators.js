@@ -1,18 +1,7 @@
-var v =
-     (function () {
-        function gen() {           
-            return new Variable();
-        }
-        function test(x) {
-            return (x instanceof Variable);  
-        }
-        return new JSConTest.contracts.SContract(test,gen,"Variable");
-     })();
-
 var c =
      (function () {
         function gen() {             
-               return new BinaryConstraint(v.gen());    
+               return new BinaryConstraint(new Variable);    
         }
         function test(x) {
             return (x instanceof Constraint);  

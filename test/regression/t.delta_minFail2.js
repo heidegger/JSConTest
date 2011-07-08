@@ -8,7 +8,7 @@ Object.prototype.inherits = function (shuper)
 };
 
 function OrderedCollection() {
-   this.elms = new Array();
+    this.elms = new Array();
 }
 OrderedCollection.prototype.add = function(elm) {
    this.elms.push(elm);
@@ -31,9 +31,7 @@ Constraint.prototype.isInput = function()
 	return false;
 };
 
-
 function BinaryConstraint(var1) {
-	BinaryConstraint.superConstructor.call(this);
 	this.v1 = var1;
 	this.addConstraint();
 }
