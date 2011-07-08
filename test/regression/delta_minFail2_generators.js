@@ -4,7 +4,7 @@ var c =
                return new BinaryConstraint(new Variable);    
         }
         function test(x) {
-            return (x instanceof Constraint);  
+            return (x instanceof BinaryConstraint);  
         }
         return new JSConTest.contracts.SContract(test,gen,"Constraint");
      })();
