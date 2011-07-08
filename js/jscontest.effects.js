@@ -129,7 +129,7 @@
 			}
 			break;
 		case QUESTIONMARK:
-			if ((access_path.type === PROP) && (eff.type === PROP)) {
+			if ((access_path.type === PROP)) {
 				return isAllowedEff(access_path.effect, eff.effect);
 			} else {
 				return false;
@@ -264,6 +264,7 @@
 					if (isAllow(access_path, eff)) {
 						perm = true;
 					}
+					i += 1;
 				}
 				
 				// if perm is false, there was no positive permission for
@@ -283,6 +284,7 @@
 							// permission is rejected, hence quit with false
 							return false;
 						}
+						i += 1;
 					}					
 				}
 				
@@ -346,8 +348,8 @@
 					}); 
 				}
 				if (!check(uid, new_context)) {
-					setFunNameEffl(new_context,getFunNameEffl(effect_store[uid]))
-          eventHandler(o, p,
+					setFunNameEffl(new_context,getFunNameEffl(effect_store[uid]));
+					eventHandler(o, p,
 					             JSConTest.utils.valueToString(effStoreToString(effect_store)), 
 					             JSConTest.utils.valueToString(efflToStringArray(effect_store[uid])),
 					             new_context);
@@ -397,11 +399,11 @@
 		function read(o, p, apo, app) {
 			// checks if read is allowed using apo
 			check_obj_access({ obj: o,
-												 object_pmap: apo,
-												 property: p, 
-												 check: checkRead, 
-												 eventHandler: cfire('assertEffectsRead')
-											 });
+							   object_pmap: apo,
+							   property: p, 
+							   check: checkRead, 
+							   eventHandler: cfire('assertEffectsRead')
+			});
 			
 			// box the result, and add the new access path
 			// to the wrapper.
@@ -918,6 +920,10 @@
 		}		
 	}
 	function getFunNameEffl(effl) {
+		if (typeof effl === 'object' && effl.fname) {
+			return effl.fname;
+		}
+		alert("strange function name");
 		if (typeof effl === 'object' && effl.pos) {
 			if (effl.pos.length > 0) {
 				return getFunNameEff(effl.pos[0]);				
