@@ -99,23 +99,23 @@ let transform env effects sel =
     | Unop (a,e,uop) -> 
         begin
           (* TODO: Does not work always, correct the transformation *)
-          let do_op op =
-            let vn = gen_var_name env.variable_prefix () in
-              g_e_sel
-                [init_var vn (t_e e);
-                 g_se_s 
-                   (g_s_e 
-                      (t_e 
-                         (Assign (null_annotation, 
-                                  e, 
-                                  Regular_assign null_annotation, 
-                                  Binop(null_annotation, 
-                                        e, 
-                                        op, 
-                                        int_to_exp 1)))));
-                   g_return (i_to_e (s_to_i vn))
-                ]
-          in
+          (* let do_op op = *)
+          (*   let vn = gen_var_name env.variable_prefix () in *)
+          (*     g_e_sel *)
+          (*       [init_var vn (t_e e); *)
+          (*        g_se_s  *)
+          (*          (g_s_e  *)
+          (*             (t_e  *)
+          (*                (Assign (null_annotation,  *)
+          (*                         e,  *)
+          (*                         Regular_assign null_annotation,  *)
+          (*                         Binop(null_annotation,  *)
+          (*                               e,  *)
+          (*                               op,  *)
+          (*                               int_to_exp 1))))); *)
+          (*          g_return (i_to_e (s_to_i vn)) *)
+          (*       ] *)
+          (* in *)
             match e with
               | Constant _ | This _ -> Unop (a,e,uop)
               | Variable (an,v) -> Unop (a,e,uop)
@@ -210,7 +210,7 @@ let transform env effects sel =
   and do_box bf e =
     match e with
       | Constant _ -> e
-      | Unop_without_sideeffect (_,e,_) ->
+      | Unop_without_sideeffect (_,e',_) ->
           begin
             match e with 
               | Constant _ -> e
