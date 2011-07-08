@@ -527,8 +527,10 @@
 			getReturnBox = (function (rv) {
 				var b = rv;
 				if (return_box && return_box.box) {
-					b = return_box.box;
-					return_box = false;
+					if (return_box.reference === rv) {
+						b = return_box.box;
+						return_box = false;						
+					}
 				}
 				return b;
 			});
@@ -569,13 +571,9 @@
 			// uid, to be able to distinguish effects registers by the method 
 			// and new objects created
 			
-			if (f && "apply" in f) {
-				incrementUid();
-				result = f.apply(that_ub, plub);
-				deleteThisParams();				
-			} else {
-				console.log("strange apply setting");
-			}
+			incrementUid();
+			result = f.apply(that_ub, plub);
+			deleteThisParams();				
 			return getReturnBox(result);
 		});
 
