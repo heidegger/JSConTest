@@ -2,7 +2,7 @@ open ProglangUtils
 open ExtUtils
 
 let print_version () =
-  print_endline ("0.4.4 -- " ^ Date.date);
+  print_endline ("0.5.0 -- " ^ Date.date);
   exit 0
 
 
