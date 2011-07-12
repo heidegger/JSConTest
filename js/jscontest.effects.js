@@ -1074,7 +1074,7 @@
 				// one of the boxes is wrong => the boxes does not suite to the
 				// parameters, do not use them!
 				plorg = arguments;
-				that = this;
+				that = box_this(this);
 			} else {
 				// the boxes were valid, use them
 				plorg = plboxed;
