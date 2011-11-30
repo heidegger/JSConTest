@@ -1,3 +1,7 @@
+/* Version: 0.1.1 */
+/* @author: Peter Thiemann, 
+ * @author: Phillip Heidegger (intergration into JSConTest, config) */
+
 // from JSConTest / js / jscontest.effects.js
 "use strict";
 (function (JSConTest) {
